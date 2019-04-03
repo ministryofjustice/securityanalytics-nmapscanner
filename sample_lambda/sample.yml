@@ -1,0 +1,34 @@
+function:
+  sample:
+    handler: sample_lambda.sample.sample
+    name: ${opt:stage, '${env:USERNAME}'}-${self:service}-sample
+    role: sampleRole
+    package:
+      include:
+        - sample_lambda/sample.py
+        - sample_lambda/__init__.py
+    events:
+      - http:
+          path: ${self:custom.plugin-name}/sample
+          method: get
+
+role:
+  sampleRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path:
+        # Not allowed '-' characters in a path
+        Fn::Join:
+          - ""
+          - Fn::Split:
+              - "-"
+              - /${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/${self:service}/sample/
+      RoleName: ${opt:stage, '${env:USERNAME}'}-${self:service}-sample
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole

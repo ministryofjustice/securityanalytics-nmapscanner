@@ -1,0 +1,145 @@
+version: 2.1
+
+master-only: &master-only
+  filters:
+    branches:
+      only: master
+
+executors:
+  builder:
+    docker:
+      - image: duckpodger/python3-node-aws-terraform
+
+jobs:
+  setup:
+    executor: builder
+    steps:
+      - restore_cache:
+          keys:
+            - git-v1-{{ .Branch }}-
+            - git-v1-
+
+      - checkout
+
+      - restore_cache:
+          keys:
+            - npm-v1-{{ .Branch }}-
+            - npm-v1-
+
+      - run: npm install
+
+      - restore_cache:
+          keys:
+            - python-v1-{{ .Branch }}-
+            - python-v1-
+
+      - run:
+          name: install virtual env
+          command: |
+            if [ ! -d "venv" ]; then
+              pip3 install virtualenv
+              virtualenv venv
+            fi
+
+      - run:
+          name: build python
+          command: |
+            . ./venv/bin/activate
+            # Get short version of git hash for temporary deployment
+            export USERNAME=builder
+            export DEPLOY_STAGE=$(expr substr `git rev-parse HEAD` 1 8)
+            pip3 install -r requirements.txt
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - "*"
+
+      - store_artifacts:
+          path: .generated
+
+      - save_cache:
+          key: git-v1-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".git"
+
+      - save_cache:
+          key: npm-v1-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - "node_modules"
+
+      - save_cache:
+          key: python-v1-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - "venv"
+            - ".cache"
+            - ".serverless"
+
+  unit-test:
+    executor: builder
+    steps:
+      - attach_workspace:
+          at: .
+      - run: |
+          . ./venv/bin/activate
+          export AWS_REGION=eu-west-2
+          export PYTHONPATH=`pwd`
+          pytest -m unit tests
+
+  integration-test:
+    executor: builder
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: integration tests
+          command: |
+            . ./venv/bin/activate
+            export AWS_REGION=eu-west-2
+            export PYTHONPATH=`pwd`
+            # Get short version of git hash for temporary deployment
+            export USERNAME=builder
+            export DEPLOY_STAGE=$(expr substr `git rev-parse HEAD` 1 8)
+            set +e # allows us to run the cleanup
+            npx sls --stage=$DEPLOY_STAGE deploy
+            npx sls --stage=$DEPLOY_STAGE exportEndpoints
+            pytest -m integration tests
+            export SUCCESS=$?
+            npx sls --stage=$DEPLOY_STAGE remove
+            exit $SUCCESS
+
+  deploy:
+    executor: builder
+    steps:
+      - attach_workspace:
+          at: .
+      # TODO change this when we move on to having multiple environments
+      - run: |
+          . ./venv/bin/activate
+          export AWS_REGION=eu-west-2
+          export PYTHONPATH=`pwd`
+          export USERNAME=builder
+          npx sls --stage=dev deploy
+
+workflows:
+  version: 2
+  terraform-infrastructure:
+    jobs:
+      - setup
+      - unit-test:
+          requires: [ setup ]
+      - integration-test:
+          requires: [ setup ]
+      - approve:
+          type: approval
+          requires:
+            - unit-test
+            - integration-test
+          <<: *master-only
+      - deploy:
+          requires: [ approve ]
+          <<: *master-only
+
+
+
+
