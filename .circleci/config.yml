@@ -81,11 +81,13 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - run: |
-          . ./venv/bin/activate
-          export AWS_REGION=eu-west-2
-          export PYTHONPATH=`pwd`
-          pytest --junitxml=test-reports/junit.xml -m unit tests
+      - run:
+          name: integration tests
+          command: |
+            . ./venv/bin/activate
+            export AWS_REGION=eu-west-2
+            export PYTHONPATH=`pwd`
+            pytest --junitxml=test-reports/junit.xml -m unit tests
       - store_test_results:
           path: test-reports
 
@@ -119,12 +121,14 @@ jobs:
       - attach_workspace:
           at: .
       # TODO change this when we move on to having multiple environments
-      - run: |
-          . ./venv/bin/activate
-          export AWS_REGION=eu-west-2
-          export PYTHONPATH=`pwd`
-          export USERNAME=builder
-          npx sls --stage=dev deploy
+      - run:
+          name: deploy
+          command: |
+            . ./venv/bin/activate
+            export AWS_REGION=eu-west-2
+            export PYTHONPATH=`pwd`
+            export USERNAME=builder
+            npx sls --stage=dev deploy
 
 workflows:
   version: 2
