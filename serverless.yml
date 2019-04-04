@@ -1,0 +1,79 @@
+service: ${self:custom.app-name}-${self:custom.plugin-name}
+
+external-gateway: &external-gateway
+  apiGateway:
+    restApiId: ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/api/id, ''}
+    restApiRootResourceId: ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/api/root, ''}
+
+
+custom:
+  app-name: sec-an
+  plugin-name: nmap
+  apiGatewayConfigOptions:
+    dev: *external-gateway
+    prod: *external-gateway
+    other:
+      apiGateway
+  # If a defined integration exists in apiGatewayConfigOptions e.g. dev or prod
+  # then serverless will take that value, if it is undefined it falls back to 'other'
+  # which provides no api gateway details and serverless will create a new one for us
+  apiGatewayConfig: &apiGatewayConfig
+    ${self:custom.apiGatewayConfigOptions.${opt:stage, '${env:USERNAME}'}, self:custom.apiGatewayConfigOptions.other}
+  output:
+    file: .generated/stack.json
+  exportEndpoints:
+    path: .generated/endpoints.json
+  pythonRequirements:
+    cacheLocation: ${env:PWD}/.cache
+    useDownloadCache: true
+    useStaticCache: true
+    dockerizePip: non-linux
+    # setting this to true breaks the zip
+    slim: false
+    # Dont use zip, it makes things bigger because the no deploy filtering seems to be ignored
+    zip: false
+    # the following are dependencies for testing, not prod lambda
+    # TODO use pipenv instead of pip to use pipfile format and avoid this
+    # https://github.com/pypa/pipfile
+    noDeploy:
+      - pytest
+      - atomicwrites
+      - colorama
+      - more-itertools
+      - pluggy
+      - py
+
+provider:
+  name: aws
+  runtime: python3.6
+  region: ${opt:region, 'eu-west-2'}
+  stage: ${opt:stage, '${env:USERNAME}'} # so when developing we keep things independent, can be overridden
+  # This is useful for local dev, but there is no config file on the build server
+  # profile: ${self:custom.app-name}
+  endpointType: REGIONAL # TODO
+  # Here if we are on dev (or later qa or prod), then we hook up to the shared gateway
+  # other wise we are probably just running integration tests and need to create our own gateway
+  <<: *apiGatewayConfig
+# TODO additional efforts are needed to get lambdas to run inside the vpc
+#  vpc:
+#    securityGroupIds:
+#      - TODO
+#    subnetIds: ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/vpc/subnets/instance}
+
+plugins:
+  - serverless-stack-output
+  - serverless-plugin-export-endpoints
+  - serverless-python-requirements
+  - serverless-offline # used for testing and local development
+
+package:
+  individually: true
+  exclude:
+    - "**"
+
+functions:
+  ${file(sample_lambda/sample.yml):function}
+
+resources:
+  Resources:
+    ${file(sample_lambda/sample.yml):role}
