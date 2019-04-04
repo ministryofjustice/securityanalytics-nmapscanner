@@ -124,11 +124,11 @@ jobs:
       - run:
           name: deploy
           command: |
-          . ./venv/bin/activate
-          export AWS_REGION=eu-west-2
-          export PYTHONPATH=`pwd`
-          export USERNAME=builder
-          npx sls --stage=dev deploy
+            . ./venv/bin/activate
+            export AWS_REGION=eu-west-2
+            export PYTHONPATH=`pwd`
+            export USERNAME=builder
+            npx sls --stage=dev deploy
 
 workflows:
   version: 2
