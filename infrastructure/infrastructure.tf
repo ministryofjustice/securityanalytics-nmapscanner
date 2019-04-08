@@ -52,7 +52,7 @@ module "docker_image" {
 }
 
 module "nmap_task" {
-  source   = "../../securityanalytics-taskexecution/infrastructure/ecs_task"
+  source   = "github.com/ministryofjustice/securityanalytics-taskexecution//infrastructure/ecs_task"
   app_name = "${var.app_name}"
   aws_region = "${var.aws_region}"
   cpu = "1024"
