@@ -1,10 +1,9 @@
 service: ${self:custom.app-name}-${self:custom.plugin-name}
 
 external-gateway: &external-gateway
-  apiGateway:
-    restApiId: ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/api/id, ''}
-    restApiRootResourceId: ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/api/root, ''}
-
+  restApiId: ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/api/public/id, ''}
+  restApiRootResourceId: ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/api/public/root, ''}
+  authorizer: ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/api/public/authorizer, ''}
 
 custom:
   app-name: sec-an
@@ -13,11 +12,13 @@ custom:
     dev: *external-gateway
     prod: *external-gateway
     other:
-      apiGateway
+      restApiId: ""
+      restApiRootResourceId: ""
+      authorizer: ""
   # If a defined integration exists in apiGatewayConfigOptions e.g. dev or prod
   # then serverless will take that value, if it is undefined it falls back to 'other'
   # which provides no api gateway details and serverless will create a new one for us
-  apiGatewayConfig: &apiGatewayConfig
+  apiGatewayConfig:
     ${self:custom.apiGatewayConfigOptions.${opt:stage, '${env:USERNAME}'}, self:custom.apiGatewayConfigOptions.other}
   output:
     file: .generated/stack.json
@@ -53,7 +54,9 @@ provider:
   endpointType: REGIONAL # TODO
   # Here if we are on dev (or later qa or prod), then we hook up to the shared gateway
   # other wise we are probably just running integration tests and need to create our own gateway
-  <<: *apiGatewayConfig
+  apiGateway:
+    restApiId: ${self:custom.apiGatewayConfig.restApiId}
+    restApiRootResourceId: ${self:custom.apiGatewayConfig.restApiRootResourceId}
 # TODO additional efforts are needed to get lambdas to run inside the vpc
 #  vpc:
 #    securityGroupIds:

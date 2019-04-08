@@ -11,6 +11,9 @@ function:
       - http:
           path: ${self:custom.plugin-name}/sample
           method: get
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId: ${self:custom.apiGatewayConfig.authorizer}
 
 role:
   sampleRole:
