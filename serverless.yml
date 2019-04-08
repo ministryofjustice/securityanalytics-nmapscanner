@@ -3,7 +3,9 @@ service: ${self:custom.app-name}-${self:custom.plugin-name}
 external-gateway: &external-gateway
   restApiId: ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/api/public/id, ''}
   restApiRootResourceId: ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/api/public/root, ''}
-  authorizer: ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/api/public/authorizer, ''}
+  authorizer:
+    type: COGNITO_USER_POOLS
+    authorizerId: ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/api/public/authorizer, ''}
 
 custom:
   app-name: sec-an
