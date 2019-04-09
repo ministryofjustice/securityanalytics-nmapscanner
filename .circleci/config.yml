@@ -36,20 +36,11 @@ jobs:
       - run:
           name: install virtual env
           command: |
-            if [ ! -d "venv" ]; then
-              pip3 install virtualenv
-              virtualenv venv
+            export PIPENV_VENV_IN_PROJECT=true
+            pipenv install --dev --deploy
+            if [ ! -d "test-reports" ]; then
+              mkdir test-reports
             fi
-
-      - run:
-          name: build python
-          command: |
-            . ./venv/bin/activate
-            # Get short version of git hash for temporary deployment
-            export USERNAME=builder
-            export DEPLOY_STAGE=$(expr substr `git rev-parse HEAD` 1 8)
-            pip3 install -r requirements.txt
-            if [ ! -d "test-reports" ]; then mkdir test-reports; fi
 
       - persist_to_workspace:
           root: .
@@ -72,9 +63,10 @@ jobs:
       - save_cache:
           key: python-v1-{{ .Branch }}-{{ .Revision }}
           paths:
-            - "venv"
+            - ".venv"
             - ".cache"
             - ".serverless"
+            - ".pytest_cache"
 
   unit-test:
     executor: builder
@@ -84,7 +76,7 @@ jobs:
       - run:
           name: integration tests
           command: |
-            . ./venv/bin/activate
+            . ./.venv/bin/activate
             export AWS_REGION=eu-west-2
             export PYTHONPATH=`pwd`
             pytest --junitxml=test-reports/junit.xml -m unit tests
@@ -99,7 +91,7 @@ jobs:
       - run:
           name: integration tests
           command: |
-            . ./venv/bin/activate
+            . ./.venv/bin/activate
             export AWS_REGION=eu-west-2
             export PYTHONPATH=`pwd`
             # Get short version of git hash for temporary deployment
@@ -107,9 +99,12 @@ jobs:
             export DEPLOY_STAGE=$(expr substr `git rev-parse HEAD` 1 8)
             set +e # allows us to run the cleanup
             npx sls --stage=$DEPLOY_STAGE deploy
+            export SUCCESS=$?
             npx sls --stage=$DEPLOY_STAGE exportEndpoints
             pytest --junitxml=test-reports/junit.xml -m integration tests
-            export SUCCESS=$?
+            if [ $? != 0 ]; then
+              export SUCCESS=$?
+            fi
             npx sls --stage=$DEPLOY_STAGE remove
             exit $SUCCESS
       - store_test_results:
@@ -124,7 +119,7 @@ jobs:
       - run:
           name: deploy
           command: |
-            . ./venv/bin/activate
+            . ./.venv/bin/activate
             export AWS_REGION=eu-west-2
             export PYTHONPATH=`pwd`
             export USERNAME=builder
