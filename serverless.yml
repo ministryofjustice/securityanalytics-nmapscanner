@@ -48,7 +48,7 @@ custom:
 
 provider:
   name: aws
-  runtime: python3.6
+  runtime: python3.7
   region: ${opt:region, 'eu-west-2'}
   stage: ${opt:stage, '${env:USERNAME}'} # so when developing we keep things independent, can be overridden
   # This is useful for local dev, but there is no config file on the build server

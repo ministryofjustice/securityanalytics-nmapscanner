@@ -1,0 +1,11 @@
+[dev-packages]
+pytest = "*"
+
+[packages]
+boto3 = "*"
+lambda-decorators = "*"
+requests = "*"
+requests-aws4auth = "*"
+
+[requires]
+python_version = "3.7"

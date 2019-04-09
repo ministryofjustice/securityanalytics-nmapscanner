@@ -16,7 +16,7 @@ var/
 .installed.cfg
 *.egg
 __pycache__
-venv
+.venv
 
 # javascript ignores
 node_modules

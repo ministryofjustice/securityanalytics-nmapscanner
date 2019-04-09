@@ -6,7 +6,7 @@ import json
 from requests_aws4auth import AWS4Auth
 
 region = os.environ['AWS_REGION']
-credentials = boto3.Session().get_credentials()
+credentials = boto3.Session(profile_name='sec-an').get_credentials()
 aws_auth = AWS4Auth(
     credentials.access_key,
     credentials.secret_key,
