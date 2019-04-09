@@ -35,16 +35,8 @@ custom:
     slim: false
     # Dont use zip, it makes things bigger because the no deploy filtering seems to be ignored
     zip: false
-    # the following are dependencies for testing, not prod lambda
-    # TODO use pipenv instead of pip to use pipfile format and avoid this
-    # https://github.com/pypa/pipfile
     noDeploy:
-      - pytest
-      - atomicwrites
-      - colorama
-      - more-itertools
-      - pluggy
-      - py
+      - utils
 
 provider:
   name: aws
