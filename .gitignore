@@ -29,3 +29,12 @@ node_modules
 .requirements.zip
 .pytest_cache
 .generated
+.terraform
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# .tfvars files
+*auto.tfvars
+terraform.tfvars
