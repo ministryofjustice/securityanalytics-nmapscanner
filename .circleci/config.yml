@@ -89,7 +89,7 @@ jobs:
       - run:
           name: integration tests
           command: |
-            . .circleci/pythonenv.sh
+            . .circleci/python_env.sh
             # Get short version of git hash for temporary deployment
             export DEPLOY_STAGE=$(expr substr `git rev-parse HEAD` 1 8)
             set +e # allows us to run the cleanup
@@ -114,7 +114,7 @@ jobs:
       - run:
           name: deploy
           command: |
-            . .circleci/pythonenv.sh
+            . .circleci/python_env.sh
             npx sls --stage=dev deploy
 
 workflows:
