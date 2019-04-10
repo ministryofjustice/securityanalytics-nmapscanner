@@ -1,0 +1,4 @@
+[submodule "shared_code"]
+	path = shared_code
+	url = https://github.com/ministryofjustice/securityanalytics-sharedcode
+	branch = master
