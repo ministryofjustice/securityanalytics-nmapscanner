@@ -76,7 +76,7 @@ jobs:
       - run:
           name: integration tests
           command: |
-            . .circleci/pythonenv.sh
+            . .circleci/python_env.sh
             pytest --junitxml=test-reports/junit.xml -m unit tests
       - store_test_results:
           path: test-reports
