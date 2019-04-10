@@ -4,7 +4,7 @@ function:
     name: ${opt:stage, '${env:USERNAME}'}-${self:service}-sample
     role: sampleRole
     layers:
-      - ${ssm:/${self:custom.app-name}/${opt:stage, ssm:/${env:USERNAME}'}/lambda/layer/utils, '/${self:custom.app-name}/dev/lambda/layer/utils}
+      - ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/lambda/layer/utils, ssm:/${self:custom.app-name}/dev/lambda/layer/utils}
     package:
       include:
         - sample_lambda/**
