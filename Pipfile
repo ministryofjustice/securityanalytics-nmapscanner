@@ -6,7 +6,6 @@ boto3 = "*"
 lambda-decorators = "*"
 requests = "*"
 requests-aws4auth = "*"
-shared = {editable = true, subdirectory= "shared_python", git = "https://github.com/ministryofjustice/securityanalytics-sharedinfrastructure.git", ref = "master"}
 
 [requires]
 python_version = "3.7"

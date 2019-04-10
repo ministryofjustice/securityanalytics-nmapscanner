@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "385f936842b15c276742fe21cb54eb0dd5970d295b879ec34e3c6ef71f833759"
+            "sha256": "f4ebfe568760dea378767b1455acc9f86ff6b772b318f541ad4a3c650eb338b8"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -125,12 +125,6 @@
                 "sha256:f23d5cb7d862b104401d9021fc82e5fa0e0cf57b7660a1331425aab0c691d021"
             ],
             "version": "==0.2.0"
-        },
-        "shared": {
-            "editable": true,
-            "git": "https://github.com/ministryofjustice/securityanalytics-sharedinfrastructure.git",
-            "ref": "5ae0e71b6ffd7cfe2b2e6cf1517f50990f51f72a",
-            "subdirectory": "shared_python"
         },
         "six": {
             "hashes": [
