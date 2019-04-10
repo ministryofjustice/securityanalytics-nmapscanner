@@ -1,0 +1,16 @@
+function:
+  handler: task_queue_consumer.task_queue_consumer.submit_scan_task
+  name: ${self:custom.deployStage}-${self:service}-task-q-consumer
+  role: ${ssm:/${self:custom.appName}/${self:custom.deployStage}/tasks/${self:custom.pluginName}/queue_consumer/role/arn}
+  environment:
+    REGION: ${self:provider.region}
+    STAGE: ${self:custom.deployStage}
+    APP_NAME: ${self:custom.appName}
+    TASK_NAME: ${self:custom.pluginName}
+  layers:
+    - ${ssm:/${self:custom.appName}/${self:custom.ssmSourceStage}/lambda/layer/utils}
+  events:
+    - sqs:
+        arn: ${ssm:/${self:custom.appName}/${self:custom.deployStage}/tasks/${self:custom.pluginName}/task_queue/arn}
+        batchSize: 1
+        enabled: true

@@ -1,38 +1,31 @@
 function:
-  sample:
-    handler: sample_lambda.sample.sample
-    name: ${opt:stage, '${env:USERNAME}'}-${self:service}-sample
-    role: sampleRole
-    layers:
-      - ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/lambda/layer/utils, ssm:/${self:custom.app-name}/dev/lambda/layer/utils}
-    package:
-      include:
-        - sample_lambda/**
-      exclude:
-        - sample_lambda/sample.yml
-    events:
-      - http:
-          path: ${self:custom.plugin-name}/sample
-          method: get
-          authorizer: ${self:custom.apiGatewayConfig.authorizer}
+  handler: sample_lambda.sample.sample
+  name: ${self:custom.deployStage}-${self:service}-sample
+  role: sampleRole
+  layers:
+    - ${ssm:/${self:custom.appName}/${self:custom.ssmSourceStage}/lambda/layer/utils}
+  events:
+    - http:
+        path: ${self:custom.pluginName}/sample
+        method: get
+        authorizer: ${self:custom.apiGatewayConfig.authorizer}
 
 role:
-  sampleRole:
-    Type: AWS::IAM::Role
-    Properties:
-      Path:
-        # Not allowed '-' characters in a path
-        Fn::Join:
-          - ""
-          - Fn::Split:
-              - "-"
-              - /${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/${self:service}/sample/
-      RoleName: ${opt:stage, '${env:USERNAME}'}-${self:service}-sample
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action: sts:AssumeRole
+  Type: AWS::IAM::Role
+  Properties:
+    Path:
+      # Not allowed '-' characters in a path
+      Fn::Join:
+        - ""
+        - Fn::Split:
+            - "-"
+            - /${self:custom.appName}/${self:custom.deployStage}/${self:service}/sample/
+    RoleName: ${self:custom.deployStage}-${self:service}-sample
+    AssumeRolePolicyDocument:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+              - lambda.amazonaws.com
+          Action: sts:AssumeRole

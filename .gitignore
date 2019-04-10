@@ -38,3 +38,5 @@ node_modules
 # .tfvars files
 *auto.tfvars
 terraform.tfvars
+
+test-reports

@@ -1,48 +1,125 @@
 from lambda_decorators import async_handler
 import os
 import boto3
-from utils import json_serialisation
+from utils.lambda_decorators import ssm_parameters
+from utils.json_serialisation import dumps
+from netaddr import IPNetwork
+from netaddr.core import AddrFormatError
+import re
 
 region = os.environ["REGION"]
 stage = os.environ["STAGE"]
-ecs_client = boto3.client('ecs', region_name=region)
-ssm_client = boto3.client('ssm', region_name=region)
+app_name = os.environ["APP_NAME"]
+task_name = os.environ["TASK_NAME"]
+ssm_prefix = f"/{app_name}/{stage}"
+ecs_client = boto3.client("ecs", region_name=region)
+ssm_client = boto3.client("ssm", region_name=region)
+
+PRIVATE_SUBNETS = f"{ssm_prefix}/vpc/using_private_subnets"
+SUBNETS = f"{ssm_prefix}/vpc/subnets/instance"
+CLUSTER = f"{ssm_prefix}/ecs/cluster"
+RESULTS = f"{ssm_prefix}/s3/results/id"
+SECURITY_GROUP = f"{ssm_prefix}/tasks/{task_name}/security_group/id"
+IMAGE_ID = f"{ssm_prefix}/tasks/{task_name}/image/id"
+
+# <name> from https://tools.ietf.org/html/rfc952#page-5
+ALLOWED_NAME = re.compile(r"(?!-)[a-z0-9-]{1,63}(?<!-)$", re.IGNORECASE)
+
+# from https://tools.ietf.org/html/rfc3696#section-2
+ALL_NUMERIC = re.compile(r"[0-9]+$")
 
 
+# Lifted from https://stackoverflow.com/a/33214423
+# Modified to extract compilation of regexes
+def is_valid_hostname(hostname):
+    if hostname[-1] == ".":
+        # strip exactly one dot from the right, if present
+        hostname = hostname[:-1]
+    if len(hostname) > 253:
+        return False
+
+    labels = hostname.split(".")
+
+    # the TLD must be not all-numeric
+    if ALL_NUMERIC.match(labels[-1]):
+        return False
+
+    return all(ALLOWED_NAME.match(label) for label in labels)
+
+
+# Since we pass the target string directly into the script that is run inside the ecs instance
+# anyone with access to the task queue could cause our instance to execute arbitrary code.
+# TODO support nmap ranges e.g. 2-6.13-55.33.2-99
+def sanitise_nmap_target(target_str):
+    targets = target_str.split(" ")
+    sanitised = []
+    # Try to parse as network descriptions (includes individual hosts)
+    for target in targets:
+        try:
+            # not used but will throw if it is an invalid input
+            IPNetwork(target)
+            sanitised.append(target)
+        except AddrFormatError:
+            # prefix to make into a url and parse then extract only the netloc,
+            #  will prevent e.g. use of semicolon in query params getting through
+            if is_valid_hostname(target):
+                sanitised.append(target)
+            else:
+                raise ValueError(f"Target {target} was an invalid specification.")
+
+    return " ".join(sanitised)
+
+
+@ssm_parameters(
+    ssm_client,
+    PRIVATE_SUBNETS,
+    SUBNETS,
+    CLUSTER,
+    RESULTS,
+    SECURITY_GROUP,
+    IMAGE_ID
+)
 @async_handler
-async def submit_scan_task(event, context):
-    private_subnet = 'true' == os.environ["PRIVATE_SUBNETS"]
+async def submit_scan_task(event, _):
+    ssm_params = event["ssm_params"]
+    private_subnet = "true" == ssm_params[PRIVATE_SUBNETS]
     network_configuration = {
-        'awsvpcConfiguration': {
-            'subnets': os.environ["SUBNETS"].split(","),
-            'securityGroups': [os.environ["SECURITY_GROUP"]],
-            'assignPublicIp': 'DISABLED' if private_subnet else 'ENABLED'
+        "awsvpcConfiguration": {
+            "subnets": ssm_params[SUBNETS].split(","),
+            "securityGroups": [ssm_params[SECURITY_GROUP]],
+            "assignPublicIp": "DISABLED" if private_subnet else "ENABLED"
         }
     }
-    for event in event['Records']:
-        print(f"Scan requested: {json_serialisation.dumps(event['body'])}")
-        params = {
-            "cluster": os.environ["CLUSTER"],
+    print(f"Processing event {dumps(event)}")
+    for event in event["Records"]:
+        print(f"Scan requested: {dumps(event['body'])}")
+        ecs_params = {
+            "cluster": ssm_params[CLUSTER],
             "networkConfiguration": network_configuration,
-            "taskDefinition": os.environ["TASK"],
+            "taskDefinition": ssm_params[IMAGE_ID],
             "launchType": "FARGATE",
             "overrides": {
                 "containerOverrides": [{
-                    "name": os.environ["TASK_NAME"],
+                    "name": task_name,
                     "environment": [
+                        # TODO The only bit of this file that isn't going to be the same for other
+                        # task queue executors, is this bit that maps the request body to some env vars
+                        # Extract the common code into a layer exported by the task-execution project
                         {
                             "name": "HOST_TO_SCAN",
-                            "value": event["body"].strip()
+                            "value": sanitise_nmap_target(event["body"].strip())
                         },
                         {
                             "name": "RESULTS_BUCKET",
-                            "value": os.environ["BUCKET"]
+                            "value": ssm_params[RESULTS]
                         }]
                 }]
             }
         }
-        print(f"Submitting task: {json_serialisation.dumps(params)}")
-        task_response = ecs_client.run_task(**params)
-        print(f"Submitted scanning task: {json_serialisation.dumps(task_response)}")
+        print(f"Submitting task: {dumps(ecs_params)}")
+        task_response = ecs_client.run_task(**ecs_params)
+        print(f"Submitted scanning task: {dumps(task_response)}")
 
-    return 0
+        failures = task_response["failures"]
+        if len(failures) != 0:
+            raise RuntimeError(f"ECS task failed to start {dumps(failures)}")

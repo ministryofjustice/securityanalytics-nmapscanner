@@ -1,27 +1,30 @@
-service: ${self:custom.app-name}-${self:custom.plugin-name}
+service: ${self:custom.appName}-${self:custom.pluginName}
 
-external-gateway: &external-gateway
-  restApiId: ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/api/public/id, ''}
-  restApiRootResourceId: ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/api/public/root, ''}
+externalGateway: &externalGateway
+  restApiId: ${ssm:/${self:custom.appName}/${self:custom.ssmSourceStage}/api/public/id, ''}
+  restApiRootResourceId: ${ssm:/${self:custom.appName}/${self:custom.deployStage}/api/public/root, ''}
   authorizer:
     type: COGNITO_USER_POOLS
-    authorizerId: ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/api/public/authorizer, ''}
+    authorizerId: ${ssm:/${self:custom.appName}/${self:custom.ssmSourceStage}/api/public/authorizer, ''}
 
 custom:
-  app-name: sec-an
-  plugin-name: nmap
+  appName: sec-an
+  pluginName: nmap
   apiGatewayConfigOptions:
-    dev: *external-gateway
-    prod: *external-gateway
+    dev: *externalGateway
+    prod: *externalGateway
     other:
       restApiId: ""
       restApiRootResourceId: ""
       authorizer: ""
+  # The build will provide SSM_SOURCE_STAGE, but local devs will get their username used
+  ssmSourceStage: ${'${env:SSM_SOURCE_STAGE, env:USERNAME}'}
+  deployStage: ${opt:stage, '${env:USERNAME}'}
   # If a defined integration exists in apiGatewayConfigOptions e.g. dev or prod
   # then serverless will take that value, if it is undefined it falls back to 'other'
   # which provides no api gateway details and serverless will create a new one for us
   apiGatewayConfig:
-    ${self:custom.apiGatewayConfigOptions.${opt:stage, '${env:USERNAME}'}, self:custom.apiGatewayConfigOptions.other}
+    ${self:custom.apiGatewayConfigOptions.${self:custom.deployStage}, self:custom.apiGatewayConfigOptions.other}
   output:
     file: .generated/stack.json
   exportEndpoints:
@@ -36,14 +39,24 @@ custom:
     # Dont use zip, it makes things bigger because the no deploy filtering seems to be ignored
     zip: false
     noDeploy:
+      # provided by our layer
       - utils
-      - sec_an_shared*
+      # the rest by lambda
+      - boto3
+      - botocore
+      - docutils
+      - jmespath
+      - python-dateutil
+      - s3transfer
+      - six
+      - pip
+      - setuptools
 
 provider:
   name: aws
   runtime: python3.7
   region: ${opt:region, 'eu-west-2'}
-  stage: ${opt:stage, '${env:USERNAME}'} # so when developing we keep things independent, can be overridden
+  stage: ${self:custom.deployStage} # so when developing we keep things independent, can be overridden
   endpointType: REGIONAL # TODO
   # Here if we are on dev (or later qa or prod), then we hook up to the shared gateway
   # other wise we are probably just running integration tests and need to create our own gateway
@@ -54,23 +67,44 @@ provider:
 #  vpc:
 #    securityGroupIds:
 #      - TODO
-#    subnetIds: ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/vpc/subnets/instance}
+#    subnetIds: ${ssm:/${self:custom.appName}/${self:custom.deployStage}/vpc/subnets/instance}
+  iamRoleStatements:
+    -  Effect: "Allow"
+       Action:
+         - "s3:GetBucketNotification"
+         - "s3:PutBucketNotification"
+       Resource:
+         Fn::Join:
+           - ""
+           - - ${ssm:/${self:custom.appName}/${self:custom.deployStage}/tasks/${self:custom.pluginName}/s3/results/arn}
 
 plugins:
   - serverless-stack-output
-  - serverless-plugin-export-endpoints
   - serverless-python-requirements
-  - serverless-offline # used for testing and local development
+  - serverless-plugin-existing-s3
+  # used for integration testing
+  - serverless-plugin-export-endpoints
+  # used for testing and local development
+  - serverless-offline
 
 package:
-  individually: true
+  individually: false
+  # This negative include is important for performance
+  # https://github.com/serverless/serverless/pull/5825
+  include:
+    - "!./**"
+    - "./sample_lambda/**"
+    - "./task_queue_consumer/**"
+    - "./results_parser/**"
   exclude:
     - "**"
 
 functions:
-  ${file(sample_lambda/sample.yml):function}
+  sample: ${file(sample_lambda/sample.yml):function}
+  taskQueueConsumer: ${file(task_queue_consumer/task_queue_consumer.yml):function}
+  resultsParser: ${file(results_parser/results_parser.yml):function}
 
 resources:
   Resources:
-    ${file(sample_lambda/sample.yml):role}
+    sampleRole: ${file(sample_lambda/sample.yml):role}
 
