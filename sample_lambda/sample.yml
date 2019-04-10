@@ -3,10 +3,13 @@ function:
     handler: sample_lambda.sample.sample
     name: ${opt:stage, '${env:USERNAME}'}-${self:service}-sample
     role: sampleRole
+    layers:
+      - ${ssm:/${self:custom.app-name}/${opt:stage, '${env:USERNAME}'}/lambda/layer/utils, ssm:/${self:custom.app-name}/dev/lambda/layer/utils}
     package:
       include:
-        - sample_lambda/sample.py
-        - sample_lambda/__init__.py
+        - sample_lambda/**
+      exclude:
+        - sample_lambda/sample.yml
     events:
       - http:
           path: ${self:custom.plugin-name}/sample

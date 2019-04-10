@@ -37,14 +37,13 @@ custom:
     zip: false
     noDeploy:
       - utils
+      - sec_an_shared*
 
 provider:
   name: aws
   runtime: python3.7
   region: ${opt:region, 'eu-west-2'}
   stage: ${opt:stage, '${env:USERNAME}'} # so when developing we keep things independent, can be overridden
-  # This is useful for local dev, but there is no config file on the build server
-  # profile: ${self:custom.app-name}
   endpointType: REGIONAL # TODO
   # Here if we are on dev (or later qa or prod), then we hook up to the shared gateway
   # other wise we are probably just running integration tests and need to create our own gateway
@@ -74,3 +73,4 @@ functions:
 resources:
   Resources:
     ${file(sample_lambda/sample.yml):role}
+
