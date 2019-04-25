@@ -31,9 +31,9 @@ def ssm_return_vals(using_private):
             {"Name": f"{ssm_prefix}/vpc/using_private_subnets", "Value": "true" if using_private else "false"},
             {"Name": f"{ssm_prefix}/tasks/{task_name}/security_group/id", "Value": "sg-123"},
             {"Name": f"{ssm_prefix}/tasks/{task_name}/image/id", "Value": "imagination"},
+            {"Name": f"{ssm_prefix}/tasks/{task_name}/s3/results/id", "Value": "bid"},
             {"Name": f"{ssm_prefix}/vpc/subnets/instance", "Value": "subnet-123,subnet-456"},
-            {"Name": f"{ssm_prefix}/ecs/cluster", "Value": "cid"},
-            {"Name": f"{ssm_prefix}/s3/results/id", "Value": "bid"}
+            {"Name": f"{ssm_prefix}/ecs/cluster", "Value": "cid"}
         ]
     }
 
