@@ -66,28 +66,6 @@ module "docker_image" {
   ssm_source_stage   = "${local.ssm_source_stage}"
 }
 
-data "aws_ssm_parameter" "vpc_id" {
-  name = "/${var.app_name}/${local.ssm_source_stage}/vpc/id"
-}
-
-resource "aws_security_group" "outbound_only" {
-  name   = "${var.app_name}-outbound-${terraform.workspace}"
-  vpc_id = "${data.aws_ssm_parameter.vpc_id.value}"
-
-  egress {
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags {
-    Name      = "${terraform.workspace}-${var.app_name}-task-security"
-    app_name  = "${var.app_name}"
-    workspace = "${terraform.workspace}"
-  }
-}
-
 module "nmap_task" {
   source = "github.com/ministryofjustice/securityanalytics-taskexecution//infrastructure/ecs_task"
 
@@ -96,7 +74,7 @@ module "nmap_task" {
   // (or other future tasks), at the same time, without requiring the task execution changes to be
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
-  //source = "../../securityanalytics-taskexecution/infrastructure/ecs_task"
+  // source = "../../securityanalytics-taskexecution/infrastructure/ecs_task"
 
   app_name                      = "${var.app_name}"
   aws_region                    = "${var.aws_region}"
@@ -106,7 +84,6 @@ module "nmap_task" {
   task_name                     = "${var.task_name}"
   sources_hash                  = "${module.docker_image.sources_hash}"
   docker_hash                   = "${module.docker_image.docker_hash}"
-  vpc_id                        = "${data.aws_ssm_parameter.vpc_id.value}"
   subscribe_elastic_to_notifier = true
   account_id                    = "${var.account_id}"
   ssm_source_stage              = "${local.ssm_source_stage}"
