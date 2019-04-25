@@ -98,7 +98,6 @@ jobs:
           name: unit tests
           command: |
             . .circleci/env.sh
-            echo using PYTHONPATH $PYTHONPATH
             pytest --junitxml=test-reports/junit.xml -m unit tests
       - store_test_results:
           path: test-reports
@@ -161,11 +160,11 @@ jobs:
           command: |
             . .circleci/env.
             cd infrastructure
-            terraform workspace new $SSM_SOURCE_STAGE || terraform workspace select $SSM_SOURCE_STAGE
+            terraform workspace new dev || terraform workspace select dev
             terraform apply plan.file
             cd ..
-            npx sls --stage=$SSM_SOURCE_STAGE deploy
-            npx sls --stage=$SSM_SOURCE_STAGE s3deploy
+            npx sls --stage=dev deploy
+            npx sls --stage=dev s3deploy
 
 
       # update the cache to include e.g. previously built docker container
