@@ -1,5 +1,6 @@
 FROM alpine:latest
 
+# Install nmap
 RUN apk --update --no-cache add nmap nmap-scripts python3
 RUN pip3 install awscli --upgrade
 

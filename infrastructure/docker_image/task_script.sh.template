@@ -1,4 +1,4 @@
-#!/bin/ash
+#!/bin/sh
 
 startTime=$(date -u +%FT%TZ)
 output=$HOST_TO_SCAN-$startTime-nmap.xml
@@ -8,6 +8,9 @@ echo Performing scan at $startTime
 
 set -x
 
+# Do the nmap
 nmap -oX /var/tmp/$output "$@" $HOST_TO_SCAN
 tar -C /var/tmp -czvf $archive $output
-aws s3 cp $archive s3://${bucket_name}/${task_name}/
+
+# Upload results
+aws s3 cp $archive s3://${bucket_name}/

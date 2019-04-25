@@ -21,6 +21,13 @@ jobs:
 
       - checkout
 
+      - run:
+          name: update git submodule
+          command: |
+            git submodule init
+            git submodule update --remote
+            git submodule sync
+
       - restore_cache:
           keys:
             - npm-v1-{{ .Branch }}-
@@ -30,8 +37,8 @@ jobs:
 
       - restore_cache:
           keys:
-            - python-v1-{{ .Branch }}-
-            - python-v1-
+            - other-v1-{{ .Branch }}-
+            - other-v1-
 
       - run:
           name: install virtual env
@@ -41,6 +48,19 @@ jobs:
             if [ ! -d "test-reports" ]; then
               mkdir test-reports
             fi
+
+      - run:
+          name: terraform
+          command: |
+            . .circleci/env.sh
+            cd infrastructure
+            terraform init
+            terraform get --update
+            terraform workspace new $SSM_SOURCE_STAGE || terraform workspace select $SSM_SOURCE_STAGE
+            echo checking formatting
+            terraform fmt -check=true
+            echo making the plan
+            terraform plan -var ssm_source_stage=$SSM_SOURCE_STAGE -var account_id=$ACCOUNT_ID -no-color -out=plan.file > terraform.plan
 
       - persist_to_workspace:
           root: .
@@ -61,8 +81,9 @@ jobs:
             - "node_modules"
 
       - save_cache:
-          key: python-v1-{{ .Branch }}-{{ .Revision }}
+          key: other-v1-{{ .Branch }}-{{ .Revision }}
           paths:
+            - ".terraform"
             - ".venv"
             - ".cache"
             - ".serverless"
@@ -74,9 +95,9 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: integration tests
+          name: unit tests
           command: |
-            . .circleci/python_env.sh
+            . .circleci/env.sh
             pytest --junitxml=test-reports/junit.xml -m unit tests
       - store_test_results:
           path: test-reports
@@ -86,21 +107,40 @@ jobs:
     steps:
       - attach_workspace:
           at: .
+
+      - setup_remote_docker:
+          docker_layer_caching: true
+
       - run:
           name: integration tests
           command: |
-            . .circleci/python_env.sh
-            # Get short version of git hash for temporary deployment
-            export DEPLOY_STAGE=$(expr substr `git rev-parse HEAD` 1 8)
+            . .circleci/env.sh
+            cd infrastructure
+            terraform workspace new $DEPLOY_STAGE || terraform workspace select $DEPLOY_STAGE
             set +e # allows us to run the cleanup
-            npx sls --stage=$DEPLOY_STAGE deploy
+            terraform apply --auto-approve -var ssm_source_stage=$SSM_SOURCE_STAGE -var account_id=$ACCOUNT_ID -no-color
             export SUCCESS=$?
+            cd ..
+            npx sls --stage=$DEPLOY_STAGE deploy
+            if [ $? != 0 ]; then
+              export SUCCESS=1
+            fi
             npx sls --stage=$DEPLOY_STAGE exportEndpoints
+            if [ $? != 0 ]; then
+              export SUCCESS=1
+            fi
+            npx sls --stage=$DEPLOY_STAGE s3deploy
+            if [ $? != 0 ]; then
+              export SUCCESS=1
+            fi
             pytest --junitxml=test-reports/junit.xml -m integration tests
             if [ $? != 0 ]; then
               export SUCCESS=1
             fi
             npx sls --stage=$DEPLOY_STAGE remove
+            if [ $? != 0 ]; then
+              export SUCCESS=1
+            fi
             exit $SUCCESS
       - store_test_results:
           path: test-reports
@@ -110,12 +150,32 @@ jobs:
     steps:
       - attach_workspace:
           at: .
+
+      - setup_remote_docker:
+          docker_layer_caching: true
+
       # TODO change this when we move on to having multiple environments
       - run:
           name: deploy
           command: |
-            . .circleci/python_env.sh
+            . .circleci/env.
+            cd infrastructure
+            terraform workspace new dev || terraform workspace select dev
+            terraform apply plan.file
+            cd ..
             npx sls --stage=dev deploy
+            npx sls --stage=dev s3deploy
+
+
+      # update the cache to include e.g. previously built docker container
+      - save_cache:
+          key: other-v1-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".terraform"
+            - ".venv"
+            - ".cache"
+            - ".serverless"
+            - ".pytest_cache"
 
 workflows:
   version: 2
@@ -135,7 +195,3 @@ workflows:
       - deploy:
           requires: [ approve ]
           <<: *master-only
-
-
-
-
