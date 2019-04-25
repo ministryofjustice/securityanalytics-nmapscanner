@@ -158,7 +158,7 @@ jobs:
       - run:
           name: deploy
           command: |
-            . .circleci/env.
+            . .circleci/env.sh
             cd infrastructure
             terraform workspace new dev || terraform workspace select dev
             terraform apply plan.file

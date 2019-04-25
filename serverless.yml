@@ -38,6 +38,7 @@ custom:
     slim: false
     # Dont use zip, it makes things bigger because the no deploy filtering seems to be ignored
     zip: false
+    # addDefaultNoDeploys: true
     noDeploy:
       # provided by our layer
       - utils
