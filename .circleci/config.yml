@@ -141,6 +141,11 @@ jobs:
             if [ $? != 0 ]; then
               export SUCCESS=1
             fi
+            cd ../infrastructure
+            terraform destroy --auto-approve -var ssm_source_stage=$SSM_SOURCE_STAGE -var account_id=$ACCOUNT_ID -no-color
+            if [ $? != 0 ]; then
+              export SUCCESS=1
+            fi
             exit $SUCCESS
       - store_test_results:
           path: test-reports
