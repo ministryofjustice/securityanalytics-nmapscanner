@@ -18,7 +18,7 @@ ssm_client = boto3.client("ssm", region_name=region)
 PRIVATE_SUBNETS = f"{ssm_prefix}/vpc/using_private_subnets"
 SUBNETS = f"{ssm_prefix}/vpc/subnets/instance"
 CLUSTER = f"{ssm_prefix}/ecs/cluster"
-RESULTS = f"{ssm_prefix}/s3/results/id"
+RESULTS = f"{ssm_prefix}/tasks/{task_name}/s3/results/id"
 SECURITY_GROUP = f"{ssm_prefix}/tasks/{task_name}/security_group/id"
 IMAGE_ID = f"{ssm_prefix}/tasks/{task_name}/image/id"
 
