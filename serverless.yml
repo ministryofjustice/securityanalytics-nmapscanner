@@ -2,7 +2,7 @@ service: ${self:custom.appName}-${self:custom.pluginName}
 
 externalGateway: &externalGateway
   restApiId: ${ssm:/${self:custom.appName}/${self:custom.ssmSourceStage}/api/public/id, ''}
-  restApiRootResourceId: ${ssm:/${self:custom.appName}/${self:custom.deployStage}/api/public/root, ''}
+  restApiRootResourceId: ${ssm:/${self:custom.appName}/${self:custom.ssmSourceStage}/api/public/root, ''}
   authorizer:
     type: COGNITO_USER_POOLS
     authorizerId: ${ssm:/${self:custom.appName}/${self:custom.ssmSourceStage}/api/public/authorizer, ''}
@@ -24,7 +24,7 @@ custom:
   # then serverless will take that value, if it is undefined it falls back to 'other'
   # which provides no api gateway details and serverless will create a new one for us
   apiGatewayConfig:
-    ${self:custom.apiGatewayConfigOptions.${self:custom.deployStage}, self:custom.apiGatewayConfigOptions.other}
+    ${self:custom.apiGatewayConfigOptions.${self:custom.ssmSourceStage}, self:custom.apiGatewayConfigOptions.other}
   output:
     file: .generated/stack.json
   exportEndpoints:
