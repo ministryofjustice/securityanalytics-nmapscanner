@@ -91,8 +91,8 @@ async def submit_scan_task(event, _):
         }
     }
     print(f"Processing event {dumps(event)}")
-    for event in event["Records"]:
-        print(f"Scan requested: {dumps(event['body'])}")
+    for record in event["Records"]:
+        print(f"Scan requested: {dumps(record['body'])}")
         ecs_params = {
             "cluster": ssm_params[CLUSTER],
             "networkConfiguration": network_configuration,
@@ -107,7 +107,11 @@ async def submit_scan_task(event, _):
                         # Extract the common code into a layer exported by the task-execution project
                         {
                             "name": "HOST_TO_SCAN",
-                            "value": sanitise_nmap_target(event["body"].strip())
+                            "value": sanitise_nmap_target(record["body"].strip())
+                        },
+                        {
+                            "name": "MESSAGE_ID",
+                            "value": record["messageId"]
                         },
                         {
                             "name": "RESULTS_BUCKET",

@@ -38,7 +38,7 @@ def ssm_return_vals(using_private):
     }
 
 
-def expected_params(public_ip_str, scan_targets):
+def expected_params(public_ip_str, scan_targets, message_id):
     return {
         "cluster": "cid",
         "networkConfiguration": {
@@ -55,6 +55,7 @@ def expected_params(public_ip_str, scan_targets):
                     "name": "me-twice",
                     "environment": [
                         {"name": "HOST_TO_SCAN", "value": scan_targets},
+                        {"name": "MESSAGE_ID", "value": message_id},
                         {"name": "RESULTS_BUCKET", "value": "bid"}
                     ]
                 }
@@ -68,8 +69,10 @@ def expected_params(public_ip_str, scan_targets):
 @resetting_mocks(task_queue_consumer.ecs_client, task_queue_consumer.ssm_client)
 def test_task_queue_consumer_private_subnet():
     task_queue_consumer.ssm_client.get_parameters.return_value = ssm_return_vals(True)
-    task_queue_consumer.submit_scan_task({"Records": [{"body": "url.to.scan.rogers"}]}, mock.MagicMock())
-    expected = expected_params("DISABLED", "url.to.scan.rogers")
+    task_queue_consumer.submit_scan_task(
+        {"Records": [{"body": "url.to.scan.rogers", "messageId": "12"}]},
+        mock.MagicMock())
+    expected = expected_params("DISABLED", "url.to.scan.rogers", "12")
     task_queue_consumer.ecs_client.run_task.assert_called_once_with(**expected)
 
 
@@ -78,8 +81,10 @@ def test_task_queue_consumer_private_subnet():
 @resetting_mocks(task_queue_consumer.ecs_client, task_queue_consumer.ssm_client)
 def test_task_queue_consumer_no_subnet():
     task_queue_consumer.ssm_client.get_parameters.return_value = ssm_return_vals(False)
-    task_queue_consumer.submit_scan_task({"Records": [{"body": "url.to.scan.mamos"}]}, mock.MagicMock())
-    expected = expected_params("ENABLED", "url.to.scan.mamos")
+    task_queue_consumer.submit_scan_task(
+        {"Records": [{"body": "url.to.scan.mamos", "messageId": "13"}]},
+        mock.MagicMock())
+    expected = expected_params("ENABLED", "url.to.scan.mamos", "13")
     task_queue_consumer.ecs_client.run_task.assert_called_once_with(**expected)
 
 
@@ -88,8 +93,10 @@ def test_task_queue_consumer_no_subnet():
 @resetting_mocks(task_queue_consumer.ecs_client, task_queue_consumer.ssm_client)
 def test_sanitises_input_cidr4():
     task_queue_consumer.ssm_client.get_parameters.return_value = ssm_return_vals(False)
-    task_queue_consumer.submit_scan_task({"Records": [{"body": "123.3.2.12/16"}]}, mock.MagicMock())
-    expected = expected_params("ENABLED", "123.3.2.12/16")
+    task_queue_consumer.submit_scan_task(
+        {"Records": [{"body": "123.3.2.12/16", "messageId": "13"}]},
+        mock.MagicMock())
+    expected = expected_params("ENABLED", "123.3.2.12/16", "13")
     task_queue_consumer.ecs_client.run_task.assert_called_once_with(**expected)
 
 
@@ -98,8 +105,10 @@ def test_sanitises_input_cidr4():
 @resetting_mocks(task_queue_consumer.ecs_client, task_queue_consumer.ssm_client)
 def test_sanitises_input_cidr6():
     task_queue_consumer.ssm_client.get_parameters.return_value = ssm_return_vals(False)
-    task_queue_consumer.submit_scan_task({"Records": [{"body": "2001:d80::/26"}]}, mock.MagicMock())
-    expected = expected_params("ENABLED", "2001:d80::/26")
+    task_queue_consumer.submit_scan_task(
+        {"Records": [{"body": "2001:d80::/26", "messageId": "13"}]},
+        mock.MagicMock())
+    expected = expected_params("ENABLED", "2001:d80::/26", "13")
     task_queue_consumer.ecs_client.run_task.assert_called_once_with(**expected)
 
 
@@ -108,8 +117,10 @@ def test_sanitises_input_cidr6():
 @resetting_mocks(task_queue_consumer.ecs_client, task_queue_consumer.ssm_client)
 def test_sanitises_input_ip4():
     task_queue_consumer.ssm_client.get_parameters.return_value = ssm_return_vals(False)
-    task_queue_consumer.submit_scan_task({"Records": [{"body": "123.3.2.124"}]}, mock.MagicMock())
-    expected = expected_params("ENABLED", "123.3.2.124")
+    task_queue_consumer.submit_scan_task(
+        {"Records": [{"body": "123.3.2.124", "messageId": "13"}]},
+        mock.MagicMock())
+    expected = expected_params("ENABLED", "123.3.2.124", "13")
     task_queue_consumer.ecs_client.run_task.assert_called_once_with(**expected)
 
 
@@ -118,9 +129,10 @@ def test_sanitises_input_ip4():
 @resetting_mocks(task_queue_consumer.ecs_client, task_queue_consumer.ssm_client)
 def test_sanitises_input_ip6():
     task_queue_consumer.ssm_client.get_parameters.return_value = ssm_return_vals(False)
-    task_queue_consumer.submit_scan_task({
-        "Records": [{"body": "2001:0db8:85a3:0000:0000:8a2e:0370:7334"}]}, mock.MagicMock())
-    expected = expected_params("ENABLED", "2001:0db8:85a3:0000:0000:8a2e:0370:7334")
+    task_queue_consumer.submit_scan_task(
+        {"Records": [{"body": "2001:0db8:85a3:0000:0000:8a2e:0370:7334", "messageId": "13"}]},
+        mock.MagicMock())
+    expected = expected_params("ENABLED", "2001:0db8:85a3:0000:0000:8a2e:0370:7334", "13")
     task_queue_consumer.ecs_client.run_task.assert_called_once_with(**expected)
 
 
@@ -131,16 +143,16 @@ def test_processes_batches():
     task_queue_consumer.ssm_client.get_parameters.return_value = ssm_return_vals(False)
     task_queue_consumer.submit_scan_task({
         "Records": [
-            {"body": "2001:0db8:85a3:0000:0000:8a2e:0370:7334"},
-            {"body": "123.3.2.124"},
-            {"body": "scan.me.everyone"},
+            {"body": "2001:0db8:85a3:0000:0000:8a2e:0370:7334", "messageId": "13"},
+            {"body": "123.3.2.124", "messageId": "14"},
+            {"body": "scan.me.everyone", "messageId": "15"},
         ]}, mock.MagicMock())
     expected = [
         mock.call(**exp) for exp in
         [
-            expected_params("ENABLED", "2001:0db8:85a3:0000:0000:8a2e:0370:7334"),
-            expected_params("ENABLED", "123.3.2.124"),
-            expected_params("ENABLED", "scan.me.everyone")
+            expected_params("ENABLED", "2001:0db8:85a3:0000:0000:8a2e:0370:7334", "13"),
+            expected_params("ENABLED", "123.3.2.124", "14"),
+            expected_params("ENABLED", "scan.me.everyone", "15")
         ]
     ]
     assert expected == task_queue_consumer.ecs_client.run_task.call_args_list
@@ -153,9 +165,9 @@ def test_sanitises_input_multiple_targets():
     task_queue_consumer.ssm_client.get_parameters.return_value = ssm_return_vals(False)
     task_queue_consumer.submit_scan_task({
         "Records": [
-            {"body": "2001:0db8:85a3:0000:0000:8a2e:0370:7334 123.3.2.124 scan.me.everyone"},
+            {"body": "2001:0db8:85a3:0000:0000:8a2e:0370:7334 123.3.2.124 scan.me.everyone", "messageId": "13"},
         ]}, mock.MagicMock())
-    expected = expected_params("ENABLED", "2001:0db8:85a3:0000:0000:8a2e:0370:7334 123.3.2.124 scan.me.everyone")
+    expected = expected_params("ENABLED", "2001:0db8:85a3:0000:0000:8a2e:0370:7334 123.3.2.124 scan.me.everyone", "13")
     task_queue_consumer.ecs_client.run_task.assert_called_once_with(**expected)
 
 
@@ -167,7 +179,9 @@ def test_sanitises_input_multiple_targets():
 def test_sanitises_input_dodgy_input():
     task_queue_consumer.ssm_client.get_parameters.return_value = ssm_return_vals(False)
     with pytest.raises(ValueError):
-        task_queue_consumer.submit_scan_task({"Records": [{"body": "; rm -rf"}]}, mock.MagicMock())
+        task_queue_consumer.submit_scan_task(
+            {"Records": [{"body": "; rm -rf", "messageId": "13"}]},
+            mock.MagicMock())
 
 
 # Although testing injections by sample is a bad way to test, its good to see some basic scenarios
@@ -178,7 +192,9 @@ def test_sanitises_input_dodgy_input():
 def test_sanitises_input_dodgy_input_url():
     task_queue_consumer.ssm_client.get_parameters.return_value = ssm_return_vals(False)
     with pytest.raises(ValueError):
-        task_queue_consumer.submit_scan_task({"Records": [{"body": "http://foo.bar?hello=foo; rm -rf"}]}, mock.MagicMock())
+        task_queue_consumer.submit_scan_task(
+            {"Records": [{"body": "http://foo.bar?hello=foo; rm -rf", "messageId": "13"}]},
+            mock.MagicMock())
 
 
 @pytest.mark.unit
@@ -190,4 +206,4 @@ def test_raises_when_ecs_failures_present():
         {'arn': 'arn::some:::arn', 'reason': 'failed miserably'}
     ]}
     with pytest.raises(RuntimeError, match=r"\{\"arn\": \"arn::some:::arn\", \"reason\": \"failed miserably\"\}"):
-        task_queue_consumer.submit_scan_task({"Records": [{"body": "some.host"}]}, mock.MagicMock())
+        task_queue_consumer.submit_scan_task({"Records": [{"body": "some.host", "messageId": "13"}]}, mock.MagicMock())

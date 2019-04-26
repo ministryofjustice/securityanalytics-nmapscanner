@@ -2,7 +2,7 @@ service: ${self:custom.appName}-${self:custom.pluginName}
 
 externalGateway: &externalGateway
   restApiId: ${ssm:/${self:custom.appName}/${self:custom.ssmSourceStage}/api/public/id, ''}
-  restApiRootResourceId: ${ssm:/${self:custom.appName}/${self:custom.deployStage}/api/public/root, ''}
+  restApiRootResourceId: ${ssm:/${self:custom.appName}/${self:custom.ssmSourceStage}/api/public/root, ''}
   authorizer:
     type: COGNITO_USER_POOLS
     authorizerId: ${ssm:/${self:custom.appName}/${self:custom.ssmSourceStage}/api/public/authorizer, ''}
