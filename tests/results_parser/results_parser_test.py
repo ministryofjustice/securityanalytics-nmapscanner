@@ -71,78 +71,65 @@ def test_parses_():
             ]
         }, mock.MagicMock())
 
-    expected = [
-        mock.call(**exp) for exp in
-        [
-            expected_pub("host", {
-                "time": "2019-04-17T12:56:27Z", "address": "45.33.32.156", "address_type": "ipv4"}),
-            expected_pub("host_name", {
-                "time": "2019-04-17T12:56:27Z",
-                "address": "45.33.32.156",
-                "address_type": "ipv4",
-                "host_name": "scanme.nmap.org",
-                "host_name_type": "user"
-            }),
-            expected_pub("host_name", {
-                "time": "2019-04-17T12:56:27Z",
-                "address": "45.33.32.156",
-                "address_type": "ipv4",
-                "host_name": "scanme.nmap.org",
-                "host_name_type": "PTR"
-            }),
-            expected_pub("port", {
-                "time": "2019-04-17T12:56:27Z",
-                "address": "45.33.32.156",
-                "address_type": "ipv4",
-                "protocol": "tcp",
-                "state": "open",
-                "service": "ssh",
-                "product": "OpenSSH",
-                "version": "6.6.1p1 Ubuntu 2ubuntu2.11",
-                "extra_info": "Ubuntu Linux; protocol 2.0",
-                "os_type": "Linux",
-                "port_id": "22"
-            }),
-            expected_pub("port", {
-                "time": "2019-04-17T12:56:27Z",
-                "address": "45.33.32.156",
-                "address_type": "ipv4",
-                "protocol": "tcp",
-                "state": "open",
-                "service": "http",
-                "product": "Apache httpd",
-                "version": "2.4.7",
-                "extra_info": "(Ubuntu)",
-                "os_type": None,
-                "port_id": "80"
-            }),
-            expected_pub("port", {
-                "time": "2019-04-17T12:56:27Z",
-                "address": "45.33.32.156",
-                "address_type": "ipv4",
-                "protocol": "tcp",
-                "state": "open",
-                "service": "nping-echo",
-                "product": "Nping echo",
-                "version": None,
-                "extra_info": None,
-                "os_type": None,
-                "port_id": "9929"
-            }),
-            expected_pub("port", {
-                "time": "2019-04-17T12:56:27Z",
-                "address": "45.33.32.156",
-                "address_type": "ipv4",
-                "protocol": "tcp",
-                "state": "open",
-                "service": "tcpwrapped",
-                "product": None,
-                "version": None,
-                "extra_info": None,
-                "os_type": None,
-                "port_id": "31337"
-            })
-        ]
-    ]
+    results_parser.sns_client.publish.assert_called_once_with(
+        **expected_pub("me-twice:data", {
+            "time": "2019-04-17T12:56:27Z",
+            "address": "45.33.32.156",
+            "address_type": "ipv4",
+            "host_names": [
+                {
+                    "host_name": "scanme.nmap.org",
+                    "host_name_type": "user"
+                },
+                {
+                    "host_name": "scanme.nmap.org",
+                    "host_name_type": "PTR"
+                }
+            ],
+            "ports": [
+                {
+                    "port_id": "22",
+                    "protocol": "tcp",
+                    "state": "open",
+                    "service": "ssh",
+                    "product": "OpenSSH",
+                    "version": "6.6.1p1 Ubuntu 2ubuntu2.11",
+                    "extra_info": "Ubuntu Linux; protocol 2.0",
+                    "os_type": "Linux"
+                },
+                {
+                    "port_id": "80",
+                    "protocol": "tcp",
+                    "state": "open",
+                    "service": "http",
+                    "product": "Apache httpd",
+                    "version": "2.4.7",
+                    "extra_info": "(Ubuntu)",
+                    "os_type": None
+                },
+                {
+                    "port_id": "9929",
+                    "protocol": "tcp",
+                    "state": "open",
+                    "service": "nping-echo",
+                    "product": "Nping echo",
+                    "version": None,
+                    "extra_info": None,
+                    "os_type": None
+                },
+                {
 
-    assert expected == results_parser.sns_client.publish.call_args_list
+                    "port_id": "31337",
+                    "protocol": "tcp",
+                    "state": "open",
+                    "service": "tcpwrapped",
+                    "product": None,
+                    "version": None,
+                    "extra_info": None,
+                    "os_type": None
+                }
+            ]
+        })
+    )
+
+
