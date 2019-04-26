@@ -6,7 +6,7 @@ function:
     - ${ssm:/${self:custom.appName}/${self:custom.ssmSourceStage}/lambda/layer/utils}
   events:
     - http:
-        path: ${self:custom.pluginName}/sample
+        path: ${self:custom.deployStage}/${self:custom.pluginName}/sample
         method: get
         authorizer: ${self:custom.apiGatewayConfig.authorizer}
 
