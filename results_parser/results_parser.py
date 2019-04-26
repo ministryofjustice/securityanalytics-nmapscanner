@@ -51,39 +51,45 @@ def process_host_results(topic, host):
     parsed_time = datetime.datetime.fromtimestamp(int(host["endtime"]), pytz.utc)
     scan_time = parsed_time.isoformat().replace('+00:00', 'Z')
     print(f"Looking at host: {(address, address_type)} scanned at {scan_time}")
-    post_results(topic, "host", {"time": scan_time, "address": address, "address_type": address_type})
 
-    process_host_names(address, address_type, host, scan_time, topic)
+    host_names = []
+    ports = []
+    results = {
+        "time": scan_time,
+        "address": address,
+        "address_type": address_type,
+        "host_names": host_names,
+        "ports": ports
+    }
 
-    process_ports(address, address_type, host, scan_time, topic)
+    process_host_names(host_names, host)
+
+    process_ports(ports, host)
+
+    post_results(topic, f"{task_name}:data", results)
 
     print(f"done host")
 
 
-def process_ports(address, address_type, host, scan_time, topic):
+def process_ports(ports, host):
     for port in host.ports.port:
-        print(f"Looking at port: {(port['portid'], port['protocol'])}")
-        post_results(topic, "port", {
-            "time": scan_time,
-            "address": address,
-            "address_type": address_type,
-            "protocol": port["protocol"],
+        port_id, protocol = (port['portid'], port['protocol'])
+        print(f"Looking at port: {(port_id, protocol)}")
+        ports.append({
+            "port_id": port_id,
+            "protocol": protocol,
             "state": port.state["state"],
             "service": port.service["name"],
             "product": port.service["product"],
             "version": port.service["version"],
             "extra_info": port.service["extrainfo"],
-            "os_type": port.service["ostype"],
-            "port_id": port["portid"]
+            "os_type": port.service["ostype"]
         })
 
 
-def process_host_names(address, address_type,host, scan_time, topic):
+def process_host_names(host_names, host):
     for host_name in host.hostnames.hostname:
-        post_results(topic, "host_name", {
-            "time": scan_time,
-            "address": address,
-            "address_type": address_type,
+        host_names.append({
             "host_name": host_name["name"],
             "host_name_type": host_name["type"]
         })
