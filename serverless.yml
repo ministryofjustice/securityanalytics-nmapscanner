@@ -24,7 +24,7 @@ custom:
   # then serverless will take that value, if it is undefined it falls back to 'other'
   # which provides no api gateway details and serverless will create a new one for us
   apiGatewayConfig:
-    ${self:custom.apiGatewayConfigOptions.${self:custom.ssmSourceStage}, self:custom.apiGatewayConfigOptions.other}
+    ${self:custom.apiGatewayConfigOptions.${self:custom.deployStage}, self:custom.apiGatewayConfigOptions.other}
   output:
     file: .generated/stack.json
   exportEndpoints:
