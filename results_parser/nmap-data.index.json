@@ -1,0 +1,14 @@
+{
+ "mappings": {
+   "_doc": {
+     "properties": {
+       "host_names": {
+         "type": "nested"
+       },
+       "ports": {
+         "type": "nested"
+       }
+     }
+   }
+ }
+}
