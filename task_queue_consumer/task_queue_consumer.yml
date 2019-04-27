@@ -14,3 +14,5 @@ function:
         arn: ${ssm:/${self:custom.appName}/${self:custom.deployStage}/tasks/${self:custom.pluginName}/task_queue/arn}
         batchSize: 1
         enabled: true
+  # the default timeout of 6 seconds is too short when passing a number of hosts in
+  timeout: 90
