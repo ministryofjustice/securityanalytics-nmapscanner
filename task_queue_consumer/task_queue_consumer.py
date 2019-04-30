@@ -93,7 +93,7 @@ async def submit_scan_task(event, _):
         }
     }
     print(f"Processing event {dumps(event)}")
-    msg_suffix = 1
+
     for record in event["Records"]:
         if record['body'][0] == '{':
             # triggered from cloudwatch which requires format in JSON:
@@ -101,7 +101,6 @@ async def submit_scan_task(event, _):
             print(body)
             record['body'] = body['CloudWatchEventHost']
         print(f"Scan requested: {dumps(record['body'])}")
-
         ecs_params = {
             "cluster": ssm_params[CLUSTER],
             "networkConfiguration": network_configuration,
@@ -120,7 +119,7 @@ async def submit_scan_task(event, _):
                         },
                         {
                             "name": "MESSAGE_ID",
-                            "value": f'{record["messageId"]}'
+                            "value": record["messageId"]
                         },
                         {
                             "name": "RESULTS_BUCKET",
