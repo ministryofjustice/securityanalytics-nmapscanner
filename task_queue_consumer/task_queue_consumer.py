@@ -93,7 +93,6 @@ async def submit_scan_task(event, _):
         }
     }
     print(f"Processing event {dumps(event)}")
-
     for record in event["Records"]:
         if record['body'][0] == '{':
             # triggered from cloudwatch which requires format in JSON:
