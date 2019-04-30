@@ -74,7 +74,7 @@ module "nmap_task" {
   // (or other future tasks), at the same time, without requiring the task execution changes to be
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
-  // source = "../../securityanalytics-taskexecution/infrastructure/ecs_task"
+  //source = "../../securityanalytics-taskexecution/infrastructure/ecs_task"
 
   app_name                      = "${var.app_name}"
   aws_region                    = "${var.aws_region}"
@@ -88,4 +88,35 @@ module "nmap_task" {
   account_id                    = "${var.account_id}"
   ssm_source_stage              = "${local.ssm_source_stage}"
   transient_workspace           = "${!contains(var.known_deployment_stages, terraform.workspace)}"
+}
+
+data "aws_ssm_parameter" "task_queue" {
+  name = "/${var.app_name}/${terraform.workspace}/tasks/nmap/task_queue/arn"
+}
+
+data "aws_ssm_parameter" "task_queue_url" {
+  name = "/${var.app_name}/${terraform.workspace}/tasks/nmap/task_queue/url"
+}
+
+resource "aws_sqs_queue_policy" "nmap_cwe_sqs_rule" {
+  queue_url = "${data.aws_ssm_parameter.task_queue_url.value}"
+
+  policy = <<POLICY
+  {
+  "Version": "2012-10-17",
+  "Id": "sqspolicy",
+  "Statement": [
+    {
+      "Sid": "TrustCWEToSendEventsToMyQueue",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "events.amazonaws.com"
+      },
+      "Action": "sqs:SendMessage",
+      "Resource": "${data.aws_ssm_parameter.task_queue.value}"
+
+    }
+  ]
+}
+POLICY
 }
