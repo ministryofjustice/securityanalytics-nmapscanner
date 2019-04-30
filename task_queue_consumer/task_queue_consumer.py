@@ -69,7 +69,7 @@ def sanitise_nmap_target(target_str):
                 raise ValueError(
                     f"Target {target} was an invalid specification.")
 
-    return sanitised
+    return " ".join(sanitised)
 
 
 @ssm_parameters(
@@ -101,50 +101,39 @@ async def submit_scan_task(event, _):
             print(body)
             record['body'] = body['CloudWatchEventHost']
         print(f"Scan requested: {dumps(record['body'])}")
-        # Changed to sanitse the target first, then iterate over the targets
-        # to kick off a Fargate/ECS instance for each host - we've seen that providing
-        # a list to nmap causes it to back off and ultimately fail to run in a decent time
-        # running each host in parallel in ECS is far more efficient (and saves having an instance
-        # up sitting idle)
-        # TODO: the test cases will now fail
-        sanitised = sanitise_nmap_target(record["body"].strip())
 
-        for host in sanitised:
-            print(f'QUEUING {host}')
-            msg_suffix += 1
-            ecs_params = {
-                "cluster": ssm_params[CLUSTER],
-                "networkConfiguration": network_configuration,
-                "taskDefinition": ssm_params[IMAGE_ID],
-                "launchType": "FARGATE",
-                "overrides": {
-                    "containerOverrides": [{
-                        "name": task_name,
-                        "environment": [
-                            # TODO The only bit of this file that isn't going to be the same for other
-                            # task queue executors, is this bit that maps the request body to some env vars
-                            # Extract the common code into a layer exported by the task-execution project
-                            {
-                                "name": "HOST_TO_SCAN",
-                                "value": host
-                            },
-                            {
-                                "name": "MESSAGE_ID",
-                                "value": f'{record["messageId"]}-{msg_suffix}'
-                            },
-                            {
-                                "name": "RESULTS_BUCKET",
-                                "value": ssm_params[RESULTS]
-                            }]
-                    }]
-                }
+        ecs_params = {
+            "cluster": ssm_params[CLUSTER],
+            "networkConfiguration": network_configuration,
+            "taskDefinition": ssm_params[IMAGE_ID],
+            "launchType": "FARGATE",
+            "overrides": {
+                "containerOverrides": [{
+                    "name": task_name,
+                    "environment": [
+                        # TODO The only bit of this file that isn't going to be the same for other
+                        # task queue executors, is this bit that maps the request body to some env vars
+                        # Extract the common code into a layer exported by the task-execution project
+                        {
+                            "name": "HOST_TO_SCAN",
+                            "value": sanitise_nmap_target(record["body"].strip())
+                        },
+                        {
+                            "name": "MESSAGE_ID",
+                            "value": f'{record["messageId"]}'
+                        },
+                        {
+                            "name": "RESULTS_BUCKET",
+                            "value": ssm_params[RESULTS]
+                        }]
+                }]
             }
-            print(f"Submitting task: {dumps(ecs_params)}")
-            task_response = ecs_client.run_task(**ecs_params)
-            print(f"Submitted scanning task: {dumps(task_response)}")
+        }
+        print(f"Submitting task: {dumps(ecs_params)}")
+        task_response = ecs_client.run_task(**ecs_params)
+        print(f"Submitted scanning task: {dumps(task_response)}")
 
-            failures = task_response["failures"]
-            if len(failures) != 0:
-                raise RuntimeError(
-                    f"ECS task failed to start {dumps(failures)}")
-    print("completed consuming SQS")
+        failures = task_response["failures"]
+        if len(failures) != 0:
+            raise RuntimeError(
+                f"ECS task failed to start {dumps(failures)}")
