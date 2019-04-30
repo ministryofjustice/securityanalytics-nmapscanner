@@ -271,3 +271,132 @@ def test_parses_tls_info():
                     "cipher_preference": "server"
                 }
             ]
+
+
+@pytest.mark.unit
+@serialise_mocks()
+@resetting_mocks(
+    results_parser.sns_client,
+    results_parser.s3_client,
+    results_parser.ssm_client
+)
+def test_parses_cve_info():
+    results_parser.ssm_client.get_parameters.return_value = ssm_return_vals()
+
+    # load sample results file and make mock return it
+    sample_file_name = f"{TEST_DIR}981cee6c-ed04-4a68-a3ef-49f683d814dc-2019-04-30T12_46_50Z-nmap.xml.tar.gz"
+    with open(sample_file_name, "rb") as sample_data:
+        results_parser.s3_client.get_object.return_value = {
+            "Body": StreamingBody(sample_data, os.stat(sample_file_name).st_size)
+        }
+
+        results_parser.parse_results({
+            "Records": [
+                {"s3": {
+                    "bucket": {"name": "test_bucket"},
+                    # Please note that the / characters in the key are replaced with %2F, the key is
+                    # urlencoded
+                    "object": {"key": "981cee6c-ed04-4a68-a3ef-49f683d814dc-2019-04-30T12%3A46%3A50Z-nmap.xml.tar.gz"}
+                }}
+            ]
+        }, mock.MagicMock())
+
+    results_parser.sns_client.publish.assert_called_once()
+    call_details = json.loads(results_parser.sns_client.publish.call_args[1]['Message'])
+    for port in call_details["ports"]:
+        if port["port_id"] == "80":
+            assert port["cve_vulners"] == [
+                {
+                    "cpe_key": "cpe:/a:apache:http_server:2.4.7",
+                    "cves": [
+                        {
+                            "cve_code": "CVE-2017-7679",
+                            "cve_severity": "7.5"
+                        },
+                        {
+                            "cve_code": "CVE-2018-1312",
+                            "cve_severity": "6.8"
+                        },
+                        {
+                            "cve_code": "CVE-2017-15715",
+                            "cve_severity": "6.8"
+                        },
+                        {
+                            "cve_code": "CVE-2014-0226",
+                            "cve_severity": "6.8"
+                        },
+                        {
+                            "cve_code": "CVE-2017-9788",
+                            "cve_severity": "6.4"
+                        },
+                        {
+                            "cve_code": "CVE-2014-0231",
+                            "cve_severity": "5.0"
+                        },
+                        {
+                            "cve_code": "CVE-2017-15710",
+                            "cve_severity": "5.0"
+                        },
+                        {
+                            "cve_code": "CVE-2018-17199",
+                            "cve_severity": "5.0"
+                        },
+                        {
+                            "cve_code": "CVE-2013-6438",
+                            "cve_severity": "5.0"
+                        },
+                        {
+                            "cve_code": "CVE-2017-9798",
+                            "cve_severity": "5.0"
+                        },
+                        {
+                            "cve_code": "CVE-2016-8743",
+                            "cve_severity": "5.0"
+                        },
+                        {
+                            "cve_code": "CVE-2016-2161",
+                            "cve_severity": "5.0"
+                        },
+                        {
+                            "cve_code": "CVE-2014-3523",
+                            "cve_severity": "5.0"
+                        },
+                        {
+                            "cve_code": "CVE-2014-0098",
+                            "cve_severity": "5.0"
+                        },
+                        {
+                            "cve_code": "CVE-2016-0736",
+                            "cve_severity": "5.0"
+                        },
+                        {
+                            "cve_code": "CVE-2016-4975",
+                            "cve_severity": "4.3"
+                        },
+                        {
+                            "cve_code": "CVE-2014-0117",
+                            "cve_severity": "4.3"
+                        },
+                        {
+                            "cve_code": "CVE-2014-8109",
+                            "cve_severity": "4.3"
+                        },
+                        {
+                            "cve_code": "CVE-2015-3185",
+                            "cve_severity": "4.3"
+                        },
+                        {
+                            "cve_code": "CVE-2014-0118",
+                            "cve_severity": "4.3"
+                        },
+                        {
+                            "cve_code": "CVE-2018-1283",
+                            "cve_severity": "3.5"
+                        },
+                        {
+                            "cve_code": "CVE-2016-8612",
+                            "cve_severity": "3.3"
+                        }
+                    ]
+                }
+            ]

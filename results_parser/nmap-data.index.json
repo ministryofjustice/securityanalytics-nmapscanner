@@ -15,6 +15,14 @@
                   "type": "nested"
                 }
               }
+            },
+            "cve_vulners": {
+              "type": "nested",
+              "properties": {
+                "cves": {
+                  "type": "nested"
+                }
+              }
             }
           }
         },
