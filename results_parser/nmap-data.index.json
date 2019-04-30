@@ -1,0 +1,27 @@
+{
+  "mappings": {
+    "nmap:data": {
+      "properties": {
+        "host_names": {
+          "type": "nested"
+        },
+        "ports": {
+          "type": "nested",
+          "properties": {
+            "ssl_enum_ciphers": {
+              "type": "nested",
+              "properties": {
+                "ciphers": {
+                  "type": "nested"
+                }
+              }
+            }
+          }
+        },
+        "os_info": {
+          "type": "nested"
+        }
+      }
+    }
+  }
+}

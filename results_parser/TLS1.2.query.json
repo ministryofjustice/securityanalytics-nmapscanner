@@ -1,0 +1,21 @@
+{
+  "query": {
+    "nested": {
+      "path": "ports",
+      "query": {
+        "nested": {
+          "path": "ports.ssl_enum_ciphers",
+          "query": {
+            "bool": {
+               "must": {
+                  "match": {
+                     "ports.ssl_enum_ciphers.protocol": "TLSv1.2"
+                  }
+               }
+            }
+          }
+        }
+      }
+    }
+  }
+}

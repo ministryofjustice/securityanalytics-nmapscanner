@@ -1,0 +1,14 @@
+{
+  "query": {
+    "nested": {
+      "path": "host_names",
+      "query": {
+          "regexp": {
+            "host_names.host_name": {
+              "value": ".*amazonaws.com"
+            }
+          }
+      }
+    }
+  }
+}
