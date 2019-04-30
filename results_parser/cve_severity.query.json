@@ -1,0 +1,24 @@
+{
+  "query": {
+    "nested": {
+      "path": "ports",
+      "query": {
+        "nested": {
+          "path": "ports.cve_vulners",
+          "query": {
+            "nested": {
+              "path": "ports.cve_vulners.cves",
+              "query": {
+                "range": {
+                  "ports.cve_vulners.cves.cve_severity": {
+                    "gte": "7.1"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
