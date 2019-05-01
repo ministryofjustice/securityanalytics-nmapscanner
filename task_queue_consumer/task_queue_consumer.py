@@ -72,6 +72,53 @@ def sanitise_nmap_target(target_str):
     return " ".join(sanitised)
 
 
+def submit_ecs_task(event, host, message_id):
+    ssm_params = event["ssm_params"]
+    private_subnet = "true" == ssm_params[PRIVATE_SUBNETS]
+    network_configuration = {
+        "awsvpcConfiguration": {
+            "subnets": ssm_params[SUBNETS].split(","),
+            "securityGroups": [ssm_params[SECURITY_GROUP]],
+            "assignPublicIp": "DISABLED" if private_subnet else "ENABLED"
+        }
+    }
+    ecs_params = {
+        "cluster": ssm_params[CLUSTER],
+        "networkConfiguration": network_configuration,
+        "taskDefinition": ssm_params[IMAGE_ID],
+        "launchType": "FARGATE",
+        "overrides": {
+            "containerOverrides": [{
+                "name": task_name,
+                "environment": [
+                    # TODO The only bit of this file that isn't going to be the same for other
+                    # task queue executors, is this bit that maps the request body to some env vars
+                    # Extract the common code into a layer exported by the task-execution project
+                    {
+                        "name": "HOST_TO_SCAN",
+                                "value": host
+                    },
+                    {
+                        "name": "MESSAGE_ID",
+                                "value": message_id
+                    },
+                    {
+                        "name": "RESULTS_BUCKET",
+                                "value": ssm_params[RESULTS]
+                    }]
+            }]
+        }
+    }
+    print(f"Submitting task: {dumps(ecs_params)}")
+    task_response = ecs_client.run_task(**ecs_params)
+    print(f"Submitted scanning task: {dumps(task_response)}")
+
+    failures = task_response["failures"]
+    if len(failures) != 0:
+        raise RuntimeError(
+            f"ECS task failed to start {dumps(failures)}")
+
+
 @ssm_parameters(
     ssm_client,
     PRIVATE_SUBNETS,
@@ -83,55 +130,22 @@ def sanitise_nmap_target(target_str):
 )
 @async_handler
 async def submit_scan_task(event, _):
-    ssm_params = event["ssm_params"]
-    private_subnet = "true" == ssm_params[PRIVATE_SUBNETS]
-    network_configuration = {
-        "awsvpcConfiguration": {
-            "subnets": ssm_params[SUBNETS].split(","),
-            "securityGroups": [ssm_params[SECURITY_GROUP]],
-            "assignPublicIp": "DISABLED" if private_subnet else "ENABLED"
-        }
-    }
+
     print(f"Processing event {dumps(event)}")
     for record in event["Records"]:
+        print(f"Scan requested: {dumps(record['body'])}")
         if record['body'][0] == '{':
             # triggered from cloudwatch which requires format in JSON:
             body = loads(record['body'])
             print(body)
-            record['body'] = body['CloudWatchEventHost']
-        print(f"Scan requested: {dumps(record['body'])}")
-        ecs_params = {
-            "cluster": ssm_params[CLUSTER],
-            "networkConfiguration": network_configuration,
-            "taskDefinition": ssm_params[IMAGE_ID],
-            "launchType": "FARGATE",
-            "overrides": {
-                "containerOverrides": [{
-                    "name": task_name,
-                    "environment": [
-                        # TODO The only bit of this file that isn't going to be the same for other
-                        # task queue executors, is this bit that maps the request body to some env vars
-                        # Extract the common code into a layer exported by the task-execution project
-                        {
-                            "name": "HOST_TO_SCAN",
-                            "value": sanitise_nmap_target(record["body"].strip())
-                        },
-                        {
-                            "name": "MESSAGE_ID",
-                            "value": record["messageId"]
-                        },
-                        {
-                            "name": "RESULTS_BUCKET",
-                            "value": ssm_params[RESULTS]
-                        }]
-                }]
-            }
-        }
-        print(f"Submitting task: {dumps(ecs_params)}")
-        task_response = ecs_client.run_task(**ecs_params)
-        print(f"Submitted scanning task: {dumps(task_response)}")
-
-        failures = task_response["failures"]
-        if len(failures) != 0:
-            raise RuntimeError(
-                f"ECS task failed to start {dumps(failures)}")
+            if 'CloudWatchEventHosts' in body:
+                id = 0
+                for host in body['CloudWatchEventHosts']:
+                    id += 1
+                    print(host)
+                    submit_ecs_task(event,  sanitise_nmap_target(
+                        host.strip()), f'{record["messageId"]}-{id}')
+        else:
+            # triggered via AWS by pushing host(s) to the queue manually:
+            submit_ecs_task(event, sanitise_nmap_target(
+                record["body"].strip()), record["messageId"])
