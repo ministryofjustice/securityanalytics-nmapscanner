@@ -72,7 +72,7 @@ module "docker_image" {
 }
 
 module "nmap_task" {
-  source = "github.com/ministryofjustice/securityanalytics-taskexecution//infrastructure/ecs_task"
+  source = "github.com/ministryofjustice/securityanalytics-taskexecution/infrastructure/ecs_task"
 
   // It is sometimes useful for the developers of the project to use a local version of the task
   // execution project. This enables them to develop the task execution project and the nmap scanner
@@ -96,7 +96,7 @@ module "nmap_task" {
 }
 
 module "nmap_task_scheduler" {
-  source = "github.com/ministryofjustice/securityanalytics-taskexecution//infrastructure/ecs_task"
+  source = "github.com/ministryofjustice/securityanalytics-taskexecution/infrastructure/scheduler"
 
   // It is sometimes useful for the developers of the project to use a local version of the task
   // execution project. This enables them to develop the task execution project and the nmap scanner
