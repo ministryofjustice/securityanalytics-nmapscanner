@@ -39,14 +39,15 @@ def process_results(topic, bucket, key):
     obj = s3_client.get_object(Bucket=bucket, Key=key)
     content = obj["Body"].read()
     tar = tarfile.open(mode="r:gz", fileobj=io.BytesIO(content), format=tarfile.PAX_FORMAT)
-    body = tar.extractfile(re.sub(r"\.tar.gz$", "", key.split("/", -1)[-1]))
+    result_file_name = re.sub(r"\.tar.gz$", "", key.split("/", -1)[-1])
+    body = tar.extractfile(result_file_name)
     nmap_results = untangle.parse(body).nmaprun
 
     for host in nmap_results.host:
-        process_host_results(topic, host)
+        process_host_results(topic, host, result_file_name)
 
 
-def process_host_results(topic, host):
+def process_host_results(topic, host, result_file_name):
     address = host.address["addr"]
     address_type = host.address["addrtype"]
     start_time, end_time = map(
@@ -59,6 +60,7 @@ def process_host_results(topic, host):
     os_info = []
     ports = []
     results = {
+        "scan_id": os.path.splitext(result_file_name)[0],
         "start_time": start_time,
         "end_time": end_time,
         "address": address,
@@ -91,7 +93,6 @@ def process_host_results(topic, host):
 
 def process_ports(ports, host):
     for port in host.ports.port:
-        status = port.state
         port_id, protocol = (port['portid'], port['protocol'])
         print(f"Looking at port: {(port_id, protocol)}")
         port_info = {
@@ -126,7 +127,6 @@ def process_port_service(port_info, port):
 
 def process_port_scripts(port_info, port):
     if hasattr(port, "script"):
-        scripts = {}
         for script in port.script:
             name = script["id"]
             # try and dynamically load a module for each script
