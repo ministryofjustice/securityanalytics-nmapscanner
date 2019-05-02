@@ -42,7 +42,7 @@ def add_new_index(index_file):
         r = requests.put(f"https://{url}/{new_index}", auth=aws_auth, json=index_doc)
 
         if not r.ok:
-            raise ValueError(f"Failure response ({r.status_code}): {r.text}")
+            raise ValueError(f"Failure response creating new index ({r.status_code}): {r.text}")
 
         print(f"Added new index {new_index}")
     else:
@@ -63,13 +63,13 @@ def update_aliases():
     r = requests.post(f"https://{url}/_aliases", auth=aws_auth, json=alias_doc)
 
     if not r.ok:
-        raise ValueError(f"Failure response ({r.status_code}): {r.text}")
+        raise ValueError(f"Failure response updating aliases ({r.status_code}): {r.text}")
 
     print(f"Updated write alias {write_alias} to point to {new_index}")
     print(f"Added read alias {read_alias} to point to {new_index}")
 
 
-def start_re_index():
+def re_index():
     if old_index and old_index != new_index:
         re_index_doc = {
           "source": {
@@ -80,16 +80,35 @@ def start_re_index():
           }
         }
         r = requests.post(f"https://{url}/_reindex", auth=aws_auth, json=re_index_doc)
+        print(f"Re-index result {r.text}")
 
         if not r.ok:
-            raise ValueError(f"Failure response ({r.status_code}): {r.text}")
+            raise ValueError(f"Failure response re-indexing ({r.status_code}): {r.text}")
 
-        print(f"Started re-indexing from {old_index} to {new_index}")
+        failures = r.json()["failures"]
+        if len(failures) > 0:
+            raise ValueError(f"Re-index errors ({failures})")
+
+        print(f"Re-indexing from {old_index} to {new_index}")
+        delete_old_index()
+    else:
+        print(f"Not re-indexing because old and new are the same {old_index} to {new_index}")
+
+
+def delete_old_index():
+    print(f"Deleting {old_index}")
+    r = requests.delete(f"https://{url}/{old_index}", auth=aws_auth)
+
+    if not r.ok:
+        raise ValueError(f"Failure response when deleting old index ({r.status_code}): {r.text}")
+
+    print(f"Deleted {old_index}")
 
 
 with open(index_file_name, 'r') as index_file:
     add_new_index(index_file)
     update_aliases()
-    start_re_index()
+    re_index()
+
 
 
