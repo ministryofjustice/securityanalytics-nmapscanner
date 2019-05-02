@@ -15,6 +15,7 @@ data "external" "current_index" {
 
 locals {
   index_hash     = "${md5(data.local_file.index_definition.content)}"
+  script_hash     = "${md5(file("${path.module}/write-new-index.py"))}"
   old_index_hash = "${data.external.current_index.result.index}"
 }
 
