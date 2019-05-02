@@ -78,7 +78,7 @@ provider:
          Fn::Join:
            - ""
            - - ${ssm:/${self:custom.appName}/${self:custom.deployStage}/tasks/${self:custom.pluginName}/s3/results/arn}
-    
+
 plugins:
   - serverless-stack-output
   - serverless-python-requirements
