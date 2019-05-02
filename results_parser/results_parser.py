@@ -86,7 +86,7 @@ def process_host_results(topic, host, result_file_name):
         results["uptime"] = uptime["seconds"]
         results["last_boot"] = uptime["lastboot"]
 
-    post_results(topic, f"{task_name}:data", results)
+    post_results(topic, f"{task_name}:data:write", results)
 
     print(f"done host")
 
