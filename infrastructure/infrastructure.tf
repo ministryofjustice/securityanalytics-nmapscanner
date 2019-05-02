@@ -80,7 +80,8 @@ module "elastic_resources" {
 }
 
 module "nmap_task" {
-  source = "github.com/ministryofjustice/securityanalytics-taskexecution/infrastructure/ecs_task"
+  // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  source = "github.com/ministryofjustice/securityanalytics-taskexecution//infrastructure/ecs_task"
 
   // It is sometimes useful for the developers of the project to use a local version of the task
   // execution project. This enables them to develop the task execution project and the nmap scanner
@@ -104,7 +105,8 @@ module "nmap_task" {
 }
 
 module "nmap_task_scheduler" {
-  source = "github.com/ministryofjustice/securityanalytics-taskexecution/infrastructure/scheduler"
+  // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  source = "github.com/ministryofjustice/securityanalytics-taskexecution//infrastructure/scheduler"
 
   // It is sometimes useful for the developers of the project to use a local version of the task
   // execution project. This enables them to develop the task execution project and the nmap scanner

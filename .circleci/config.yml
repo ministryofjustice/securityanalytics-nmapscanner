@@ -54,7 +54,7 @@ jobs:
           command: |
             . .circleci/env.sh
             cd infrastructure
-            echo $CIRCLE_HOSTS >scan_hosts.auto.tfvars 
+            echo $CIRCLE_HOSTS > scan_hosts.auto.tfvars 
             terraform init
             terraform get --update
             terraform workspace new $SSM_SOURCE_STAGE || terraform workspace select $SSM_SOURCE_STAGE
