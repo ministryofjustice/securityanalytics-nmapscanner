@@ -31,7 +31,7 @@ new_index = f"{task_name}:data:{index_hash}"
 
 
 def add_new_index(index_file):
-    if old_index != new_index:
+    if old_index and old_index != new_index:
         index_doc = json.load(index_file)
         r = requests.put(f"https://{url}/{new_index}", auth=aws_auth, json=index_doc)
 
@@ -64,7 +64,7 @@ def update_aliases():
 
 
 def start_re_index():
-    if old_index:
+    if old_index and old_index != new_index:
         re_index_doc = {
           "source": {
             "index": old_index
