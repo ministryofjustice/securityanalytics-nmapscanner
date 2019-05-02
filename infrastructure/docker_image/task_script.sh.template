@@ -9,7 +9,7 @@ echo Performing scan at $startTime
 set -x
 
 # Do the nmap
-nmap -oX /var/tmp/$output "$@" $HOST_TO_SCAN
+nmap -oX /var/tmp/$output "$@" $NMAP_TARGET_STRING
 tar -C /var/tmp -czvf $archive $output
 
 # Upload results
