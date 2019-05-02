@@ -71,6 +71,14 @@ module "docker_image" {
   ssm_source_stage   = "${local.ssm_source_stage}"
 }
 
+module "elastic_resources" {
+  source           = "elastic_resources"
+  aws_region       = "${var.aws_region}"
+  app_name         = "${var.app_name}"
+  task_name        = "${var.task_name}"
+  ssm_source_stage = "${local.ssm_source_stage}"
+}
+
 module "nmap_task" {
   source = "github.com/ministryofjustice/securityanalytics-taskexecution/infrastructure/ecs_task"
 
