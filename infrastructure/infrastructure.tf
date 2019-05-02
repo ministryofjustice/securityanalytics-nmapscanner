@@ -113,26 +113,21 @@ module "nmap_task_scheduler" {
   transient_workspace = "${!contains(var.known_deployment_stages, terraform.workspace)}"
 }
 
+data "aws_iam_policy_document" "nmap_cwe_sqs_policy" {
+  statement {
+    actions = ["SQS:SendMessage"]
+    effect  = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["events.amazonaws.com"]
+    }
+
+    resources = ["${module.nmap_task.task_queue}"]
+  }
+}
+
 resource "aws_sqs_queue_policy" "nmap_cwe_sqs_rule" {
   queue_url = "${module.nmap_task.task_queue_url}"
-
-  policy = <<POLICY
-  {
-  "Version": "2012-10-17",
-  "Id": "sqspolicy",
-  "Statement": [
-    {
-      "Sid": "TrustCWEToSendEventsToMyQueue",
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "events.amazonaws.com"
-      },
-      "Action": "SQS:SendMessage",
-      "Resource": "${module.nmap_task.task_queue}"
-
-
-    }
-  ]
-}
-POLICY
+  policy    = "${data.aws_iam_policy_document.nmap_cwe_sqs_policy.json}"
 }
