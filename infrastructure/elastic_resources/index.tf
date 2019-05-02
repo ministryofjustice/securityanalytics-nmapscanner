@@ -9,19 +9,19 @@ data "external" "current_index" {
     "${var.aws_region}",
     "${var.app_name}",
     "${var.task_name}",
-    "${data.aws_ssm_parameter.es_domain.value}"
+    "${data.aws_ssm_parameter.es_domain.value}",
   ]
 }
 
 locals {
-  index_hash = "${md5(data.local_file.index_definition.content)}"
+  index_hash     = "${md5(data.local_file.index_definition.content)}"
   old_index_hash = "${data.external.current_index.result.index}"
 }
 
 resource "null_resource" "setup_new_index" {
   triggers {
     index_hash = "${local.index_hash}"
-    foo = "${timestamp()}"
+    foo        = "${timestamp()}"
   }
 
   provisioner "local-exec" {

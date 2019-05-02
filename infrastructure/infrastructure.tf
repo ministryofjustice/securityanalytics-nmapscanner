@@ -67,11 +67,11 @@ module "docker_image" {
 }
 
 module "elastic_resources" {
-  source = "elastic_resources"
-  aws_region         = "${var.aws_region}"
-  app_name           = "${var.app_name}"
-  task_name          = "${var.task_name}"
-  ssm_source_stage   = "${local.ssm_source_stage}"
+  source           = "elastic_resources"
+  aws_region       = "${var.aws_region}"
+  app_name         = "${var.app_name}"
+  task_name        = "${var.task_name}"
+  ssm_source_stage = "${local.ssm_source_stage}"
 }
 
 module "nmap_task" {
