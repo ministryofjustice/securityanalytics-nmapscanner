@@ -74,7 +74,7 @@ def test_parses_hosts_and_ports():
         }, mock.MagicMock())
 
     results_parser.sns_client.publish.assert_called_once_with(
-        **expected_pub("me-twice:data", {
+        **expected_pub("me-twice:data:write", {
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "start_time": "2019-04-17T12:55:57Z",
             "end_time": "2019-04-17T12:56:27Z",
