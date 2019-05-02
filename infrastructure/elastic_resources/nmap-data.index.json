@@ -46,6 +46,9 @@
             "service": {
               "type": "keyword"
             },
+            "product": {
+              "type": "keyword"
+            },
             "ssl_enum_ciphers": {
               "type": "nested",
               "properties": {
