@@ -167,7 +167,7 @@ def test_sanitises_input_multiple_targets():
         "Records": [
             {"body": "2001:0db8:85a3:0000:0000:8a2e:0370:7334 123.3.2.124 scan.me.everyone", "messageId": "13"},
         ]}, mock.MagicMock())
-    expected = expected_params( "ENABLED", "2001:0db8:85a3:0000:0000:8a2e:0370:7334 123.3.2.124 scan.me.everyone", "13")
+    expected = expected_params("ENABLED", "2001:0db8:85a3:0000:0000:8a2e:0370:7334 123.3.2.124 scan.me.everyone", "13")
     task_queue_consumer.ecs_client.run_task.assert_called_once_with(**expected)
 
 
