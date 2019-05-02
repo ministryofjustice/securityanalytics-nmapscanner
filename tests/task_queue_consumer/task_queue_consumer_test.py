@@ -28,14 +28,11 @@ def ssm_return_vals(using_private):
     ssm_prefix = f"/{app_name}/{stage}"
     return {
         'Parameters': [
-            {"Name": f"{ssm_prefix}/vpc/using_private_subnets",
-                "Value": "true" if using_private else "false"},
-            {"Name": f"{ssm_prefix}/tasks/{task_name}/security_group/id",
-                "Value": "sg-123"},
+            {"Name": f"{ssm_prefix}/vpc/using_private_subnets", "Value": "true" if using_private else "false"},
+            {"Name": f"{ssm_prefix}/tasks/{task_name}/security_group/id", "Value": "sg-123"},
             {"Name": f"{ssm_prefix}/tasks/{task_name}/image/id", "Value": "imagination"},
             {"Name": f"{ssm_prefix}/tasks/{task_name}/s3/results/id", "Value": "bid"},
-            {"Name": f"{ssm_prefix}/vpc/subnets/instance",
-                "Value": "subnet-123,subnet-456"},
+            {"Name": f"{ssm_prefix}/vpc/subnets/instance", "Value": "subnet-123,subnet-456"},
             {"Name": f"{ssm_prefix}/ecs/cluster", "Value": "cid"}
         ]
     }
@@ -170,8 +167,7 @@ def test_sanitises_input_multiple_targets():
         "Records": [
             {"body": "2001:0db8:85a3:0000:0000:8a2e:0370:7334 123.3.2.124 scan.me.everyone", "messageId": "13"},
         ]}, mock.MagicMock())
-    expected = expected_params(
-        "ENABLED", "2001:0db8:85a3:0000:0000:8a2e:0370:7334 123.3.2.124 scan.me.everyone", "13")
+    expected = expected_params( "ENABLED", "2001:0db8:85a3:0000:0000:8a2e:0370:7334 123.3.2.124 scan.me.everyone", "13")
     task_queue_consumer.ecs_client.run_task.assert_called_once_with(**expected)
 
 
