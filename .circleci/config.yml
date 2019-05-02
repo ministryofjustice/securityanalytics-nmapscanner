@@ -70,6 +70,12 @@ jobs:
       - store_artifacts:
           path: .generated
 
+      - store_artifacts:
+          path: infrastructure/plan.file
+
+      - store_artifacts:
+          path: infrastructure/terraform.plan
+
       - save_cache:
           key: git-v1-{{ .Branch }}-{{ .Revision }}
           paths:
