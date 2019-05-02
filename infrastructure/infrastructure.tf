@@ -72,14 +72,14 @@ module "docker_image" {
 }
 
 module "nmap_task" {
-  //source = "github.com/ministryofjustice/securityanalytics-taskexecution/infrastructure/ecs_task"
+  source = "github.com/ministryofjustice/securityanalytics-taskexecution/infrastructure/ecs_task"
 
   // It is sometimes useful for the developers of the project to use a local version of the task
   // execution project. This enables them to develop the task execution project and the nmap scanner
   // (or other future tasks), at the same time, without requiring the task execution changes to be
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
-  source = "../../securityanalytics-taskexecution/infrastructure/ecs_task"
+  // source = "../../securityanalytics-taskexecution/infrastructure/ecs_task"
 
   app_name                      = "${var.app_name}"
   aws_region                    = "${var.aws_region}"
@@ -96,14 +96,14 @@ module "nmap_task" {
 }
 
 module "nmap_task_scheduler" {
-  // source = "github.com/ministryofjustice/securityanalytics-taskexecution/infrastructure/scheduler"
+  source = "github.com/ministryofjustice/securityanalytics-taskexecution/infrastructure/scheduler"
 
   // It is sometimes useful for the developers of the project to use a local version of the task
   // execution project. This enables them to develop the task execution project and the nmap scanner
   // (or other future tasks), at the same time, without requiring the task execution changes to be
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
-  source = "../../securityanalytics-taskexecution/infrastructure/scheduler"
+  // source = "../../securityanalytics-taskexecution/infrastructure/scheduler"
 
   app_name            = "${var.app_name}"
   task_name           = "${var.task_name}"
