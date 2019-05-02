@@ -22,6 +22,7 @@ locals {
 resource "null_resource" "setup_new_index" {
   triggers {
     index_hash = "${local.index_hash}"
+    script_hash = "${local.script_hash}"
   }
 
   provisioner "local-exec" {
