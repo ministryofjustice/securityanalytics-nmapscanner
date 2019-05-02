@@ -21,7 +21,6 @@ locals {
 resource "null_resource" "setup_new_index" {
   triggers {
     index_hash = "${local.index_hash}"
-    foo        = "${timestamp()}"
   }
 
   provisioner "local-exec" {

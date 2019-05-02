@@ -31,13 +31,16 @@ new_index = f"{task_name}:data:{index_hash}"
 
 
 def add_new_index(index_file):
-    index_doc = json.load(index_file)
-    r = requests.put(f"https://{url}/{new_index}", auth=aws_auth, json=index_doc)
+    if old_index != new_index:
+        index_doc = json.load(index_file)
+        r = requests.put(f"https://{url}/{new_index}", auth=aws_auth, json=index_doc)
 
-    if not r.ok:
-        raise ValueError(f"Failure response ({r.status_code}): {r.text}")
+        if not r.ok:
+            raise ValueError(f"Failure response ({r.status_code}): {r.text}")
 
-    print(f"Added new index {new_index}")
+        print(f"Added new index {new_index}")
+    else:
+        print(f"Index {new_index} already existed, ignoring")
 
 
 def update_aliases():
@@ -45,7 +48,7 @@ def update_aliases():
     alias_doc = {
         "actions": actions
     }
-    if old_index:
+    if old_index and old_index != new_index:
         actions.append({"remove": {"index": old_index, "alias": write_alias}})
 
     actions.append({"add": {"index": new_index, "alias": write_alias}})
