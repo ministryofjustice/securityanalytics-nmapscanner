@@ -15,4 +15,4 @@ function:
         batchSize: 1
         enabled: true
   # the default timeout of 6 seconds is too short when passing a number of hosts in (increased to 10s as 6s might be tight for even one host)
-  timeout: 10
+  timeout: 30

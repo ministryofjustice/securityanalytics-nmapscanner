@@ -95,8 +95,8 @@ def submit_ecs_task(event, host, message_id):
                     # task queue executors, is this bit that maps the request body to some env vars
                     # Extract the common code into a layer exported by the task-execution project
                     {
-                        "name": "HOST_TO_SCAN",
-                                "value": host
+                        "name": "NMAP_TARGET_STRING",
+                                "value": sanitise_nmap_target(host.strip())
                     },
                     {
                         "name": "MESSAGE_ID",
@@ -137,15 +137,11 @@ async def submit_scan_task(event, _):
         if record['body'][0] == '{':
             # triggered from cloudwatch which requires format in JSON:
             body = loads(record['body'])
-            print(body)
             if 'CloudWatchEventHosts' in body:
                 id = 0
-                for host in body['CloudWatchEventHosts']:
+                for nmap_targets in body['CloudWatchEventHosts']:
                     id += 1
-                    print(host)
-                    submit_ecs_task(event,  sanitise_nmap_target(
-                        host.strip()), f'{record["messageId"]}-{id}')
+                    submit_ecs_task(event, nmap_targets, f'{record["messageId"]}-{id}')
         else:
             # triggered via AWS by pushing host(s) to the queue manually:
-            submit_ecs_task(event, sanitise_nmap_target(
-                record["body"].strip()), record["messageId"])
+            submit_ecs_task(event, record["body"], record["messageId"])

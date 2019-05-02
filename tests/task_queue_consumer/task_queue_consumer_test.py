@@ -54,7 +54,7 @@ def expected_params(public_ip_str, scan_targets, message_id):
                 {
                     "name": "me-twice",
                     "environment": [
-                        {"name": "HOST_TO_SCAN", "value": scan_targets},
+                        {"name": "NMAP_TARGET_STRING", "value": scan_targets},
                         {"name": "MESSAGE_ID", "value": message_id},
                         {"name": "RESULTS_BUCKET", "value": "bid"}
                     ]
