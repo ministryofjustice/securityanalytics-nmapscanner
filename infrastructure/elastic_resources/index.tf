@@ -20,6 +20,9 @@ locals {
 }
 
 resource "null_resource" "setup_new_index" {
+  # This count stops us from re-indexing dev, when looking at integration tests
+  count = "${var.ssm_source_stage == terraform.workspace ? 1 : 0}"
+
   triggers {
     index_hash  = "${local.index_hash}"
     script_hash = "${local.script_hash}"
