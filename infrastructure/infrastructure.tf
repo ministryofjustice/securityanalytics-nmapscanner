@@ -120,5 +120,6 @@ module "nmap_task_scheduler" {
   scan_hosts          = "${var.scan_hosts}"
   queue_url           = "${module.nmap_task.task_queue_url}"
   queue_arn           = "${module.nmap_task.task_queue}"
+  ssm_source_stage    = "${local.ssm_source_stage}"
   transient_workspace = "${!contains(var.known_deployment_stages, terraform.workspace)}"
 }
