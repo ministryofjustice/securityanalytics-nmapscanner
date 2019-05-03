@@ -113,7 +113,9 @@ def test_parses_hosts_and_ports():
                     "extra_info": "(Ubuntu)",
                     "os_type": None,
                     "cpes": ["cpe:/a:apache:http_server:2.4.7"],
-                    "http-server-header": "Apache/2.4.7 (Ubuntu)"
+                    "http-server-header": [
+                        "Apache/2.4.7 (Ubuntu)"
+                    ]
                 },
                 {
                     "port_id": "9929",
@@ -484,7 +486,7 @@ def test_parses_no_timestamps_when_host_down_regression_sa_43():
     results_parser.s3_client,
     results_parser.ssm_client
 )
-def test_parses_os_but_no_osmatch_sa_45():
+def test_parses_os_but_no_osmatch_regression_sa_45():
     results_parser.ssm_client.get_parameters.return_value = ssm_return_vals()
 
     # load sample results file and make mock return it
@@ -502,6 +504,39 @@ def test_parses_os_but_no_osmatch_sa_45():
                     # urlencoded
                     "object": {
                         "key": "dcca306c-15de-4b22-ae81-a24af6f29de8-1-2019-05-03T08%3A35%3A50Z-nmap.xml.tar.gz"}
+                }}
+            ]
+        }, mock.MagicMock())
+
+    results_parser.sns_client.publish.assert_called_once()
+
+
+@pytest.mark.unit
+@pytest.mark.regression
+@serialise_mocks()
+@resetting_mocks(
+    results_parser.sns_client,
+    results_parser.s3_client,
+    results_parser.ssm_client
+)
+def test_parses_http_server_parse_regression_sa_46():
+    results_parser.ssm_client.get_parameters.return_value = ssm_return_vals()
+
+    # load sample results file and make mock return it
+    sample_file_name = f"{TEST_DIR}8278563c-08dc-468e-9a21-04efb43af885-1-2019-05-03T09_43_02Z-nmap.xml.tar.gz"
+    with open(sample_file_name, "rb") as sample_data:
+        results_parser.s3_client.get_object.return_value = {
+            "Body": StreamingBody(sample_data, os.stat(sample_file_name).st_size)
+        }
+
+        results_parser.parse_results({
+            "Records": [
+                {"s3": {
+                    "bucket": {"name": "test_bucket"},
+                    # Please note that the / characters in the key are replaced with %2F, the key is
+                    # urlencoded
+                    "object": {
+                        "key": "8278563c-08dc-468e-9a21-04efb43af885-1-2019-05-03T09%3A43%3A02Z-nmap.xml.tar.gz"}
                 }}
             ]
         }, mock.MagicMock())
