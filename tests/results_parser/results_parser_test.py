@@ -484,7 +484,7 @@ def test_parses_no_timestamps_when_host_down_regression_sa_43():
     results_parser.s3_client,
     results_parser.ssm_client
 )
-def test_parses__sa_45():
+def test_parses_os_but_no_osmatch_sa_45():
     results_parser.ssm_client.get_parameters.return_value = ssm_return_vals()
 
     # load sample results file and make mock return it
