@@ -2,10 +2,16 @@
   "mappings": {
     "_doc": {
       "properties": {
-        "start_time": {
+        "scan_start_time": {
           "type": "date"
         },
-        "end_time": {
+        "scan_end_time": {
+          "type": "date"
+        },
+        "host_scan_start_time": {
+          "type": "date"
+        },
+        "host_scan_end_time": {
           "type": "date"
         },
         "address": {
