@@ -7,7 +7,6 @@ from test_utils.test_utils import resetting_mocks, serialise_mocks
 from utils.json_serialisation import dumps
 from botocore.response import StreamingBody
 
-
 TEST_ENV = {
     "REGION": "eu-west-wood",
     "STAGE": "door",
@@ -18,7 +17,7 @@ TEST_DIR = "./tests/results_parser/"
 
 with mock.patch.dict(os.environ, TEST_ENV), \
      mock.patch("boto3.client") as boto_client, \
-     mock.patch("utils.json_serialisation.stringify_all"):
+        mock.patch("utils.json_serialisation.stringify_all"):
     # ensure each client is a different mock
     boto_client.side_effect = (mock.MagicMock() for _ in itertools.count())
     from results_parser import results_parser
@@ -48,8 +47,8 @@ def expected_pub(doc_type, doc):
 @pytest.mark.unit
 @serialise_mocks()
 @resetting_mocks(
-    results_parser.sns_client, 
-    results_parser.s3_client, 
+    results_parser.sns_client,
+    results_parser.s3_client,
     results_parser.ssm_client
 )
 def test_parses_hosts_and_ports():
@@ -76,8 +75,8 @@ def test_parses_hosts_and_ports():
     results_parser.sns_client.publish.assert_called_once_with(
         **expected_pub("me-twice:data:write", {
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
-            "start_time": "2019-04-17T12:55:57Z",
-            "end_time": "2019-04-17T12:56:27Z",
+            "scan_start_time": "2019-04-17T12:55:57Z",
+            "scan_end_time": "2019-04-17T12:56:27Z",
             "address": "45.33.32.156",
             "address_type": "ipv4",
             "host_names": [
@@ -147,11 +146,13 @@ def test_parses_hosts_and_ports():
                     "os_classes": [
                         {
                             "os_class_type": "general purpose",
-                            "os_cpe": "cpe:/o:linux:linux_kernel:4.4",
                             "os_class_vendor": "Linux",
                             "os_class_os_family": "Linux",
                             "os_class_os_gen": "4.X",
-                            "os_class_accuracy": "97"
+                            "os_class_accuracy": "97",
+                            "os_cpes": [
+                                "cpe:/o:linux:linux_kernel:4.4"
+                            ]
                         }
                     ]
                 },
@@ -161,23 +162,29 @@ def test_parses_hosts_and_ports():
                     "os_classes": [
                         {
                             "os_class_type": "general purpose",
-                            "os_cpe": "cpe:/o:linux:linux_kernel:3",
                             "os_class_vendor": "Linux",
                             "os_class_os_family": "Linux",
                             "os_class_os_gen": "3.X",
-                            "os_class_accuracy": "93"
+                            "os_class_accuracy": "93",
+                            "os_cpes": [
+                                "cpe:/o:linux:linux_kernel:3"
+                            ]
                         },
                         {
                             "os_class_type": "general purpose",
-                            "os_cpe": "cpe:/o:linux:linux_kernel:4",
                             "os_class_vendor": "Linux",
                             "os_class_os_family": "Linux",
                             "os_class_os_gen": "4.X",
-                            "os_class_accuracy": "93"
+                            "os_class_accuracy": "93",
+                            "os_cpes": [
+                                "cpe:/o:linux:linux_kernel:4"
+                            ]
                         }
                     ]
                 }
             ],
+            "host_scan_start_time": "2019-04-17T12:55:57Z",
+            "host_scan_end_time": "2019-04-17T12:56:27Z",
             "status": "up",
             "status_reason": "echo-reply",
             "uptime": "686432",
@@ -401,3 +408,102 @@ def test_parses_cve_info():
                     ]
                 }
             ]
+
+
+@pytest.mark.unit
+@pytest.mark.regression
+@serialise_mocks()
+@resetting_mocks(
+    results_parser.sns_client,
+    results_parser.s3_client,
+    results_parser.ssm_client
+)
+def test_parses_multiple_os_cpes_regression_sa_44():
+    results_parser.ssm_client.get_parameters.return_value = ssm_return_vals()
+
+    # load sample results file and make mock return it
+    sample_file_name = f"{TEST_DIR}b2b68f48-cc77-4ee1-aead-945cb6095f2f-2-2019-05-03T07_19_58Z-nmap.xml.tar.gz"
+    with open(sample_file_name, "rb") as sample_data:
+        results_parser.s3_client.get_object.return_value = {
+            "Body": StreamingBody(sample_data, os.stat(sample_file_name).st_size)
+        }
+
+        results_parser.parse_results({
+            "Records": [
+                {"s3": {
+                    "bucket": {"name": "test_bucket"},
+                    # Please note that the / characters in the key are replaced with %2F, the key is
+                    # urlencoded
+                    "object": {
+                        "key": "b2b68f48-cc77-4ee1-aead-945cb6095f2f-2-2019-05-03T07%3A19%3A58Z-nmap.xml.tar.gz"}
+                }}
+            ]
+        }, mock.MagicMock())
+
+    results_parser.sns_client.publish.assert_called_once()
+
+
+@pytest.mark.unit
+@pytest.mark.regression
+@serialise_mocks()
+@resetting_mocks(
+    results_parser.sns_client,
+    results_parser.s3_client,
+    results_parser.ssm_client
+)
+def test_parses_no_timestamps_when_host_down_regression_sa_43():
+    results_parser.ssm_client.get_parameters.return_value = ssm_return_vals()
+
+    # load sample results file and make mock return it
+    sample_file_name = f"{TEST_DIR}e2791270-b64e-4ec8-969c-87af81f169ce-1-2019-05-03T07_16_50Z-nmap.xml.tar.gz"
+    with open(sample_file_name, "rb") as sample_data:
+        results_parser.s3_client.get_object.return_value = {
+            "Body": StreamingBody(sample_data, os.stat(sample_file_name).st_size)
+        }
+
+        results_parser.parse_results({
+            "Records": [
+                {"s3": {
+                    "bucket": {"name": "test_bucket"},
+                    # Please note that the / characters in the key are replaced with %2F, the key is
+                    # urlencoded
+                    "object": {
+                        "key": "e2791270-b64e-4ec8-969c-87af81f169ce-1-2019-05-03T07%3A16%3A50Z-nmap.xml.tar.gz"}
+                }}
+            ]
+        }, mock.MagicMock())
+
+    results_parser.sns_client.publish.assert_called_once()
+
+
+@pytest.mark.unit
+@pytest.mark.regression
+@serialise_mocks()
+@resetting_mocks(
+    results_parser.sns_client,
+    results_parser.s3_client,
+    results_parser.ssm_client
+)
+def test_parses_os_but_no_osmatch_sa_45():
+    results_parser.ssm_client.get_parameters.return_value = ssm_return_vals()
+
+    # load sample results file and make mock return it
+    sample_file_name = f"{TEST_DIR}dcca306c-15de-4b22-ae81-a24af6f29de8-1-2019-05-03T08_35_50Z-nmap.xml.tar.gz"
+    with open(sample_file_name, "rb") as sample_data:
+        results_parser.s3_client.get_object.return_value = {
+            "Body": StreamingBody(sample_data, os.stat(sample_file_name).st_size)
+        }
+
+        results_parser.parse_results({
+            "Records": [
+                {"s3": {
+                    "bucket": {"name": "test_bucket"},
+                    # Please note that the / characters in the key are replaced with %2F, the key is
+                    # urlencoded
+                    "object": {
+                        "key": "dcca306c-15de-4b22-ae81-a24af6f29de8-1-2019-05-03T08%3A35%3A50Z-nmap.xml.tar.gz"}
+                }}
+            ]
+        }, mock.MagicMock())
+
+    results_parser.sns_client.publish.assert_called_once()

@@ -43,17 +43,18 @@ def process_results(topic, bucket, key):
     body = tar.extractfile(result_file_name)
     nmap_results = untangle.parse(body).nmaprun
 
-    for host in nmap_results.host:
-        process_host_results(topic, host, result_file_name)
-
-
-def process_host_results(topic, host, result_file_name):
-    address = host.address["addr"]
-    address_type = host.address["addrtype"]
     start_time, end_time = map(
         lambda f:
-            datetime.datetime.fromtimestamp(int(host[f]), pytz.utc).isoformat().replace('+00:00', 'Z'),
-        ("starttime", "endtime"))
+            datetime.datetime.fromtimestamp(int(f), pytz.utc).isoformat().replace('+00:00', 'Z'),
+        (nmap_results["start"], nmap_results.runstats.finished["time"]))
+
+    for host in nmap_results.host:
+        process_host_results(topic, host, result_file_name, start_time, end_time)
+
+
+def process_host_results(topic, host, result_file_name, start_time, end_time):
+    address = host.address["addr"]
+    address_type = host.address["addrtype"]
     print(f"Looking at host: {(address, address_type)} scanned at {end_time}")
 
     host_names = []
@@ -61,14 +62,22 @@ def process_host_results(topic, host, result_file_name):
     ports = []
     results = {
         "scan_id": os.path.splitext(result_file_name)[0],
-        "start_time": start_time,
-        "end_time": end_time,
+        "scan_start_time": start_time,
+        "scan_end_time": end_time,
         "address": address,
         "address_type": address_type,
         "host_names": host_names,
         "ports": ports,
         "os_info": os_info
     }
+
+    if host["starttime"] and host["endtime"]:
+        host_start_time, host_end_time = map(
+            lambda f:
+                datetime.datetime.fromtimestamp(int(host[f]), pytz.utc).isoformat().replace('+00:00', 'Z'),
+            ("starttime", "endtime"))
+        results["host_scan_start_time"] = host_start_time
+        results["host_scan_end_time"] = host_end_time
 
     process_host_names(host_names, host)
 
@@ -92,20 +101,21 @@ def process_host_results(topic, host, result_file_name):
 
 
 def process_ports(ports, host):
-    for port in host.ports.port:
-        port_id, protocol = (port['portid'], port['protocol'])
-        print(f"Looking at port: {(port_id, protocol)}")
-        port_info = {
-            "port_id": port_id,
-            "protocol": protocol
-        }
-        if hasattr(port, "state"):
-            status = port.state
-            port_info["status"] = status["state"]
-            port_info["status_reason"] = status["reason"]
-        process_port_service(port_info, port)
-        process_port_scripts(port_info, port)
-        ports.append(port_info)
+    if hasattr(host, "ports") and hasattr(host.ports, "port"):
+        for port in host.ports.port:
+            port_id, protocol = (port['portid'], port['protocol'])
+            print(f"Looking at port: {(port_id, protocol)}")
+            port_info = {
+                "port_id": port_id,
+                "protocol": protocol
+            }
+            if hasattr(port, "state"):
+                status = port.state
+                port_info["status"] = status["state"]
+                port_info["status_reason"] = status["reason"]
+            process_port_service(port_info, port)
+            process_port_scripts(port_info, port)
+            ports.append(port_info)
 
 
 def process_port_service(port_info, port):
@@ -141,34 +151,41 @@ def process_port_scripts(port_info, port):
 
 
 def process_host_names(host_names, host):
-    for host_name in host.hostnames.hostname:
-        host_names.append({
-            "host_name": host_name["name"],
-            "host_name_type": host_name["type"]
-        })
+    if hasattr(host, "hostnames") and hasattr(host.hostnames, "hostname"):
+        for host_name in host.hostnames.hostname:
+            host_names.append({
+                "host_name": host_name["name"],
+                "host_name_type": host_name["type"]
+            })
 
 
 MAPPED_OS_ATTRS = {f: f.replace("_", "") for f in ["type", "vendor", "os_family", "os_gen", "accuracy"]}
 
 
 def process_os(os_info, host):
-    for os_match in host.os.osmatch:
-        os_details = {
-            "os_name": os_match["name"],
-            "os_accuracy": os_match["accuracy"]
-        }
-        if hasattr(os_match, "osclass"):
-            os_classes = []
-            for os_class in os_match.osclass:
-                class_info = {}
-                for field, retreive_name in MAPPED_OS_ATTRS.items():
-                    class_info[f"os_class_{field}"] = os_class[retreive_name]
+    if hasattr(host, "os") and hasattr(host.os, "osmatch"):
+        for os_match in host.os.osmatch:
+            os_details = {
+                "os_name": os_match["name"],
+                "os_accuracy": os_match["accuracy"]
+            }
+            if hasattr(os_match, "osclass"):
+                os_classes = []
+                for os_class in os_match.osclass:
+                    class_info = {}
+                    for field, retreive_name in MAPPED_OS_ATTRS.items():
+                        class_info[f"os_class_{field}"] = os_class[retreive_name]
                     if hasattr(os_class, "cpe"):
-                        class_info["os_cpe"] = os_class.cpe.cdata
-                os_classes.append(class_info)
-            if len(os_classes) > 0:
-                os_details["os_classes"] = os_classes
-        os_info.append(os_details)
+                        cpe_info = []
+                        for cpe in os_class.cpe:
+                            cpe_info.append(cpe.cdata)
+                        if len(cpe_info) > 0:
+                            class_info["os_cpes"] = cpe_info
+
+                    os_classes.append(class_info)
+                if len(os_classes) > 0:
+                    os_details["os_classes"] = os_classes
+            os_info.append(os_details)
 
 
 @ssm_parameters(
