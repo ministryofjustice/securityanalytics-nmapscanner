@@ -1,0 +1,48 @@
+{
+  "Version": "2012-10-17",
+  "Id": "default",
+  "Statement": [
+    {
+      "Sid": "56a16f6d-9bec-479d-aa05-657716810973",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "apigateway.amazonaws.com"
+      },
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:lambda:eu-west-2:447213725459:function:mamos-sec-an-nmap-sample",
+      "Condition": {
+        "ArnLike": {
+          "AWS:SourceArn": "arn:aws:execute-api:eu-west-2:447213725459:weacl94h7b/*/GET/nmap/rtttr"
+        }
+      }
+    },
+    {
+      "Sid": "5db0f2af-3ffb-4841-8939-5b92bda62e2c",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "apigateway.amazonaws.com"
+      },
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:lambda:eu-west-2:447213725459:function:mamos-sec-an-nmap-sample",
+      "Condition": {
+        "ArnLike": {
+          "AWS:SourceArn": "arn:aws:execute-api:eu-west-2:447213725459:weacl94h7b/*/GET/nmap/rtttr"
+        }
+      }
+    },
+    {
+      "Sid": "AllowExecutionFromAPIGateway",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "apigateway.amazonaws.com"
+      },
+      "Action": "lambda:InvokeFunction",
+      "Resource": "arn:aws:lambda:eu-west-2:447213725459:function:mamos-sec-an-nmap-sample",
+      "Condition": {
+        "ArnLike": {
+          "AWS:SourceArn": "arn:aws:execute-api:eu-west-2:447213725459:weacl94h7b/*/GET/nmap/sample"
+        }
+      }
+    }
+  ]
+}
