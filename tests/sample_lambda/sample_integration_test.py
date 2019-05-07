@@ -25,7 +25,8 @@ region = os.environ['AWS_REGION']
 
 # TODO make this into a reusable util
 def get_url(endpoint, method):
-    return json.load(open('.generated/endpoints.json'))[endpoint][method]
+    foo = json.load(open('.generated/endpoints.json'))
+    return foo[endpoint][method]
 
 
 @pytest.mark.integration

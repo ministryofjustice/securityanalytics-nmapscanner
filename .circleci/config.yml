@@ -30,13 +30,6 @@ jobs:
 
       - restore_cache:
           keys:
-            - npm-v1-{{ .Branch }}-
-            - npm-v1-
-
-      - run: npm install
-
-      - restore_cache:
-          keys:
             - other-v1-{{ .Branch }}-
             - other-v1-
 
@@ -83,17 +76,11 @@ jobs:
             - ".git"
 
       - save_cache:
-          key: npm-v1-{{ .Branch }}-{{ .Revision }}
-          paths:
-            - "node_modules"
-
-      - save_cache:
           key: other-v1-{{ .Branch }}-{{ .Revision }}
           paths:
             - ".terraform"
             - ".venv"
-            - ".cache"
-            - ".serverless"
+            - ".generated"
             - ".pytest_cache"
 
   unit-test:
@@ -128,23 +115,7 @@ jobs:
             terraform apply --auto-approve -var ssm_source_stage=$SSM_SOURCE_STAGE -var account_id=$ACCOUNT_ID -no-color
             export SUCCESS=$?
             cd ..
-            npx sls --stage=$DEPLOY_STAGE deploy
-            if [ $? != 0 ]; then
-              export SUCCESS=1
-            fi
-            npx sls --stage=$DEPLOY_STAGE exportEndpoints
-            if [ $? != 0 ]; then
-              export SUCCESS=1
-            fi
-            npx sls --stage=$DEPLOY_STAGE s3deploy
-            if [ $? != 0 ]; then
-              export SUCCESS=1
-            fi
             pytest --junitxml=test-reports/junit.xml -m integration tests
-            if [ $? != 0 ]; then
-              export SUCCESS=1
-            fi
-            npx sls --stage=$DEPLOY_STAGE remove
             if [ $? != 0 ]; then
               export SUCCESS=1
             fi
@@ -174,9 +145,6 @@ jobs:
             cd infrastructure
             terraform workspace new dev || terraform workspace select dev
             terraform apply plan.file
-            cd ..
-            npx sls --stage=dev deploy
-            npx sls --stage=dev s3deploy
 
 
       # update the cache to include e.g. previously built docker container
@@ -185,8 +153,7 @@ jobs:
           paths:
             - ".terraform"
             - ".venv"
-            - ".cache"
-            - ".serverless"
+            - ".generated"
             - ".pytest_cache"
 
 workflows:
