@@ -32,5 +32,5 @@ def get_url(endpoint, method):
 def test_integration():
     url = get_url('sample', 'GET')
     response = requests.get(url, auth=get_auth())
-    assert response.status_code == 200
+    assert 200 == response.status_code
     assert "hello lambda world" in response.text
