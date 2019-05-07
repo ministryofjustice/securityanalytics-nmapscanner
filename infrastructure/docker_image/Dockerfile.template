@@ -4,6 +4,8 @@ FROM alpine:latest
 RUN apk --update --no-cache add nmap nmap-scripts python3
 RUN pip3 install awscli --upgrade
 RUN wget https://raw.githubusercontent.com/vulnersCom/nmap-vulners/master/vulners.nse
+RUN wget https://svn.nmap.org/nmap/scripts/ssl-cert.nse
+
 RUN mv vulners.nse /usr/share/nmap/scripts
 
 COPY task_script.sh .
@@ -11,4 +13,4 @@ COPY task_script.sh .
 ENV NMAP_TARGET_STRING=127.0.0.1
 ENV RESULTS_BUCKET=${results_bucket_arn}
 
-ENTRYPOINT [ "sh", "task_script.sh", "--script", "ssl-enum-ciphers,vulners", "-A", "-v" ]
+ENTRYPOINT [ "sh", "task_script.sh", "--script", "ssl-enum-ciphers,vulners,ssl-cert", "-A", "-v" ]
