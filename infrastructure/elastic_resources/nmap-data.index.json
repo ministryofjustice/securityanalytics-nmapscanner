@@ -55,36 +55,6 @@
             "product": {
               "type": "keyword"
             },
-            "ssl_cert": {
-              "type": "nested",
-              "properties": {
-                "issuer": {
-                  "type": "nested",
-                  "properties": {
-                    "countryName": {
-                      "type": "keyword"
-                    },
-                    "commonName": {
-                      "type": "keyword"
-                    },
-                    "organizationName": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "validity": {
-                  "type": "nested",
-                  "properties": {
-                    "notAfter": {
-                      "type": "date"
-                    },
-                    "notBefore": {
-                      "type": "date"
-                    }
-                  }
-                }
-              }
-            },
             "ssl_enum_ciphers": {
               "type": "nested",
               "properties": {
