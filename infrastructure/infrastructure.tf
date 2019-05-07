@@ -122,3 +122,17 @@ module "nmap_task_scheduler" {
   queue_arn           = "${module.nmap_task.task_queue}"
   transient_workspace = "${!contains(var.known_deployment_stages, terraform.workspace)}"
 }
+
+module "nmap_lambda" {
+  source                   = "nmap_lambdas"
+  app_name                 = "${var.app_name}"
+  task_name                = "${var.task_name}"
+  results_bucket           = "${module.nmap_task.results_bucket_id}"
+  results_bucket_arn       = "${module.nmap_task.results_bucket_arn}"
+  aws_region               = "${var.aws_region}"
+  account_id               = "${var.account_id}"
+  queue_arn                = "${module.nmap_task.task_queue}"
+  ssm_source_stage         = "${local.ssm_source_stage}"
+  task_queue_consumer_role = "${module.nmap_task.task_queue_consumer}"
+  results_parser_role      = "${module.nmap_task.results_parser}"
+}
