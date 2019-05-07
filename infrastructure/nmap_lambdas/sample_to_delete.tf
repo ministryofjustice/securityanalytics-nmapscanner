@@ -61,7 +61,7 @@ resource "aws_api_gateway_method" "nmap_sample" {
   rest_api_id   = "${aws_api_gateway_rest_api.api_gateway.id}"
   resource_id   = "${aws_api_gateway_resource.nmap_sample.id}"
   http_method   = "GET"
-  authorization = "AWS_IAM"
+  authorization = "NONE"
 }
 
 resource "aws_api_gateway_integration" "nmap_sample" {
@@ -81,6 +81,9 @@ resource "aws_api_gateway_method_response" "nmap_sample_200" {
 }
 
 resource "aws_api_gateway_integration_response" "nmap_sample" {
+  depends_on = [
+    "aws_api_gateway_integration.nmap_sample"
+  ]
   rest_api_id = "${aws_api_gateway_rest_api.api_gateway.id}"
   resource_id = "${aws_api_gateway_resource.nmap_sample.id}"
   http_method = "${aws_api_gateway_method.nmap_sample.http_method}"
