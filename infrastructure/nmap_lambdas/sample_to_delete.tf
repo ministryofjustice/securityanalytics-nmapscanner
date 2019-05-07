@@ -16,7 +16,6 @@ resource "aws_api_gateway_deployment" "stage" {
   stage_name  = "${terraform.workspace}"
 }
 
-
 resource "aws_lambda_function" "sample" {
   depends_on = ["data.external.nmap_zip"]
 
@@ -109,6 +108,7 @@ data "aws_iam_policy_document" "sample_access" {
     # TODO reduce this scope
     resources = ["*"]
   }
+
   statement {
     effect = "Allow"
 

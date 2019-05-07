@@ -8,5 +8,5 @@ locals {
 
 resource "local_file" "endpoints" {
   filename = "../.generated/endpoints.json"
-  content = "${jsonencode(local.endpoints)}"
+  content  = "${jsonencode(local.endpoints)}"
 }
