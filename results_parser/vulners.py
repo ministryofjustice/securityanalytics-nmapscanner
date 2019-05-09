@@ -5,7 +5,7 @@ LINE_SPLITTER = re.compile(r"\n")
 
 
 def summarise_severity(severity, summaries):
-    if "highest_cve_severity" not in summaries or severity < summaries["highest_cve_severity"]:
+    if "highest_cve_severity" not in summaries or severity > summaries["highest_cve_severity"]:
         summaries["highest_cve_severity"] = severity
 
 

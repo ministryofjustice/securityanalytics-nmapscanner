@@ -1,24 +1,31 @@
 # ssl-enum-ciphers will translate these codes to these strings, converting them back in order to
 # to use the numeric ordering for comparison
 # https://svn.nmap.org/nmap-releases/nmap-6.00/scripts/ssl-enum-ciphers.nse
-PROTOCOLS = {
-    "SSLv3": 0x0300,
-    "TLSv1.0": 0x0301,
-    "TLSv1.1": 0x0302,
-    "TLSv1.2": 0x0303
-}
+PROTOCOLS = set([
+    "SSLv3",
+    "TLSv1.0",
+    "TLSv1.1",
+    "TLSv1.2",
+    "TLSv1.3"
+])
 
 
 def summarise_proto(proto, summaries):
-    # default to low (unknown)
-    proto_code = PROTOCOLS.get(proto, 0x0000)
-    if "lowest_ssl_proto" not in summaries or proto_code < summaries["lowest_ssl_proto"]:
-        summaries["lowest_ssl_proto"] = proto_code
+    if proto in PROTOCOLS:
+        if "lowest_ssl_proto" not in summaries:
+            summaries["lowest_ssl_proto"] = proto
+        else:
+            lowest = summaries["lowest_ssl_proto"]
+            if proto < lowest:
+                summaries["lowest_ssl_proto"] = proto
+    else:
+        if "unknown_ssl_proto" not in summaries:
+            summaries["unknown_ssl_proto"] = True
 
 
 def summarise_cipher(cipher, summaries):
-    if "summary_lowest_ssl_strength" not in summaries or cipher < summaries["summary_lowest_ssl_strength"]:
-        summaries["summary_lowest_ssl_strength"] = cipher
+    if "lowest_ssl_strength" not in summaries or cipher < summaries["lowest_ssl_strength"]:
+        summaries["lowest_ssl_strength"] = cipher
 
 
 def process_script(script, summaries):

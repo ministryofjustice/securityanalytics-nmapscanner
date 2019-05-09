@@ -315,7 +315,7 @@ def test_parses_cve_info():
 
     results_parser.sns_client.publish.assert_called_once()
     call_details = json.loads(results_parser.sns_client.publish.call_args[1]['Message'])
-    assert call_details["summary_highest_cve_severity"] == "TLSv1.2"
+    assert call_details["summary_highest_cve_severity"] == 7.5
     for port in call_details["ports"]:
         if port["port_id"] == "80":
             assert port["cve_vulners"] == [
