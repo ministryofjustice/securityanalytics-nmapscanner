@@ -16,7 +16,7 @@ TEST_ENV = {
 TEST_DIR = "./tests/results_parser/"
 
 with mock.patch.dict(os.environ, TEST_ENV), \
-     mock.patch("boto3.client") as boto_client, \
+    mock.patch("boto3.client") as boto_client, \
         mock.patch("utils.json_serialisation.stringify_all"):
     # ensure each client is a different mock
     boto_client.side_effect = (mock.MagicMock() for _ in itertools.count())
@@ -542,3 +542,53 @@ def test_parses_http_server_parse_regression_sa_46():
         }, mock.MagicMock())
 
     results_parser.sns_client.publish.assert_called_once()
+
+
+@pytest.mark.unit
+@serialise_mocks()
+@resetting_mocks(
+    results_parser.sns_client,
+    results_parser.s3_client,
+    results_parser.ssm_client
+)
+def test_parses_ssl_certs():
+    results_parser.ssm_client.get_parameters.return_value = ssm_return_vals()
+    # load sample results file and make mock return it
+    sample_file_name = f"{TEST_DIR}test_ssl_cert.xml.tar.gz"
+    with open(sample_file_name, "rb") as sample_data:
+        results_parser.s3_client.get_object.return_value = {
+            "Body": StreamingBody(sample_data, os.stat(sample_file_name).st_size)
+        }
+
+        results_parser.parse_results({
+            "Records": [
+                {"s3": {
+                    "bucket": {"name": "test_bucket"},
+                    "object": {"key": "test_ssl_cert.xml.tar.gz"}
+                }}
+            ]
+        }, mock.MagicMock())
+
+    results_parser.sns_client.publish.assert_called_once()
+    call_details = json.loads(results_parser.sns_client.publish.call_args[1]['Message'])
+
+    for port in call_details["ports"]:
+        if port["port_id"] == "443":
+            assert port["ssl_cert"] == {
+                "issuer": {
+                    "countryName": "US",
+                    "commonName": "Let's Encrypt Authority X3",
+                    "organizationName": "Let's Encrypt"
+                },
+                "subject": {
+                    "commonName": "scottlogic.com"
+                },
+                "validity": {
+                    "notAfter": "2019-06-29T06:52:46",
+                    "notBefore": "2019-03-31T06:52:46"
+                },
+                "extensions": [{
+                    "name": "X509v3 Subject Alternative Name",
+                    "value": "DNS:scottlogic.com"
+                }]
+            }
