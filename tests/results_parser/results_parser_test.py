@@ -571,7 +571,7 @@ def test_parses_ssl_certs():
 
     results_parser.sns_client.publish.assert_called_once()
     call_details = json.loads(results_parser.sns_client.publish.call_args[1]['Message'])
-    
+
     for port in call_details["ports"]:
         if port["port_id"] == "443":
             assert port["ssl_cert"] == {
@@ -580,8 +580,15 @@ def test_parses_ssl_certs():
                     "commonName": "Let's Encrypt Authority X3",
                     "organizationName": "Let's Encrypt"
                 },
+                "subject": {
+                    "commonName": "scottlogic.com"
+                },
                 "validity": {
                     "notAfter": "2019-06-29T06:52:46",
                     "notBefore": "2019-03-31T06:52:46"
-                }
+                },
+                "extensions": [{
+                    "name": "X509v3 Subject Alternative Name",
+                    "value": "DNS:scottlogic.com"
+                }]
             }
