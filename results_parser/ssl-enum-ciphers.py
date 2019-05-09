@@ -1,4 +1,6 @@
-def process_script(script):
+PROTO_ORDERING = []
+
+def process_script(script, summaries):
     script_info = []
     for proto_table in script.table:
         proto_info = {

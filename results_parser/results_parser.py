@@ -81,7 +81,9 @@ def process_host_results(topic, host, result_file_name, start_time, end_time):
 
     process_host_names(host_names, host)
 
-    process_ports(ports, host)
+    summaries = {}
+
+    process_ports(ports, host, summaries)
 
     process_os(os_info, host)
 
@@ -95,12 +97,19 @@ def process_host_results(topic, host, result_file_name, start_time, end_time):
         results["uptime"] = uptime["seconds"]
         results["last_boot"] = uptime["lastboot"]
 
+    add_summaries(results, summaries)
+
     post_results(topic, f"{task_name}:data:write", results)
 
     print(f"done host")
 
 
-def process_ports(ports, host):
+def add_summaries(results, summaries):
+    for key, value in summaries.items():
+        results[f"summary_{key}"] = value
+
+
+def process_ports(ports, host, summaries):
     if hasattr(host, "ports") and hasattr(host.ports, "port"):
         for port in host.ports.port:
             port_id, protocol = (port['portid'], port['protocol'])
@@ -114,7 +123,7 @@ def process_ports(ports, host):
                 port_info["status"] = status["state"]
                 port_info["status_reason"] = status["reason"]
             process_port_service(port_info, port)
-            process_port_scripts(port_info, port)
+            process_port_scripts(port_info, port, summaries)
             ports.append(port_info)
 
 
@@ -135,7 +144,7 @@ def process_port_service(port_info, port):
                 port_info["cpes"] = cpes
 
 
-def process_port_scripts(port_info, port):
+def process_port_scripts(port_info, port, summaries):
     if hasattr(port, "script"):
         for script in port.script:
             name = script["id"]
@@ -145,7 +154,7 @@ def process_port_scripts(port_info, port):
                 print(f"Processing plugin for script {name}")
                 module = importlib.util.module_from_spec(script_processing_module_spec)
                 script_processing_module_spec.loader.exec_module(module)
-                script_info = module.process_script(script)
+                script_info = module.process_script(script, summaries)
                 if script_info:
                     port_info.update(script_info)
 
