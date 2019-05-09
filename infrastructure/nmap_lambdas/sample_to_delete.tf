@@ -37,6 +37,12 @@ resource "aws_lambda_function" "sample" {
       TASK_NAME = "${var.task_name}"
     }
   }
+
+  tags = {
+    source_hash = "${data.external.nmap_zip.result.hash}"
+    workspace = "${terraform.workspace}"
+    app_name  = "${var.app_name}"
+  }
 }
 
 # TODO should use the shared api, but that is currently set to private and so making new public one
