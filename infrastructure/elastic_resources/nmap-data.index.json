@@ -29,6 +29,15 @@
         "uptime": {
           "type": "integer"
         },
+        "summary_lowest_ssl_strength": {
+          "type": "keyword"
+        },
+        "summary_lowest_ssl_proto": {
+          "type": "keyword"
+        },
+        "summary_highest_cve_severity": {
+          "type": "float"
+        },
         "host_names": {
           "type": "nested",
           "properties": {
