@@ -41,7 +41,7 @@ resource "aws_lambda_function" "results_parser" {
 
   tags = {
     source_hash = "${data.external.nmap_zip.result.hash}"
-    workspace = "${terraform.workspace}"
-    app_name  = "${var.app_name}"
+    workspace   = "${terraform.workspace}"
+    app_name    = "${var.app_name}"
   }
 }
