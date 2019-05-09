@@ -6,8 +6,6 @@ RUN pip3 install awscli --upgrade
 RUN wget https://raw.githubusercontent.com/vulnersCom/nmap-vulners/master/vulners.nse
 RUN wget https://svn.nmap.org/nmap/scripts/ssl-cert.nse
 
-RUN mv vulners.nse /usr/share/nmap/scripts
-
 COPY task_script.sh .
 
 ENV NMAP_TARGET_STRING=127.0.0.1
