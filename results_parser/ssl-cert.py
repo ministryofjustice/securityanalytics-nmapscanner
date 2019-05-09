@@ -1,4 +1,4 @@
-def process_script(script):
+def process_script(script, _):
     results = {}
     for table in script.table:
         if table["key"] == "validity":
