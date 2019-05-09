@@ -225,6 +225,8 @@ def test_parses_tls_info():
 
     results_parser.sns_client.publish.assert_called_once()
     call_details = json.loads(results_parser.sns_client.publish.call_args[1]['Message'])
+    assert call_details["summary_lowest_ssl_strength"] == "A"
+    assert call_details["summary_lowest_ssl_proto"] == "TLSv1.2"
     for port in call_details["ports"]:
         if port["port_id"] == "443":
             assert port["ssl_least_strength"] == "A"
@@ -313,6 +315,7 @@ def test_parses_cve_info():
 
     results_parser.sns_client.publish.assert_called_once()
     call_details = json.loads(results_parser.sns_client.publish.call_args[1]['Message'])
+    assert call_details["summary_highest_cve_severity"] == "TLSv1.2"
     for port in call_details["ports"]:
         if port["port_id"] == "80":
             assert port["cve_vulners"] == [

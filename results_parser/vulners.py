@@ -4,7 +4,12 @@ WHITE_SQUASHER = re.compile(r"\s+")
 LINE_SPLITTER = re.compile(r"\n")
 
 
-def process_script(script):
+def summarise_severity(severity, summaries):
+    if "highest_cve_severity" not in summaries or severity < summaries["highest_cve_severity"]:
+        summaries["highest_cve_severity"] = severity
+
+
+def process_script(script, summaries):
     results = []
     result = {"cve_vulners": results}
     for elem in script.elem:
@@ -25,6 +30,7 @@ def process_script(script):
                 "cve_code": code,
                 "cve_severity": severity
             })
+            summarise_severity(float(severity), summaries)
         if len(cve_info) > 0:
             results.append(cpe_result)
     return result
