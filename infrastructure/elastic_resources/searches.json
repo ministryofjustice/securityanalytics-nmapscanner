@@ -1,0 +1,62 @@
+[
+  {
+    "_id": "2e13fcb0-733a-11e9-af7e-bba502bfbecd",
+    "_type": "search",
+    "_source": {
+      "title": "CVE",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "_source"
+      ],
+      "sort": [
+        "scan_end_time",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\n  \"index\": \"1b0e7eb0-7330-11e9-af7e-bba502bfbecd\",\n  \"highlightAll\": true,\n  \"version\": true,\n  \"query\": {\n    \"language\": \"kuery\",\n    \"query\": \"\"\n  },\n  \"filter\": [\n    {\n      \"query\": {\n        \"range\": {\n          \"summary_highest_cve_severity\": {\n            \"gte\": 7,\n            \"lt\": null\n          }\n        }\n      },\n      \"size\": 0,\n      \"meta\": {\n        \"negate\": false,\n        \"index\": \"1b0e7eb0-7330-11e9-af7e-bba502bfbecd\",\n        \"disabled\": false,\n        \"alias\": null,\n        \"type\": \"custom\",\n        \"key\": \"query\",\n        \"value\": \"{\\\"range\\\":{\\\"summary_highest_cve_severity\\\":{\\\"gte\\\":7,\\\"lt\\\":null}}}\"\n      },\n      \"$state\": {\n        \"store\": \"appState\"\n      }\n    }\n  ]\n}"
+      }
+    }
+  },
+  {
+    "_id": "5e4aaa40-7345-11e9-af7e-bba502bfbecd",
+    "_type": "search",
+    "_source": {
+      "title": "Weak SSL Cipher",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "_source"
+      ],
+      "sort": [
+        "scan_end_time",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"1b0e7eb0-7330-11e9-af7e-bba502bfbecd\",\"highlightAll\":true,\"version\":true,\"query\":{\"language\":\"kuery\",\"query\":\"\"},\"filter\":[{\"meta\":{\"index\":\"1b0e7eb0-7330-11e9-af7e-bba502bfbecd\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"exists\",\"key\":\"summary_lowest_ssl_strength\",\"value\":\"exists\"},\"exists\":{\"field\":\"summary_lowest_ssl_strength\"},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"1b0e7eb0-7330-11e9-af7e-bba502bfbecd\",\"type\":\"phrases\",\"key\":\"summary_lowest_ssl_strength\",\"value\":\"A, B\",\"params\":[\"A\",\"B\"],\"negate\":true,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"summary_lowest_ssl_strength\":\"A\"}},{\"match_phrase\":{\"summary_lowest_ssl_strength\":\"B\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    }
+  },
+  {
+    "_id": "dbdab900-733b-11e9-af7e-bba502bfbecd",
+    "_type": "search",
+    "_source": {
+      "title": "Weak SSL Proto",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "_source"
+      ],
+      "sort": [
+        "scan_end_time",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"1b0e7eb0-7330-11e9-af7e-bba502bfbecd\",\"highlightAll\":true,\"version\":true,\"query\":{\"query\":\"\",\"language\":\"kuery\"},\"filter\":[{\"meta\":{\"index\":\"1b0e7eb0-7330-11e9-af7e-bba502bfbecd\",\"type\":\"phrases\",\"key\":\"summary_lowest_ssl_proto\",\"value\":\"TLSv1.0, SSLv3\",\"params\":[\"TLSv1.0\",\"SSLv3\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"summary_lowest_ssl_proto\":\"TLSv1.0\"}},{\"match_phrase\":{\"summary_lowest_ssl_proto\":\"SSLv3\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}}]}"
+      }
+    }
+  }
+]
