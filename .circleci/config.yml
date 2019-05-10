@@ -71,7 +71,7 @@ jobs:
           path: infrastructure/terraform.plan
 
       - store_artifacts:
-          path: .generated/sec-an-nmap.zip
+          path: .generated/*
 
       - save_cache:
           key: git-v1-{{ .Branch }}-{{ .Revision }}
