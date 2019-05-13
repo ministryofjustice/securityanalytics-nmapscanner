@@ -85,7 +85,7 @@ def process_host_results(topic, host, result_file_name, start_time, end_time):
 
     process_ports(ports, host, summaries)
 
-    process_os(os_info, host)
+    process_os(os_info, host, summaries)
 
     if hasattr(host, "status"):
         status = host.status
@@ -171,13 +171,19 @@ def process_host_names(host_names, host):
 MAPPED_OS_ATTRS = {f: f.replace("_", "") for f in ["type", "vendor", "os_family", "os_gen", "accuracy"]}
 
 
-def process_os(os_info, host):
+def process_os(os_info, host, summaries):
     if hasattr(host, "os") and hasattr(host.os, "osmatch"):
+        most_likely_os, most_accurate = (None, 0)
         for os_match in host.os.osmatch:
+            name = os_match["name"]
+            accuracy = int(os_match["accuracy"])
             os_details = {
                 "os_name": os_match["name"],
                 "os_accuracy": os_match["accuracy"]
             }
+            if accuracy > most_accurate:
+                most_accurate = accuracy
+                most_likely_os = name
             if hasattr(os_match, "osclass"):
                 os_classes = []
                 for os_class in os_match.osclass:
@@ -195,6 +201,9 @@ def process_os(os_info, host):
                 if len(os_classes) > 0:
                     os_details["os_classes"] = os_classes
             os_info.append(os_details)
+            if most_likely_os:
+                summaries["most_likely_os"] = most_likely_os
+                summaries["most_likely_os_accuracy"] = most_accurate
 
 
 @ssm_parameters(
