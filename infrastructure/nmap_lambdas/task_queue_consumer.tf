@@ -17,11 +17,12 @@ resource "aws_lambda_event_source_mapping" "ingestor_queue_trigger" {
 resource "aws_lambda_function" "queue_consumer" {
   depends_on = ["data.external.nmap_zip"]
 
-  function_name = "${terraform.workspace}-${var.app_name}-${var.task_name}-task-q-consumer"
-  handler       = "task_queue_consumer.task_queue_consumer.submit_scan_task"
-  role          = "${var.task_queue_consumer_role}"
-  runtime       = "python3.7"
-  filename      = "${local.nmap_zip}"
+  function_name    = "${terraform.workspace}-${var.app_name}-${var.task_name}-task-q-consumer"
+  handler          = "task_queue_consumer.task_queue_consumer.submit_scan_task"
+  role             = "${var.task_queue_consumer_role}"
+  runtime          = "python3.7"
+  filename         = "${local.nmap_zip}"
+  source_code_hash = "${data.external.nmap_zip.result.hash}"
 
   layers = [
     "${data.aws_ssm_parameter.utils_layer.value}",
@@ -37,8 +38,7 @@ resource "aws_lambda_function" "queue_consumer" {
   }
 
   tags = {
-    source_hash = "${data.external.nmap_zip.result.hash}"
-    workspace   = "${terraform.workspace}"
-    app_name    = "${var.app_name}"
+    workspace = "${terraform.workspace}"
+    app_name  = "${var.app_name}"
   }
 }
