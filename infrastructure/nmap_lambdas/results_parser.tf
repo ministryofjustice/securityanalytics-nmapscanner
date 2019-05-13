@@ -20,11 +20,12 @@ resource "aws_s3_bucket_notification" "ingestor_queue_trigger" {
 resource "aws_lambda_function" "results_parser" {
   depends_on = ["data.external.nmap_zip"]
 
-  function_name = "${terraform.workspace}-${var.app_name}-${var.task_name}-results-parser"
-  handler       = "results_parser.results_parser.parse_results"
-  role          = "${var.results_parser_role}"
-  runtime       = "python3.7"
-  filename      = "${local.nmap_zip}"
+  function_name    = "${terraform.workspace}-${var.app_name}-${var.task_name}-results-parser"
+  handler          = "results_parser.results_parser.parse_results"
+  role             = "${var.results_parser_role}"
+  runtime          = "python3.7"
+  filename         = "${local.nmap_zip}"
+  source_code_hash = "${data.external.nmap_zip.result.hash}"
 
   layers = [
     "${data.aws_ssm_parameter.utils_layer.value}",
@@ -40,8 +41,7 @@ resource "aws_lambda_function" "results_parser" {
   }
 
   tags = {
-    source_hash = "${data.external.nmap_zip.result.hash}"
-    workspace   = "${terraform.workspace}"
-    app_name    = "${var.app_name}"
+    workspace = "${terraform.workspace}"
+    app_name  = "${var.app_name}"
   }
 }
