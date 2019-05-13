@@ -18,4 +18,5 @@ module "severe_cve_search" {
     index = "${module.nmap_index.index_id}"
   }
   object_type = "search"
+  object_title = "CriticalVulnerabilitiesOver7"
 }

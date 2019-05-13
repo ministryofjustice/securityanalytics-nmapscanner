@@ -1,7 +1,7 @@
 {
     "attributes": {
-      "title": "CriticalVulnerabilitiesOver${severity}",
-      "description": "A search returning all hosts that have a CVE with a rating over ${severity}.",
+      "title": "${object_title}",
+      "description": "A search returning all hosts that have a CVE with a rating over ${severity}",
       "columns": [
         "_source"
       ],
