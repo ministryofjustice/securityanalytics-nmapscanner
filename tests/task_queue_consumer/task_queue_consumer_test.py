@@ -286,3 +286,45 @@ def test_json_input_multiple_targets_mixed():
         ]
     ]
     assert expected == task_queue_consumer.ecs_client.run_task.call_args_list
+
+
+@pytest.mark.unit
+@serialise_mocks()
+@resetting_mocks(task_queue_consumer.ecs_client, task_queue_consumer.ssm_client.get_parameters)
+def test_sanitises_input_short_name():
+    task_queue_consumer.ssm_client.get_parameters.return_value = ssm_return_vals(False)
+    with pytest.raises(ValueError):
+        task_queue_consumer.submit_scan_task(
+            {"Records": [{"body": "host", "messageId": "100"}]},
+            mock.MagicMock())
+
+@pytest.mark.unit
+@serialise_mocks()
+@resetting_mocks(task_queue_consumer.ecs_client, task_queue_consumer.ssm_client.get_parameters)
+def test_sanitises_input_mid_underscore():
+    task_queue_consumer.ssm_client.get_parameters.return_value = ssm_return_vals(False)
+    with pytest.raises(ValueError):
+        task_queue_consumer.submit_scan_task(
+            {"Records": [{"body": "underscores_are.not.allowed.mid.domain", "messageId": "101"}]},
+            mock.MagicMock())
+
+@pytest.mark.unit
+@serialise_mocks()
+@resetting_mocks(task_queue_consumer.ecs_client, task_queue_consumer.ssm_client.get_parameters)
+def test_sanitises_input_underscore_hostname():
+    task_queue_consumer.ssm_client.get_parameters.return_value = ssm_return_vals(False)
+    task_queue_consumer.submit_scan_task(
+        {"Records": [{"body": "_valid.if._first.test.com", "messageId": "102"}]},
+        mock.MagicMock())
+    expected = expected_params("ENABLED", "_valid.if._first.test.com", "102")
+    task_queue_consumer.ecs_client.run_task.assert_called_once_with(**expected)
+
+@pytest.mark.unit
+@serialise_mocks()
+@resetting_mocks(task_queue_consumer.ecs_client, task_queue_consumer.ssm_client.get_parameters)
+def test_sanitises_input_last_underscore():
+    task_queue_consumer.ssm_client.get_parameters.return_value = ssm_return_vals(False)
+    with pytest.raises(ValueError):
+        task_queue_consumer.submit_scan_task(
+            {"Records": [{"body": "_notvalid.if._at.end", "messageId": "103"}]},
+            mock.MagicMock())

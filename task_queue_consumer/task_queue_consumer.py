@@ -26,6 +26,9 @@ IMAGE_ID = f"{ssm_prefix}/tasks/{task_name}/image/id"
 # <name> from https://tools.ietf.org/html/rfc952#page-5
 ALLOWED_NAME = re.compile(r"(?!-)[a-z0-9-]{1,63}(?<!-)$", re.IGNORECASE)
 
+# <name> from https://tools.ietf.org/html/rfc952#page-5
+UNDERSCORE_ALLOWED_NAME = re.compile(r"[_]?(?!-)[a-z0-9-]{1,63}(?<!-)$", re.IGNORECASE)
+
 # from https://tools.ietf.org/html/rfc3696#section-2
 ALL_NUMERIC = re.compile(r"[0-9]+$")
 
@@ -45,7 +48,14 @@ def is_valid_hostname(hostname):
     if ALL_NUMERIC.match(labels[-1]):
         return False
 
-    return all(ALLOWED_NAME.match(label) for label in labels)
+    # hostname should consist of at least two parts:
+    if len(labels) < 2:
+        return False
+
+    # RFC2782 allows for an underscore as the first character for each part of the domain name
+    host_check = all(UNDERSCORE_ALLOWED_NAME.match(label) for label in labels[:-2])
+    domain_check = all(ALLOWED_NAME.match(label) for label in labels[-2:])
+    return (host_check & domain_check)
 
 
 # Since we pass the target string directly into the script that is run inside the ecs instance
