@@ -190,7 +190,9 @@ def test_parses_hosts_and_ports():
             "status": "up",
             "status_reason": "echo-reply",
             "uptime": "686432",
-            "last_boot": "Tue Apr  9 14:15:55 2019"
+            "last_boot": "Tue Apr  9 14:15:55 2019",
+            "summary_most_likely_os": "Linux 4.4",
+            "summary_most_likely_os_accuracy": 97
         })
     )
 
