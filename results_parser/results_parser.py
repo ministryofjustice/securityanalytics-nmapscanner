@@ -57,11 +57,12 @@ def process_host_results(topic, host, result_file_name, start_time, end_time):
     address_type = host.address["addrtype"]
     print(f"Looking at host: {(address, address_type)} scanned at {end_time}")
 
+    scan_id = os.path.splitext(result_file_name)[0]
     host_names = []
     os_info = []
     ports = []
-    results = {
-        "scan_id": os.path.splitext(result_file_name)[0],
+    results =  {
+        "scan_id": scan_id,
         "scan_start_time": start_time,
         "scan_end_time": end_time,
         "address": address,
@@ -83,9 +84,9 @@ def process_host_results(topic, host, result_file_name, start_time, end_time):
 
     summaries = {}
 
-    process_ports(ports, host, summaries)
+    process_ports(ports, host, summaries, scan_id, end_time, address, address_type, topic)
 
-    process_os(os_info, host, summaries)
+    process_os(os_info, host, summaries, scan_id, end_time, address, address_type, topic)
 
     if hasattr(host, "status"):
         status = host.status
@@ -109,7 +110,7 @@ def add_summaries(results, summaries):
         results[f"summary_{key}"] = value
 
 
-def process_ports(ports, host, summaries):
+def process_ports(ports, host, summaries, scan_id, end_time, address, address_type, topic):
     if hasattr(host, "ports") and hasattr(host.ports, "port"):
         for port in host.ports.port:
             port_id, protocol = (port['portid'], port['protocol'])
@@ -125,7 +126,38 @@ def process_ports(ports, host, summaries):
             process_port_service(port_info, port)
             process_port_scripts(port_info, port, summaries)
             ports.append(port_info)
-
+            port_result = {
+                "scan_id": scan_id,
+                "scan_end_time": end_time,
+                "address": address,
+                "address_type": address_type
+            }
+            port_result.update(port_info)
+            post_results(topic, f"{task_name}:data:write", port_result)
+            if "cve_vulners" in port_info:
+                for vulner in port_info["cve_vulners"]:
+                    cve_key = {
+                        "scan_id": scan_id,
+                        "scan_end_time": end_time,
+                        "address": address,
+                        "address_type": address_type,
+                        "cpe_key": vulner["cpe_key"]
+                    }
+                    for code in vulner["cves"]:
+                        cve_result = {**cve_key, **code}
+                        post_results(topic, f"{task_name}:data:write", cve_result)
+            if "ssl_enum_ciphers" in port_info:
+                for enum_cipher in port_info["ssl_enum_ciphers"]:
+                    cipher_key = {
+                        "scan_id": scan_id,
+                        "scan_end_time": end_time,
+                        "address": address,
+                        "address_type": address_type,
+                        "cpe_key": enum_cipher["protocol"]
+                    }
+                    for cipher in enum_cipher["ciphers"]:
+                        cipher_result = {**cipher_key, **cipher}
+                        post_results(topic, f"{task_name}:data:write", cipher_result)
 
 def process_port_service(port_info, port):
     if hasattr(port, "service"):
@@ -159,6 +191,7 @@ def process_port_scripts(port_info, port, summaries):
                     port_info.update(script_info)
 
 
+
 def process_host_names(host_names, host):
     if hasattr(host, "hostnames") and hasattr(host.hostnames, "hostname"):
         for host_name in host.hostnames.hostname:
@@ -171,7 +204,7 @@ def process_host_names(host_names, host):
 MAPPED_OS_ATTRS = {f: f.replace("_", "") for f in ["type", "vendor", "os_family", "os_gen", "accuracy"]}
 
 
-def process_os(os_info, host, summaries):
+def process_os(os_info, host, summaries, scan_id, end_time, address, address_type, topic):
     if hasattr(host, "os") and hasattr(host.os, "osmatch"):
         most_likely_os, most_accurate = (None, 0)
         for os_match in host.os.osmatch:
@@ -204,6 +237,14 @@ def process_os(os_info, host, summaries):
             if most_likely_os:
                 summaries["most_likely_os"] = most_likely_os
                 summaries["most_likely_os_accuracy"] = most_accurate
+            os_result = {
+                "scan_id": scan_id,
+                "scan_end_time": end_time,
+                "address": address,
+                "address_type": address_type
+            }
+            os_result.update(os_details)
+            post_results(topic, f"{task_name}:data:write", os_result)
 
 
 @ssm_parameters(

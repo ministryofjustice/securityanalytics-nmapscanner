@@ -55,7 +55,7 @@ def test_parses_hosts_and_ports():
     results_parser.ssm_client.get_parameters.return_value = ssm_return_vals()
 
     # load sample results file and make mock return it
-    sample_file_name = f"{TEST_DIR}scanme.nmap.org-2019-04-17T12_55_56Z-nmap.xml.tar.gz"
+    sample_file_name = f"{TEST_DIR}hosts-ports-nmap.xml.tar.gz"
     with open(sample_file_name, "rb") as sample_data:
         results_parser.s3_client.get_object.return_value = {
             "Body": StreamingBody(sample_data, os.stat(sample_file_name).st_size)
@@ -72,8 +72,145 @@ def test_parses_hosts_and_ports():
             ]
         }, mock.MagicMock())
 
-    results_parser.sns_client.publish.assert_called_once_with(
-        **expected_pub("me-twice:data:write", {
+    port_call_22_actual = results_parser.sns_client.publish.call_args_list[0]
+    assert port_call_22_actual == mock.call(TopicArn="test_topic", Subject="me-twice:data:write", Message=json.dumps({
+            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
+            "scan_end_time": "2019-04-17T12:56:27Z",
+            "address": "45.33.32.156",
+            "address_type": "ipv4",
+            "port_id": "22",
+            "protocol": "tcp",
+            "status": "open",
+            "status_reason": "syn-ack",
+            "service": "ssh",
+            "product": "OpenSSH",
+            "version": "6.6.1p1 Ubuntu 2ubuntu2.11",
+            "extra_info": "Ubuntu Linux; protocol 2.0",
+            "os_type": "Linux",
+            "cpes": ["cpe:/a:openbsd:openssh:6.6.1p1", "cpe:/o:linux:linux_kernel"]
+        }))
+
+    port_call_80_actual = results_parser.sns_client.publish.call_args_list[1]
+    assert port_call_80_actual == mock.call(TopicArn="test_topic", Subject="me-twice:data:write", Message=json.dumps({
+            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
+            "scan_end_time": "2019-04-17T12:56:27Z",
+            "address": "45.33.32.156",
+            "address_type": "ipv4",
+            "port_id": "80",
+            "protocol": "tcp",
+            "status": "open",
+            "status_reason": "syn-ack",
+            "service": "http",
+            "product": "Apache httpd",
+            "version": "2.4.7",
+            "extra_info": "(Ubuntu)",
+            "os_type": None,
+            "cpes": ["cpe:/a:apache:http_server:2.4.7"],
+            "http-server-header": [
+                "Apache/2.4.7 (Ubuntu)"
+            ]
+        }))
+
+    port_call_9929_actual = results_parser.sns_client.publish.call_args_list[2]
+    assert port_call_9929_actual == mock.call(TopicArn="test_topic", Subject="me-twice:data:write", Message=json.dumps({
+            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
+            "scan_end_time": "2019-04-17T12:56:27Z",
+            "address": "45.33.32.156",
+            "address_type": "ipv4",
+            "port_id": "9929",
+            "protocol": "tcp",
+            "status": "open",
+            "status_reason": "syn-ack",
+            "service": "nping-echo",
+            "product": "Nping echo",
+            "version": None,
+            "extra_info": None,
+            "os_type": None
+        }))
+
+    port_call_31337_actual = results_parser.sns_client.publish.call_args_list[3]
+    assert port_call_31337_actual == mock.call(
+        TopicArn="test_topic",
+        Subject="me-twice:data:write",
+        Message=json.dumps({
+            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
+            "scan_end_time": "2019-04-17T12:56:27Z",
+            "address": "45.33.32.156",
+            "address_type": "ipv4",
+            "port_id": "31337",
+            "protocol": "tcp",
+            "status": "open",
+            "status_reason": "syn-ack",
+            "service": "tcpwrapped",
+            "product": None,
+            "version": None,
+            "extra_info": None,
+            "os_type": None
+        }))
+
+    os_call_linux_44_actual = results_parser.sns_client.publish.call_args_list[4]
+    assert os_call_linux_44_actual == mock.call(
+        TopicArn="test_topic",
+        Subject="me-twice:data:write",
+        Message=json.dumps({
+            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
+            "scan_end_time": "2019-04-17T12:56:27Z",
+            "address": "45.33.32.156",
+            "address_type": "ipv4",
+            "os_name": "Linux 4.4",
+            "os_accuracy": "97",
+            "os_classes": [
+                {
+                    "os_class_type": "general purpose",
+                    "os_class_vendor": "Linux",
+                    "os_class_os_family": "Linux",
+                    "os_class_os_gen": "4.X",
+                    "os_class_accuracy": "97",
+                    "os_cpes": [
+                        "cpe:/o:linux:linux_kernel:4.4"
+                    ]
+                }
+            ]
+        }))
+
+    os_call_linux_34_actual = results_parser.sns_client.publish.call_args_list[5]
+    assert os_call_linux_34_actual == mock.call(
+        TopicArn="test_topic",
+        Subject="me-twice:data:write",
+        Message=json.dumps({
+            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
+            "scan_end_time": "2019-04-17T12:56:27Z",
+            "address": "45.33.32.156",
+            "address_type": "ipv4",
+            "os_name": "Linux 3.11 - 4.1",
+                "os_accuracy": "93",
+                "os_classes": [
+                    {
+                        "os_class_type": "general purpose",
+                        "os_class_vendor": "Linux",
+                        "os_class_os_family": "Linux",
+                        "os_class_os_gen": "3.X",
+                        "os_class_accuracy": "93",
+                        "os_cpes": [
+                            "cpe:/o:linux:linux_kernel:3"
+                        ]
+                    },
+                    {
+                        "os_class_type": "general purpose",
+                        "os_class_vendor": "Linux",
+                        "os_class_os_family": "Linux",
+                        "os_class_os_gen": "4.X",
+                        "os_class_accuracy": "93",
+                        "os_cpes": [
+                            "cpe:/o:linux:linux_kernel:4"
+                        ]
+                    }
+                ]
+        }))
+
+    host_call_actual = results_parser.sns_client.publish.call_args_list[6]
+    assert host_call_actual == (
+        mock.call(TopicArn="test_topic", Subject="me-twice:data:write", Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
@@ -193,8 +330,7 @@ def test_parses_hosts_and_ports():
             "last_boot": "Tue Apr  9 14:15:55 2019",
             "summary_most_likely_os": "Linux 4.4",
             "summary_most_likely_os_accuracy": 97
-        })
-    )
+        })))
 
 
 @pytest.mark.unit
@@ -208,7 +344,7 @@ def test_parses_tls_info():
     results_parser.ssm_client.get_parameters.return_value = ssm_return_vals()
 
     # load sample results file and make mock return it
-    sample_file_name = f"{TEST_DIR}34868089-d02d-4414-b9c9-b0d5247d2a32-2019-04-26T16_36_15Z-nmap.xml.tar.gz"
+    sample_file_name = f"{TEST_DIR}tls-info-nmap.xml.tar.gz"
     with open(sample_file_name, "rb") as sample_data:
         results_parser.s3_client.get_object.return_value = {
             "Body": StreamingBody(sample_data, os.stat(sample_file_name).st_size)
@@ -225,8 +361,7 @@ def test_parses_tls_info():
             ]
         }, mock.MagicMock())
 
-    results_parser.sns_client.publish.assert_called_once()
-    call_details = json.loads(results_parser.sns_client.publish.call_args[1]['Message'])
+    call_details = json.loads(results_parser.sns_client.publish.call_args_list[-1][1]['Message'])
     assert call_details["summary_lowest_ssl_strength"] == "A"
     assert call_details["summary_lowest_ssl_proto"] == "TLSv1.2"
     for port in call_details["ports"]:
@@ -285,6 +420,10 @@ def test_parses_tls_info():
                     "cipher_preference": "server"
                 }
             ]
+            assert results_parser.sns_client.publish.call_count == \
+                   len(call_details["ports"]) + \
+                   len(port["ssl_enum_ciphers"][0]["ciphers"]) + \
+                   len(call_details["os_info"]) + 1
 
 
 @pytest.mark.unit
@@ -298,7 +437,7 @@ def test_parses_cve_info():
     results_parser.ssm_client.get_parameters.return_value = ssm_return_vals()
 
     # load sample results file and make mock return it
-    sample_file_name = f"{TEST_DIR}981cee6c-ed04-4a68-a3ef-49f683d814dc-2019-04-30T12_46_50Z-nmap.xml.tar.gz"
+    sample_file_name = f"{TEST_DIR}cve-info-nmap.xml.tar.gz"
     with open(sample_file_name, "rb") as sample_data:
         results_parser.s3_client.get_object.return_value = {
             "Body": StreamingBody(sample_data, os.stat(sample_file_name).st_size)
@@ -315,11 +454,12 @@ def test_parses_cve_info():
             ]
         }, mock.MagicMock())
 
-    results_parser.sns_client.publish.assert_called_once()
-    call_details = json.loads(results_parser.sns_client.publish.call_args[1]['Message'])
+    call_details = json.loads(results_parser.sns_client.publish.call_args_list[-1][1]['Message'])
     assert call_details["summary_highest_cve_severity"] == 7.5
     for port in call_details["ports"]:
         if port["port_id"] == "80":
+            assert results_parser.sns_client.publish.call_count == \
+                   len(call_details["ports"]) + len(port["cve_vulners"][0]["cves"]) + len(call_details["os_info"]) + 1
             assert port["cve_vulners"] == [
                 {
                     "cpe_key": "cpe:/a:apache:http_server:2.4.7",
@@ -429,7 +569,7 @@ def test_parses_multiple_os_cpes_regression_sa_44():
     results_parser.ssm_client.get_parameters.return_value = ssm_return_vals()
 
     # load sample results file and make mock return it
-    sample_file_name = f"{TEST_DIR}b2b68f48-cc77-4ee1-aead-945cb6095f2f-2-2019-05-03T07_19_58Z-nmap.xml.tar.gz"
+    sample_file_name = f"{TEST_DIR}multiple-os-cpes-regression-sa-44-nmap.xml.tar.gz"
     with open(sample_file_name, "rb") as sample_data:
         results_parser.s3_client.get_object.return_value = {
             "Body": StreamingBody(sample_data, os.stat(sample_file_name).st_size)
@@ -447,7 +587,8 @@ def test_parses_multiple_os_cpes_regression_sa_44():
             ]
         }, mock.MagicMock())
 
-    results_parser.sns_client.publish.assert_called_once()
+    call_details = json.loads(results_parser.sns_client.publish.call_args_list[-1][1]['Message'])
+    assert results_parser.sns_client.publish.call_count == len(call_details["ports"]) + len(call_details["os_info"]) + 1
 
 
 @pytest.mark.unit
@@ -462,7 +603,7 @@ def test_parses_no_timestamps_when_host_down_regression_sa_43():
     results_parser.ssm_client.get_parameters.return_value = ssm_return_vals()
 
     # load sample results file and make mock return it
-    sample_file_name = f"{TEST_DIR}e2791270-b64e-4ec8-969c-87af81f169ce-1-2019-05-03T07_16_50Z-nmap.xml.tar.gz"
+    sample_file_name = f"{TEST_DIR}no-timestamps-when-host-down-regression-sa-43-nmap.xml.tar.gz"
     with open(sample_file_name, "rb") as sample_data:
         results_parser.s3_client.get_object.return_value = {
             "Body": StreamingBody(sample_data, os.stat(sample_file_name).st_size)
@@ -495,7 +636,7 @@ def test_parses_os_but_no_osmatch_regression_sa_45():
     results_parser.ssm_client.get_parameters.return_value = ssm_return_vals()
 
     # load sample results file and make mock return it
-    sample_file_name = f"{TEST_DIR}dcca306c-15de-4b22-ae81-a24af6f29de8-1-2019-05-03T08_35_50Z-nmap.xml.tar.gz"
+    sample_file_name = f"{TEST_DIR}os-but-no-osmatch-regression-sa-45-nmap.xml.tar.gz"
     with open(sample_file_name, "rb") as sample_data:
         results_parser.s3_client.get_object.return_value = {
             "Body": StreamingBody(sample_data, os.stat(sample_file_name).st_size)
@@ -513,7 +654,17 @@ def test_parses_os_but_no_osmatch_regression_sa_45():
             ]
         }, mock.MagicMock())
 
-    results_parser.sns_client.publish.assert_called_once()
+    call_details = json.loads(results_parser.sns_client.publish.call_args_list[-1][1]['Message'])
+    all_ciphers = 0
+    for x in call_details["ports"]:
+        if "ssl_enum_ciphers"in x:
+            for enum_cipher in x["ssl_enum_ciphers"]:
+                all_ciphers += len(enum_cipher["ciphers"])
+
+    assert results_parser.sns_client.publish.call_count == \
+        len(call_details["ports"]) + \
+        all_ciphers +  \
+        len(call_details["os_info"]) + 1
 
 
 @pytest.mark.unit
@@ -528,7 +679,7 @@ def test_parses_http_server_parse_regression_sa_46():
     results_parser.ssm_client.get_parameters.return_value = ssm_return_vals()
 
     # load sample results file and make mock return it
-    sample_file_name = f"{TEST_DIR}8278563c-08dc-468e-9a21-04efb43af885-1-2019-05-03T09_43_02Z-nmap.xml.tar.gz"
+    sample_file_name = f"{TEST_DIR}http-server-parse-regression-sa-46-nmap.xml.tar.gz"
     with open(sample_file_name, "rb") as sample_data:
         results_parser.s3_client.get_object.return_value = {
             "Body": StreamingBody(sample_data, os.stat(sample_file_name).st_size)
@@ -546,7 +697,13 @@ def test_parses_http_server_parse_regression_sa_46():
             ]
         }, mock.MagicMock())
 
-    results_parser.sns_client.publish.assert_called_once()
+    call_details = json.loads(results_parser.sns_client.publish.call_args_list[-1][1]['Message'])
+    all_ciphers = 0
+    for x in call_details["ports"]:
+        if "ssl_enum_ciphers" in x:
+            for enum_cipher in x["ssl_enum_ciphers"]:
+                all_ciphers += len(enum_cipher["ciphers"])
+    assert results_parser.sns_client.publish.call_count == len(call_details["ports"]) + all_ciphers + 1
 
 
 @pytest.mark.unit
@@ -574,8 +731,13 @@ def test_parses_ssl_certs():
             ]
         }, mock.MagicMock())
 
-    results_parser.sns_client.publish.assert_called_once()
-    call_details = json.loads(results_parser.sns_client.publish.call_args[1]['Message'])
+    call_details = json.loads(results_parser.sns_client.publish.call_args_list[-1][1]['Message'])
+    all_ciphers = 0
+    for x in call_details["ports"]:
+        if "ssl_enum_ciphers" in x:
+            for enum_cipher in x["ssl_enum_ciphers"]:
+                all_ciphers += len(enum_cipher["ciphers"])
+    assert results_parser.sns_client.publish.call_count == len(call_details["ports"]) + all_ciphers + 1
 
     for port in call_details["ports"]:
         if port["port_id"] == "443":
