@@ -421,9 +421,10 @@ def test_parses_tls_info():
                 }
             ]
             assert results_parser.sns_client.publish.call_count == \
-                   len(call_details["ports"]) + \
-                   len(port["ssl_enum_ciphers"][0]["ciphers"]) + \
-                   len(call_details["os_info"]) + 1
+                    len(call_details["ports"]) + \
+                    len(port["ssl_enum_ciphers"]) + \
+                    len(port["ssl_enum_ciphers"][0]["ciphers"]) + \
+                    len(call_details["os_info"]) + 1
 
 
 @pytest.mark.unit
@@ -655,14 +656,17 @@ def test_parses_os_but_no_osmatch_regression_sa_45():
         }, mock.MagicMock())
 
     call_details = json.loads(results_parser.sns_client.publish.call_args_list[-1][1]['Message'])
+    all_protocols = 0
     all_ciphers = 0
     for x in call_details["ports"]:
         if "ssl_enum_ciphers"in x:
+            all_protocols += len(x["ssl_enum_ciphers"])
             for enum_cipher in x["ssl_enum_ciphers"]:
                 all_ciphers += len(enum_cipher["ciphers"])
 
     assert results_parser.sns_client.publish.call_count == \
         len(call_details["ports"]) + \
+        all_protocols + \
         all_ciphers +  \
         len(call_details["os_info"]) + 1
 
@@ -699,11 +703,13 @@ def test_parses_http_server_parse_regression_sa_46():
 
     call_details = json.loads(results_parser.sns_client.publish.call_args_list[-1][1]['Message'])
     all_ciphers = 0
+    all_protocols = 0
     for x in call_details["ports"]:
         if "ssl_enum_ciphers" in x:
+            all_protocols += len(x["ssl_enum_ciphers"])
             for enum_cipher in x["ssl_enum_ciphers"]:
                 all_ciphers += len(enum_cipher["ciphers"])
-    assert results_parser.sns_client.publish.call_count == len(call_details["ports"]) + all_ciphers + 1
+    assert results_parser.sns_client.publish.call_count == len(call_details["ports"]) + all_protocols + all_ciphers + 1
 
 
 @pytest.mark.unit
@@ -732,12 +738,14 @@ def test_parses_ssl_certs():
         }, mock.MagicMock())
 
     call_details = json.loads(results_parser.sns_client.publish.call_args_list[-1][1]['Message'])
+    all_protocols = 0
     all_ciphers = 0
     for x in call_details["ports"]:
         if "ssl_enum_ciphers" in x:
+            all_protocols += len(x["ssl_enum_ciphers"])
             for enum_cipher in x["ssl_enum_ciphers"]:
                 all_ciphers += len(enum_cipher["ciphers"])
-    assert results_parser.sns_client.publish.call_count == len(call_details["ports"]) + all_ciphers + 1
+    assert results_parser.sns_client.publish.call_count == len(call_details["ports"]) + all_protocols + all_ciphers + 1
 
     for port in call_details["ports"]:
         if port["port_id"] == "443":

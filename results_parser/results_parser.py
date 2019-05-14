@@ -155,6 +155,7 @@ def process_ports(ports, host, summaries, scan_id, end_time, address, address_ty
                         "address_type": address_type,
                         "cpe_key": enum_cipher["protocol"]
                     }
+                    post_results(topic, f"{task_name}:data:write", cipher_key)
                     for cipher in enum_cipher["ciphers"]:
                         cipher_result = {**cipher_key, **cipher}
                         post_results(topic, f"{task_name}:data:write", cipher_result)
