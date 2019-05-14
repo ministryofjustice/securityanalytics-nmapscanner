@@ -1,0 +1,16 @@
+{
+  "attributes": {
+    "title": "${object_title}",
+    "description": "A search returning all hosts that have a CVE with a rating of over ${severity}",
+    "columns": [
+      "_source"
+    ],
+    "sort": [
+      "scan_end_time",
+      "desc"
+    ],
+    "kibanaSavedObjectMeta": {
+      "searchSourceJSON": "{\"index\":\"${index}\",\"highlightAll\":true,\"version\":true,\"query\":{\"language\":\"kuery\",\"query\":\"\"},\"filter\":[{\"query\":{\"range\":{\"summary_highest_cve_severity\":{\"gte\":${severity},\"lt\":null}}},\"size\":0,\"meta\":{\"index\":\"${index}\",\"disabled\":false,\"alias\":null,\"type\":\"custom\",\"key\":\"query\",\"value\":\"{\\\"range\\\":{\\\"summary_highest_cve_severity\\\":{\\\"gte\\\":${severity},\\\"lt\\\":null}}}\",\"negate\":false},\"$state\":{\"store\":\"appState\"}}]}"
+    }
+  }
+}
