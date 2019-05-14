@@ -1,4 +1,4 @@
-module "severe_cve_search" {
+module "severe_cipher_total" {
   // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
   source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
 
@@ -13,18 +13,17 @@ module "severe_cve_search" {
   aws_region       = "${var.aws_region}"
   ssm_source_stage = "${var.ssm_source_stage}"
   task_name        = "${var.task_name}"
-  object_template  = "${path.module}/searches/serious_vulnerabilities.search.json"
+  object_template  = "${path.module}/visualisations/ssl_cipher/ssl_cipher_total.vis.json"
 
   object_substitutions {
-    severity = 7
-    index    = "${module.index_pattern.object_id}"
+    search_id = "${module.weak_ssl_cipher_search.object_id}"
   }
 
-  object_type  = "search"
-  object_title = "Hosts with severe CVEs"
+  object_type  = "visualization"
+  object_title = "Total hosts with weak SSL ciphers"
 }
 
-module "weak_ssl_cipher_search" {
+module "severe_cipher_distro" {
   // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
   source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
 
@@ -39,17 +38,17 @@ module "weak_ssl_cipher_search" {
   aws_region       = "${var.aws_region}"
   ssm_source_stage = "${var.ssm_source_stage}"
   task_name        = "${var.task_name}"
-  object_template  = "${path.module}/searches/weak_ssl_ciphers.search.json"
+  object_template  = "${path.module}/visualisations/ssl_cipher/ssl_cipher_distro.vis.json"
 
   object_substitutions {
-    index = "${module.index_pattern.object_id}"
+    search_id = "${module.weak_ssl_cipher_search.object_id}"
   }
 
-  object_type  = "search"
-  object_title = "Hosts with weak SSL Ciphers"
+  object_type  = "visualization"
+  object_title = "Distribution of weakest SSL ciphers"
 }
 
-module "weak_ssl_proto_search" {
+module "severe_cipher_table" {
   // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
   source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
 
@@ -64,12 +63,12 @@ module "weak_ssl_proto_search" {
   aws_region       = "${var.aws_region}"
   ssm_source_stage = "${var.ssm_source_stage}"
   task_name        = "${var.task_name}"
-  object_template  = "${path.module}/searches/weak_ssl_protos.search.json"
+  object_template  = "${path.module}/visualisations/ssl_cipher/ssl_cipher_table.vis.json"
 
   object_substitutions {
-    index = "${module.index_pattern.object_id}"
+    search_id = "${module.weak_ssl_cipher_search.object_id}"
   }
 
-  object_type  = "search"
-  object_title = "Hosts with weak SSL Protocols"
+  object_type  = "visualization"
+  object_title = "Table of hosts with weak SSL ciphers"
 }
