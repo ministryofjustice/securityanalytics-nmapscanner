@@ -57,19 +57,24 @@ def process_host_results(topic, host, result_file_name, start_time, end_time):
     address_type = host.address["addrtype"]
     print(f"Looking at host: {(address, address_type)} scanned at {end_time}")
 
+    scan_id = os.path.splitext(result_file_name)[0]
     host_names = []
     os_info = []
     ports = []
-    results = {
-        "scan_id": os.path.splitext(result_file_name)[0],
+    results_key = {
+        "scan_id": scan_id,
         "scan_start_time": start_time,
         "scan_end_time": end_time,
         "address": address,
-        "address_type": address_type,
+        "address_type": address_type
+    }
+    results_details = {
         "host_names": host_names,
         "ports": ports,
         "os_info": os_info
     }
+
+    results = {**results_key, **results_details}
 
     if host["starttime"] and host["endtime"]:
         host_start_time, host_end_time = map(
@@ -83,9 +88,9 @@ def process_host_results(topic, host, result_file_name, start_time, end_time):
 
     summaries = {}
 
-    process_ports(ports, host, summaries)
+    process_ports(ports, host, summaries, results_key, topic)
 
-    process_os(os_info, host, summaries)
+    process_os(os_info, host, summaries, results_key, topic)
 
     if hasattr(host, "status"):
         status = host.status
@@ -109,7 +114,7 @@ def add_summaries(results, summaries):
         results[f"summary_{key}"] = value
 
 
-def process_ports(ports, host, summaries):
+def process_ports(ports, host, summaries, results_key, topic):
     if hasattr(host, "ports") and hasattr(host.ports, "port"):
         for port in host.ports.port:
             port_id, protocol = (port['portid'], port['protocol'])
@@ -123,8 +128,9 @@ def process_ports(ports, host, summaries):
                 port_info["status"] = status["state"]
                 port_info["status_reason"] = status["reason"]
             process_port_service(port_info, port)
-            process_port_scripts(port_info, port, summaries)
+            process_port_scripts(port_info, port, summaries, topic, results_key)
             ports.append(port_info)
+            post_results(topic, f"{task_name}:ports:write", {**results_key, **port_info})
 
 
 def process_port_service(port_info, port):
@@ -144,7 +150,7 @@ def process_port_service(port_info, port):
                 port_info["cpes"] = cpes
 
 
-def process_port_scripts(port_info, port, summaries):
+def process_port_scripts(port_info, port, summaries, topic, results_key):
     if hasattr(port, "script"):
         for script in port.script:
             name = script["id"]
@@ -154,7 +160,7 @@ def process_port_scripts(port_info, port, summaries):
                 print(f"Processing plugin for script {name}")
                 module = importlib.util.module_from_spec(script_processing_module_spec)
                 script_processing_module_spec.loader.exec_module(module)
-                script_info = module.process_script(script, summaries)
+                script_info = module.process_script(script, summaries, post_results, topic, results_key)
                 if script_info:
                     port_info.update(script_info)
 
@@ -171,7 +177,7 @@ def process_host_names(host_names, host):
 MAPPED_OS_ATTRS = {f: f.replace("_", "") for f in ["type", "vendor", "os_family", "os_gen", "accuracy"]}
 
 
-def process_os(os_info, host, summaries):
+def process_os(os_info, host, summaries, results_key, topic):
     if hasattr(host, "os") and hasattr(host.os, "osmatch"):
         most_likely_os, most_accurate = (None, 0)
         for os_match in host.os.osmatch:
@@ -204,6 +210,7 @@ def process_os(os_info, host, summaries):
             if most_likely_os:
                 summaries["most_likely_os"] = most_likely_os
                 summaries["most_likely_os_accuracy"] = most_accurate
+            post_results(topic, f"{task_name}:os:write", {**results_key, **os_details})
 
 
 @ssm_parameters(
