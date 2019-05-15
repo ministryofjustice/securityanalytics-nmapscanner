@@ -2,7 +2,7 @@
 
 if [ $# -ne 2 ]
 then
-    echo "Syntax: build.sh <app_name> <tf_workspace>"
+    echo "Syntax: setup.sh <app_name> <tf_workspace>"
     sleep 30
     exit
 fi
