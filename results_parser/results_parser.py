@@ -61,7 +61,7 @@ def process_host_results(topic, host, result_file_name, start_time, end_time):
     host_names = []
     os_info = []
     ports = []
-    results_key =  {
+    results_key = {
         "scan_id": scan_id,
         "scan_start_time": start_time,
         "scan_end_time": end_time,
@@ -128,26 +128,10 @@ def process_ports(ports, host, summaries, results_key, topic):
                 port_info["status"] = status["state"]
                 port_info["status_reason"] = status["reason"]
             process_port_service(port_info, port)
-            process_port_scripts(port_info, port, summaries)
+            process_port_scripts(port_info, port, summaries, topic, results_key)
             ports.append(port_info)
-            post_results(topic, f"{task_name}:data:write", {**results_key, **port_info})
-            if "cve_vulners" in port_info:
-                for vulner in port_info["cve_vulners"]:
-                    cve_key = {
-                        "cpe_key": vulner["cpe_key"]
-                    }
-                    for code in vulner["cves"]:
-                        cve_result = {**cve_key, **code}
-                        post_results(topic, f"{task_name}:data:write", {**results_key, **cve_result})
-            if "ssl_enum_ciphers" in port_info:
-                for enum_cipher in port_info["ssl_enum_ciphers"]:
-                    cipher_key = {
-                        "cpe_key": enum_cipher["protocol"]
-                    }
-                    post_results(topic, f"{task_name}:data:write", {**results_key, **cipher_key})
-                    for cipher in enum_cipher["ciphers"]:
-                        cipher_result = {**cipher_key, **cipher}
-                        post_results(topic, f"{task_name}:data:write", {**results_key, **cipher_result})
+            post_results(topic, f"{task_name}:ports:write", {**results_key, **port_info})
+
 
 def process_port_service(port_info, port):
     if hasattr(port, "service"):
@@ -166,7 +150,7 @@ def process_port_service(port_info, port):
                 port_info["cpes"] = cpes
 
 
-def process_port_scripts(port_info, port, summaries):
+def process_port_scripts(port_info, port, summaries, topic, results_key):
     if hasattr(port, "script"):
         for script in port.script:
             name = script["id"]
@@ -176,7 +160,7 @@ def process_port_scripts(port_info, port, summaries):
                 print(f"Processing plugin for script {name}")
                 module = importlib.util.module_from_spec(script_processing_module_spec)
                 script_processing_module_spec.loader.exec_module(module)
-                script_info = module.process_script(script, summaries)
+                script_info = module.process_script(script, summaries, post_results, topic, results_key)
                 if script_info:
                     port_info.update(script_info)
 
@@ -226,7 +210,7 @@ def process_os(os_info, host, summaries, results_key, topic):
             if most_likely_os:
                 summaries["most_likely_os"] = most_likely_os
                 summaries["most_likely_os_accuracy"] = most_accurate
-            post_results(topic, f"{task_name}:data:write", {**results_key, **os_details})
+            post_results(topic, f"{task_name}:os:write", {**results_key, **os_details})
 
 
 @ssm_parameters(

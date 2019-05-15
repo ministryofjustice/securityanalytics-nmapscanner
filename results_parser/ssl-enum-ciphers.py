@@ -1,3 +1,5 @@
+import os
+
 # ssl-enum-ciphers will translate these codes to these strings, converting them back in order to
 # to use the numeric ordering for comparison
 # https://svn.nmap.org/nmap-releases/nmap-6.00/scripts/ssl-enum-ciphers.nse
@@ -8,6 +10,8 @@ PROTOCOLS = set([
     "TLSv1.2",
     "TLSv1.3"
 ])
+
+task_name = os.environ["TASK_NAME"]
 
 
 def summarise_proto(proto, summaries):
@@ -28,7 +32,7 @@ def summarise_cipher(cipher, summaries):
         summaries["lowest_ssl_strength"] = cipher
 
 
-def process_script(script, summaries):
+def process_script(script, summaries, post_results, topic, results_key):
     script_info = []
     for proto_table in script.table:
         proto = proto_table["key"]
@@ -40,7 +44,8 @@ def process_script(script, summaries):
         for sub_table in proto_table.table:
             if sub_table["key"] == "ciphers":
                 proto_info["ciphers"] = cipher_info = []
-                process_ciphers(cipher_info, sub_table)
+                post_results(topic, f"{task_name}:ssl_protos:write", {**results_key, **proto_info})
+                process_ciphers(cipher_info, sub_table, post_results, topic, results_key, proto_info)
         for elem in proto_table.elem:
             if elem["key"] == "cipher preference":
                 proto_info["cipher_preference"] = elem.cdata
@@ -54,9 +59,13 @@ def process_script(script, summaries):
     return result
 
 
-def process_ciphers(cipher_info, table):
+def process_ciphers(cipher_info, table, post_results, topic, results_key, proto_info):
     for cipher_table in table.table:
         info = {}
         for elem in cipher_table.elem:
             info[elem["key"]] = elem.cdata
         cipher_info.append(info)
+        post_results(topic, f"{task_name}:ssl_ciphers:write", {
+            **results_key,
+            **proto_info,
+            **info})

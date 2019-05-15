@@ -73,7 +73,7 @@ def test_parses_hosts_and_ports():
         }, mock.MagicMock())
 
     port_call_22_actual = results_parser.sns_client.publish.call_args_list[0]
-    assert port_call_22_actual == mock.call(TopicArn="test_topic", Subject="me-twice:data:write", Message=json.dumps({
+    assert port_call_22_actual == mock.call(TopicArn="test_topic", Subject="me-twice:ports:write", Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
@@ -92,7 +92,7 @@ def test_parses_hosts_and_ports():
         }))
 
     port_call_80_actual = results_parser.sns_client.publish.call_args_list[1]
-    assert port_call_80_actual == mock.call(TopicArn="test_topic", Subject="me-twice:data:write", Message=json.dumps({
+    assert port_call_80_actual == mock.call(TopicArn="test_topic", Subject="me-twice:ports:write", Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
@@ -114,7 +114,7 @@ def test_parses_hosts_and_ports():
         }))
 
     port_call_9929_actual = results_parser.sns_client.publish.call_args_list[2]
-    assert port_call_9929_actual == mock.call(TopicArn="test_topic", Subject="me-twice:data:write", Message=json.dumps({
+    assert port_call_9929_actual == mock.call(TopicArn="test_topic", Subject="me-twice:ports:write", Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
@@ -134,7 +134,7 @@ def test_parses_hosts_and_ports():
     port_call_31337_actual = results_parser.sns_client.publish.call_args_list[3]
     assert port_call_31337_actual == mock.call(
         TopicArn="test_topic",
-        Subject="me-twice:data:write",
+        Subject="me-twice:ports:write",
         Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "scan_start_time": "2019-04-17T12:55:57Z",
@@ -155,7 +155,7 @@ def test_parses_hosts_and_ports():
     os_call_linux_44_actual = results_parser.sns_client.publish.call_args_list[4]
     assert os_call_linux_44_actual == mock.call(
         TopicArn="test_topic",
-        Subject="me-twice:data:write",
+        Subject="me-twice:os:write",
         Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "scan_start_time": "2019-04-17T12:55:57Z",
@@ -181,7 +181,7 @@ def test_parses_hosts_and_ports():
     os_call_linux_34_actual = results_parser.sns_client.publish.call_args_list[5]
     assert os_call_linux_34_actual == mock.call(
         TopicArn="test_topic",
-        Subject="me-twice:data:write",
+        Subject="me-twice:os:write",
         Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "scan_start_time": "2019-04-17T12:55:57Z",
@@ -339,6 +339,7 @@ def test_parses_hosts_and_ports():
         })))
 
 
+@mock.patch.dict(os.environ, TEST_ENV)
 @pytest.mark.unit
 @serialise_mocks()
 @resetting_mocks(
@@ -427,12 +428,13 @@ def test_parses_tls_info():
                 }
             ]
             assert results_parser.sns_client.publish.call_count == \
-                    len(call_details["ports"]) + \
-                    len(port["ssl_enum_ciphers"]) + \
-                    len(port["ssl_enum_ciphers"][0]["ciphers"]) + \
-                    len(call_details["os_info"]) + 1
+                len(call_details["ports"]) + \
+                len(port["ssl_enum_ciphers"]) + \
+                len(port["ssl_enum_ciphers"][0]["ciphers"]) + \
+                len(call_details["os_info"]) + 1
 
 
+@mock.patch.dict(os.environ, TEST_ENV)
 @pytest.mark.unit
 @serialise_mocks()
 @resetting_mocks(
@@ -631,6 +633,7 @@ def test_parses_no_timestamps_when_host_down_regression_sa_43():
     results_parser.sns_client.publish.assert_called_once()
 
 
+@mock.patch.dict(os.environ, TEST_ENV)
 @pytest.mark.unit
 @pytest.mark.regression
 @serialise_mocks()
@@ -677,6 +680,7 @@ def test_parses_os_but_no_osmatch_regression_sa_45():
         len(call_details["os_info"]) + 1
 
 
+@mock.patch.dict(os.environ, TEST_ENV)
 @pytest.mark.unit
 @pytest.mark.regression
 @serialise_mocks()
@@ -718,6 +722,7 @@ def test_parses_http_server_parse_regression_sa_46():
     assert results_parser.sns_client.publish.call_count == len(call_details["ports"]) + all_protocols + all_ciphers + 1
 
 
+@mock.patch.dict(os.environ, TEST_ENV)
 @pytest.mark.unit
 @serialise_mocks()
 @resetting_mocks(
