@@ -1,9 +1,27 @@
 import importlib
 import pytest
+import os
 from test_utils.test_utils import serialise_mocks
-ssl_enum_ciphers = importlib.import_module("results_parser.ssl-enum-ciphers")
+from unittest import mock
 
 
+TEST_ENV = {
+    "REGION": "eu-west-wood",
+    "STAGE": "door",
+    "APP_NAME": "me-once",
+    "TASK_NAME": "me-twice",
+}
+
+
+@mock.patch.dict(os.environ, TEST_ENV)
+def import_ciphers():
+    return importlib.import_module("results_parser.ssl-enum-ciphers")
+
+
+ssl_enum_ciphers = import_ciphers()
+
+
+@mock.patch.dict(os.environ, TEST_ENV)
 @pytest.mark.unit
 @serialise_mocks()
 def test_adds_to_empty():
@@ -13,6 +31,7 @@ def test_adds_to_empty():
     assert "unknown_ssl_proto" not in summaries
 
 
+@mock.patch.dict(os.environ, TEST_ENV)
 @pytest.mark.unit
 @serialise_mocks()
 def test_adds_unknown_flag():
@@ -23,6 +42,7 @@ def test_adds_unknown_flag():
     assert summaries["unknown_ssl_proto"]
 
 
+@mock.patch.dict(os.environ, TEST_ENV)
 @pytest.mark.unit
 @serialise_mocks()
 def test_orders_by_protocol():

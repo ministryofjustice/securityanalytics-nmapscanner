@@ -1,7 +1,10 @@
 import re
+import os
 
 WHITE_SQUASHER = re.compile(r"\s+")
 LINE_SPLITTER = re.compile(r"\n")
+
+task_name = os.environ["TASK_NAME"]
 
 
 def summarise_severity(severity, summaries):
@@ -9,12 +12,13 @@ def summarise_severity(severity, summaries):
         summaries["highest_cve_severity"] = severity
 
 
-def process_script(script, summaries):
+def process_script(script, summaries, post_results, topic, results_key):
     results = []
     result = {"cve_vulners": results}
     for elem in script.elem:
         cve_info = []
-        cpe_result = {"cpe_key": elem["key"], "cves": cve_info}
+        cpe_key = elem["key"]
+        cpe_result = {"cpe_key": cpe_key, "cves": cve_info}
         cves_trimmed = [
             re.sub(WHITE_SQUASHER, " ", x).split(" ")
             for x
@@ -31,9 +35,13 @@ def process_script(script, summaries):
                 "cve_severity": severity
             })
             summarise_severity(float(severity), summaries)
+            post_results(topic, f"{task_name}:cves:write", {
+                **results_key,
+                "cve_code": code,
+                "cpe_key": cpe_key
+            })
         if len(cve_info) > 0:
             results.append(cpe_result)
     return result
-
 
 

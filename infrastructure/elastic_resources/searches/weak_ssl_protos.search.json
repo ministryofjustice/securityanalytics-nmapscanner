@@ -1,0 +1,18 @@
+{
+  "attributes": {
+    "title": "${object_title}",
+    "description": "SSL protos that are TLS1.0 or SSLv3.",
+    "hits": 0,
+    "columns": [
+      "_source"
+    ],
+    "sort": [
+      "scan_end_time",
+      "desc"
+    ],
+    "version": 1,
+    "kibanaSavedObjectMeta": {
+      "searchSourceJSON": "{\"index\":\"${index}\",\"highlightAll\":true,\"version\":true,\"query\":{\"query\":\"\",\"language\":\"kuery\"},\"filter\":[{\"meta\":{\"index\":\"${index}\",\"type\":\"phrases\",\"key\":\"summary_lowest_ssl_proto\",\"value\":\"TLSv1.0, SSLv3\",\"params\":[\"TLSv1.0\",\"SSLv3\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"summary_lowest_ssl_proto\":\"TLSv1.0\"}},{\"match_phrase\":{\"summary_lowest_ssl_proto\":\"SSLv3\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}}]}"
+    }
+  }
+}
