@@ -45,7 +45,7 @@ def process_script(script, summaries, post_results, topic, results_key):
             if sub_table["key"] == "ciphers":
                 proto_info["ciphers"] = cipher_info = []
                 post_results(topic, f"{task_name}:ssl_protos:write", {**results_key, **proto_info})
-                process_ciphers(cipher_info, sub_table, post_results, topic, results_key, proto_info)
+                process_ciphers(cipher_info, sub_table, post_results, topic, results_key, proto)
         for elem in proto_table.elem:
             if elem["key"] == "cipher preference":
                 proto_info["cipher_preference"] = elem.cdata
@@ -59,7 +59,7 @@ def process_script(script, summaries, post_results, topic, results_key):
     return result
 
 
-def process_ciphers(cipher_info, table, post_results, topic, results_key, proto_info):
+def process_ciphers(cipher_info, table, post_results, topic, results_key, protocol):
     for cipher_table in table.table:
         info = {}
         for elem in cipher_table.elem:
@@ -67,5 +67,5 @@ def process_ciphers(cipher_info, table, post_results, topic, results_key, proto_
         cipher_info.append(info)
         post_results(topic, f"{task_name}:ssl_ciphers:write", {
             **results_key,
-            **proto_info,
-            **info})
+            **info,
+            "protocol": protocol})

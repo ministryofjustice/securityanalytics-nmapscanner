@@ -128,9 +128,10 @@ def process_ports(ports, host, summaries, results_key, topic):
                 port_info["status"] = status["state"]
                 port_info["status_reason"] = status["reason"]
             process_port_service(port_info, port)
+            # publish this before adding the script info
+            post_results(topic, f"{task_name}:ports:write", {**results_key, **port_info})
             process_port_scripts(port_info, port, summaries, topic, results_key)
             ports.append(port_info)
-            post_results(topic, f"{task_name}:ports:write", {**results_key, **port_info})
 
 
 def process_port_service(port_info, port):

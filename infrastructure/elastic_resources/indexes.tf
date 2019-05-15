@@ -32,7 +32,7 @@ module "index_pattern" {
   aws_region           = "${var.aws_region}"
   ssm_source_stage     = "${var.ssm_source_stage}"
   task_name            = "${var.task_name}"
-  object_template      = "${path.module}/indexes/index-pattern.json"
+  object_template      = "${path.module}/indexes/nmap-data.pattern.json"
   object_substitutions = {}
 
   object_type  = "index-pattern"
@@ -73,7 +73,7 @@ module "index_pattern_os" {
   aws_region           = "${var.aws_region}"
   ssm_source_stage     = "${var.ssm_source_stage}"
   task_name            = "${var.task_name}"
-  object_template      = "${path.module}/indexes/index-pattern.json"
+  object_template      = "${path.module}/indexes/nmap-os.pattern.json"
   object_substitutions = {}
 
   object_type  = "index-pattern"
@@ -114,7 +114,7 @@ module "index_pattern_ports" {
   aws_region           = "${var.aws_region}"
   ssm_source_stage     = "${var.ssm_source_stage}"
   task_name            = "${var.task_name}"
-  object_template      = "${path.module}/indexes/index-pattern.json"
+  object_template      = "${path.module}/indexes/nmap-ports.pattern.json"
   object_substitutions = {}
 
   object_type  = "index-pattern"
@@ -155,7 +155,7 @@ module "index_pattern_cves" {
   aws_region           = "${var.aws_region}"
   ssm_source_stage     = "${var.ssm_source_stage}"
   task_name            = "${var.task_name}"
-  object_template      = "${path.module}/indexes/index-pattern.json"
+  object_template      = "${path.module}/indexes/nmap-cves.pattern.json"
   object_substitutions = {}
 
   object_type  = "index-pattern"
@@ -196,7 +196,7 @@ module "index_pattern_ssl_protos" {
   aws_region           = "${var.aws_region}"
   ssm_source_stage     = "${var.ssm_source_stage}"
   task_name            = "${var.task_name}"
-  object_template      = "${path.module}/indexes/index-pattern.json"
+  object_template      = "${path.module}/indexes/nmap-ssl_protos.pattern.json"
   object_substitutions = {}
 
   object_type  = "index-pattern"
@@ -237,7 +237,7 @@ module "index_pattern_ssl_ciphers" {
   aws_region           = "${var.aws_region}"
   ssm_source_stage     = "${var.ssm_source_stage}"
   task_name            = "${var.task_name}"
-  object_template      = "${path.module}/indexes/index-pattern.json"
+  object_template      = "${path.module}/indexes/nmap-ssl_ciphers.pattern.json"
   object_substitutions = {}
 
   object_type  = "index-pattern"

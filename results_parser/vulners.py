@@ -30,14 +30,16 @@ def process_script(script, summaries, post_results, topic, results_key):
             if x != ""
         ]
         for code, severity, _ in cves_trimmed:
+            severity = float(severity)
             cve_info.append({
                 "cve_code": code,
                 "cve_severity": severity
             })
-            summarise_severity(float(severity), summaries)
+            summarise_severity(severity, summaries)
             post_results(topic, f"{task_name}:cves:write", {
                 **results_key,
                 "cve_code": code,
+                "cve_severity": severity,
                 "cpe_key": cpe_key
             })
         if len(cve_info) > 0:
