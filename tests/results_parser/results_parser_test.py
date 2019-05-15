@@ -75,6 +75,7 @@ def test_parses_hosts_and_ports():
     port_call_22_actual = results_parser.sns_client.publish.call_args_list[0]
     assert port_call_22_actual == mock.call(TopicArn="test_topic", Subject="me-twice:data:write", Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
+            "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
             "address": "45.33.32.156",
             "address_type": "ipv4",
@@ -93,6 +94,7 @@ def test_parses_hosts_and_ports():
     port_call_80_actual = results_parser.sns_client.publish.call_args_list[1]
     assert port_call_80_actual == mock.call(TopicArn="test_topic", Subject="me-twice:data:write", Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
+            "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
             "address": "45.33.32.156",
             "address_type": "ipv4",
@@ -114,6 +116,7 @@ def test_parses_hosts_and_ports():
     port_call_9929_actual = results_parser.sns_client.publish.call_args_list[2]
     assert port_call_9929_actual == mock.call(TopicArn="test_topic", Subject="me-twice:data:write", Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
+            "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
             "address": "45.33.32.156",
             "address_type": "ipv4",
@@ -134,6 +137,7 @@ def test_parses_hosts_and_ports():
         Subject="me-twice:data:write",
         Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
+            "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
             "address": "45.33.32.156",
             "address_type": "ipv4",
@@ -154,6 +158,7 @@ def test_parses_hosts_and_ports():
         Subject="me-twice:data:write",
         Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
+            "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
             "address": "45.33.32.156",
             "address_type": "ipv4",
@@ -179,6 +184,7 @@ def test_parses_hosts_and_ports():
         Subject="me-twice:data:write",
         Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
+            "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
             "address": "45.33.32.156",
             "address_type": "ipv4",
