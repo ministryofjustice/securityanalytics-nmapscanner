@@ -66,8 +66,8 @@ module "docker_image" {
   source             = "docker_image"
   app_name           = "${var.app_name}"
   task_name          = "${var.task_name}"
-  results_bucket_arn = "${module.nmap_task_common.results_bucket_arn}"
-  results_bucket_id  = "${module.nmap_task_common.results_bucket_id}"
+  results_bucket_arn = "${module.nmap_task.results_bucket_arn}"
+  results_bucket_id  = "${module.nmap_task.results_bucket_id}"
   ssm_source_stage   = "${local.ssm_source_stage}"
 }
 
@@ -121,10 +121,11 @@ module "nmap_task" {
   account_id                    = "${var.account_id}"
   ssm_source_stage              = "${local.ssm_source_stage}"
   transient_workspace           = "${!contains(var.known_deployment_stages, terraform.workspace)}"
-  results_bucket_arn            = "${module.nmap_task_common.results_bucket_arn}"
-  trigger_queue_arn             = "${module.nmap_task_common.task_queue}"
-  trigger_role_arn              = "${module.nmap_task_common.task_queue_consumer}"
-  trigger_role_name             = "${module.nmap_task_common.trigger_role_name}"
+
+  # results_bucket_arn            = "${module.nmap_task_common.results_bucket_arn}"
+  # trigger_queue_arn             = "${module.nmap_task_common.task_queue}"
+  # trigger_role_arn              = "${module.nmap_task_common.task_queue_consumer}"
+  # trigger_role_name             = "${module.nmap_task_common.trigger_role_name}"
 }
 
 module "nmap_task_scheduler" {
@@ -141,8 +142,8 @@ module "nmap_task_scheduler" {
   app_name            = "${var.app_name}"
   task_name           = "${var.task_name}"
   scan_hosts          = "${var.scan_hosts}"
-  queue_url           = "${module.nmap_task_common.task_queue_url}"
-  queue_arn           = "${module.nmap_task_common.task_queue}"
+  queue_url           = "${module.nmap_task.task_queue_url}"
+  queue_arn           = "${module.nmap_task.task_queue}"
   transient_workspace = "${!contains(var.known_deployment_stages, terraform.workspace)}"
 }
 
@@ -150,12 +151,12 @@ module "nmap_lambda" {
   source                   = "nmap_lambdas"
   app_name                 = "${var.app_name}"
   task_name                = "${var.task_name}"
-  results_bucket           = "${module.nmap_task_common.results_bucket_id}"
-  results_bucket_arn       = "${module.nmap_task_common.results_bucket_arn}"
+  results_bucket           = "${module.nmap_task.results_bucket_id}"
+  results_bucket_arn       = "${module.nmap_task.results_bucket_arn}"
   aws_region               = "${var.aws_region}"
   account_id               = "${var.account_id}"
-  queue_arn                = "${module.nmap_task_common.task_queue}"
+  queue_arn                = "${module.nmap_task.task_queue}"
   ssm_source_stage         = "${local.ssm_source_stage}"
-  task_queue_consumer_role = "${module.nmap_task_common.task_queue_consumer}"
-  results_parser_role      = "${module.nmap_task_common.results_parser}"
+  task_queue_consumer_role = "${module.nmap_task.task_queue_consumer}"
+  results_parser_role      = "${module.nmap_task.results_parser}"
 }
