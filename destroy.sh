@@ -2,16 +2,17 @@
 
 if [ $# -ne 2 ]
 then
-    echo "Syntax: destroy.sh <app_name> <tf_workspace>"
+    echo "Syntax: setup.sh <app_name> <tf_workspace>"
     sleep 30
     exit
 fi
+# update with the latest shared code first:
+git submodule init
+git submodule update --remote
+git submodule sync
 
-cd infrastructure
-terraform init -backend-config "bucket=$1-terraform-state"
-terraform workspace new $2 || terraform workspace select $2
-# terraform apply -auto-approve -input=true -var 'app_name=sec-an'
-terraform destroy -auto-approve -input=true -var app_name=$1
+export PIPENV_VENV_IN_PROJECT=true
+pipenv install --dev
+pipenv run ./pipenv-destroy.sh $1 $2
+
 wait
-# pause in case the user is watching output
-sleep 5
