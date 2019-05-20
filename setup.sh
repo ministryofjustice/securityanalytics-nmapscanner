@@ -13,6 +13,8 @@ git submodule sync
 
 export PIPENV_VENV_IN_PROJECT=true
 pipenv install --dev
-pipenv run ./pipenv.sh $1 $2
+
+# since the terraform step uses python code, it requires we run in an activated venv
+pipenv run ./terraform.sh $1 $2
 
 wait
