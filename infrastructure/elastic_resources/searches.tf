@@ -17,7 +17,7 @@ module "severe_cve_search" {
 
   object_substitutions {
     severity = 7
-    index    = "${module.index_pattern.object_id}"
+    index    = "${module.index_pattern_history.object_id}"
   }
 
   object_type  = "search"
@@ -42,7 +42,7 @@ module "weak_ssl_cipher_search" {
   object_template  = "${path.module}/searches/weak_ssl_ciphers.search.json"
 
   object_substitutions {
-    index = "${module.index_pattern.object_id}"
+    index = "${module.index_pattern_history.object_id}"
   }
 
   object_type  = "search"
@@ -67,7 +67,7 @@ module "weak_ssl_proto_search" {
   object_template  = "${path.module}/searches/weak_ssl_protos.search.json"
 
   object_substitutions {
-    index = "${module.index_pattern.object_id}"
+    index = "${module.index_pattern_history.object_id}"
   }
 
   object_type  = "search"
