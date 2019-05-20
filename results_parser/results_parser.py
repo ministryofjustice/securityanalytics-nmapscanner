@@ -12,6 +12,7 @@ import datetime
 import pytz
 from urllib.parse import unquote_plus
 import importlib.util
+from hashlib import sha256
 
 
 region = os.environ["REGION"]
@@ -57,21 +58,26 @@ class ResultsContext:
     def _key_fields(self):
         return {k: v for field in self.non_temporal_key for k, v in field.items()}
 
+    def _hash_of(self, value):
+        hasher = sha256()
+        hasher.update(value.encode('utf-8'))
+        return hasher.hexdigest()
+
     def post_results(self, doc_type, data, include_summaries=False):
         if include_summaries:
             for key, value in self.summaries.items():
                 data[f"summary_{key}"] = value
         r = sns_client.publish(
             TopicArn=self.topic,
-            Subject=f"{task_name}:{doc_type}:write",
+            Subject=f"{task_name}:{doc_type}",
             Message=dumps({
                 **self._key_fields(),
                 "scan_start_time": self.start,
                 "scan_end_time": self.end,
                 **data}),
             MessageAttributes={
-                "NonTemporalKey": self._key(),
-                "ScanEndTime": self.end
+                "NonTemporalKey": {"StringValue": self._hash_of(self._key()), "DataType": "String"},
+                "ScanEndTime": {"StringValue": self._hash_of(self.end), "DataType": "String"}
             }
         )
         print(f"Published message {r['MessageId']}")
