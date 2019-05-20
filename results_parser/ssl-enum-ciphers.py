@@ -32,44 +32,51 @@ def summarise_cipher(cipher, summaries):
         summaries["lowest_ssl_strength"] = cipher
 
 
-def process_script(script, summaries, post_results, topic, results_key):
+def process_script(script, results_context):
     script_info = []
+    summaries = {}
     for proto_table in script.table:
         proto = proto_table["key"]
-        proto_info = {
+        proto_key = {
             "ssl_protocol": proto
         }
+        results_context.push_context(proto_key)
         summarise_proto(proto, summaries)
+        proto_data = {}
 
         for sub_table in proto_table.table:
             if sub_table["key"] == "ciphers":
-                proto_info["ciphers"] = cipher_info = []
-                non_temporal_key = f"{results_key['scan_id']}/{results_key['port_id']}/{results_key['protocol']}/{proto}"
-                post_results(topic, f"{task_name}:ssl_protos:write", {**results_key, **proto_info}, non_temporal_key, results_key["scan_end_time"])
-                process_ciphers(cipher_info, sub_table, post_results, topic, {**results_key, **proto_info}, proto)
+                proto_data["ciphers"] = cipher_info = []
+                results_context.post_results("ssl_protos", proto_data)
+                process_ciphers(cipher_info, sub_table, results_context)
         for elem in proto_table.elem:
             if elem["key"] == "cipher preference":
-                proto_info["cipher_preference"] = elem.cdata
-        script_info.append(proto_info)
+                proto_data["cipher_preference"] = elem.cdata
+        script_info.append({**proto_key, **proto_data})
+        results_context.pop_context()
 
     result = {"ssl_enum_ciphers": script_info}
     for elem in script.elem:
         if elem["key"] == "least strength":
             result["ssl_least_strength"] = elem.cdata
             summarise_cipher(elem.cdata, summaries)
+    results_context.add_summaries(summaries)
     return result
 
 
-def process_ciphers(cipher_info, table, post_results, topic, results_key, protocol):
+def process_ciphers(cipher_info, table, results_context):
     for cipher_table in table.table:
         info = {}
+        name = None
         for elem in cipher_table.elem:
-            info[elem["key"]] = elem.cdata
-        cipher_info.append(info)
-        non_temporal_key = f"{results_key['scan_id']}/{results_key['port_id']}/{results_key['protocol']}/{results_key['ssl_protocol']}/{info['name']}"
-        post_results(topic, f"{task_name}:ssl_ciphers:write", {
-            **results_key,
-            **info,
-            "ssl_protocol": protocol},
-            non_temporal_key,
-            results_key["scan_end_time"])
+            if elem["key"] == "name":
+                name = elem.cdata
+            else:
+                info[elem["key"]] = elem.cdata
+        cipher_key = {
+            "name": name
+        }
+        cipher_info.append({**cipher_key, **info})
+        results_context.push_context(cipher_key)
+        results_context.post_results("ssl_ciphers", info)
+        results_context.pop_context()

@@ -26,14 +26,55 @@ sns_client = boto3.client("sns", region_name=region)
 SNS_TOPIC = f"{ssm_prefix}/tasks/{task_name}/results/arn"
 
 
-def post_results(topic, doc_type, document, non_temporal_key, time):
-    r = sns_client.publish(
-        TopicArn=topic,
-        Subject=doc_type,
-        Message=dumps(document),
-        MessageAttributes={"NonTemporalKey": non_temporal_key, "ScanEndTime": time}
-    )
-    print(f"Published message {r['MessageId']}")
+# Tracks context for results e.g. the main data result has key fields of scan id, address and address type
+# When looking at a port the port id and protocol are pushed onto that context
+class ResultsContext:
+    def __init__(self, topic, non_temporal_key_fields, start, end):
+        self.non_temporal_key = [non_temporal_key_fields]
+        self.start = start
+        self.end = end
+        self.topic = topic
+        self.summaries = {}
+        print(f"Created publication context {self.topic}, {self._key()}, {self.end}")
+
+    def push_context(self, non_temporal_key_fields):
+        self.non_temporal_key.append(non_temporal_key_fields)
+        print(f"Created publication context {self.topic}, {self._key()}, {self.end}")
+
+    def pop_context(self):
+        self.non_temporal_key.pop()
+
+    def add_summary(self, key, value):
+        self.summaries[key] = value
+
+    def add_summaries(self, summaries):
+        for k, v in summaries.items():
+            self.summaries[k] = v
+
+    def _key(self):
+        return "/".join(self._key_fields().values())
+
+    def _key_fields(self):
+        return {k: v for field in self.non_temporal_key for k, v in field.items()}
+
+    def post_results(self, doc_type, data, include_summaries=False):
+        if include_summaries:
+            for key, value in self.summaries.items():
+                data[f"summary_{key}"] = value
+        r = sns_client.publish(
+            TopicArn=self.topic,
+            Subject=f"{task_name}:{doc_type}:write",
+            Message=dumps({
+                **self._key_fields(),
+                "scan_start_time": self.start,
+                "scan_end_time": self.end,
+                **data}),
+            MessageAttributes={
+                "NonTemporalKey": self._key(),
+                "ScanEndTime": self.end
+            }
+        )
+        print(f"Published message {r['MessageId']}")
 
 
 def process_results(topic, bucket, key):
@@ -61,87 +102,75 @@ def process_host_results(topic, host, result_file_name, start_time, end_time):
     print(f"Looking at host: {(address, address_type)} scanned at {end_time}")
 
     scan_id = os.path.splitext(result_file_name)[0]
-    host_names = []
-    os_info = []
-    ports = []
-    results_key = {
+    non_temporal_key = {
         "scan_id": scan_id,
-        "scan_start_time": start_time,
-        "scan_end_time": end_time,
         "address": address,
         "address_type": address_type
     }
+
+    results_context = ResultsContext(topic, non_temporal_key, start_time, end_time)
+
+    host_names = []
+    os_info = []
+    ports = []
     results_details = {
         "host_names": host_names,
         "ports": ports,
         "os_info": os_info
     }
 
-    results = {**results_key, **results_details}
-
     if host["starttime"] and host["endtime"]:
         host_start_time, host_end_time = map(
             lambda f:
                 datetime.datetime.fromtimestamp(int(host[f]), pytz.utc).isoformat().replace('+00:00', 'Z'),
             ("starttime", "endtime"))
-        results["host_scan_start_time"] = host_start_time
-        results["host_scan_end_time"] = host_end_time
+        results_details["host_scan_start_time"] = host_start_time
+        results_details["host_scan_end_time"] = host_end_time
 
     process_host_names(host_names, host)
-
-    summaries = {}
-
-    process_ports(ports, host, summaries, results_key, topic)
-
-    process_os(os_info, host, summaries, results_key, topic)
+    process_ports(ports, host, results_context)
+    process_os(os_info, host, results_context)
 
     if hasattr(host, "status"):
         status = host.status
-        results["status"] = status["state"]
-        results["status_reason"] = status["reason"]
+        results_details["status"] = status["state"]
+        results_details["status_reason"] = status["reason"]
 
     if hasattr(host, "uptime"):
         uptime = host.uptime
-        results["uptime"] = uptime["seconds"]
-        results["last_boot"] = uptime["lastboot"]
+        results_details["uptime"] = uptime["seconds"]
+        results_details["last_boot"] = uptime["lastboot"]
 
-    add_summaries(results, summaries)
-
-    post_results(topic, f"{task_name}:data:write", results, scan_id, end_time)
+    results_context.post_results("data", results_details, include_summaries=True)
 
     print(f"done host")
 
 
-def add_summaries(results, summaries):
-    for key, value in summaries.items():
-        results[f"summary_{key}"] = value
-
-
-def process_ports(ports, host, summaries, results_key, topic):
+def process_ports(ports, host, results_context):
     if hasattr(host, "ports") and hasattr(host.ports, "port"):
         for port in host.ports.port:
             port_id, protocol = (port['portid'], port['protocol'])
             print(f"Looking at port: {(port_id, protocol)}")
-            port_info = {
+            port_key = {
                 "port_id": port_id,
                 "protocol": protocol
             }
-            # publish this before adding the script info
-            port_result_key = {**results_key, **port_info}
+            results_context.push_context(port_key)
+            port_data = {}
             if hasattr(port, "state"):
                 status = port.state
-                port_info["status"] = status["state"]
-                port_info["status_reason"] = status["reason"]
-            process_port_service(port_info, port)
-            non_temporal_key = f"{results_key['scan_id']}/{port_id}/{protocol}"
-            post_results(topic, f"{task_name}:ports:write", {**results_key, **port_info}, non_temporal_key, results_key["scan_end_time"])
-            process_port_scripts(port_info, port, summaries, topic, port_result_key)
-            ports.append(port_info)
+                port_data["status"] = status["state"]
+                port_data["status_reason"] = status["reason"]
+            process_port_service(port_data, port)
+            results_context.post_results("ports", port_data)
+            process_port_scripts(port_data, port, results_context)
+            ports.append({**port_key, **port_data})
+            results_context.pop_context()
 
 
-def process_port_service(port_info, port):
+def process_port_service(port_data, port):
     if hasattr(port, "service"):
-        port_info.update({
+        port_data.update({
             "service": port.service["name"],
             "product": port.service["product"],
             "version": port.service["version"],
@@ -153,10 +182,10 @@ def process_port_service(port_info, port):
             for cpe in port.service.cpe:
                 cpes.append(cpe.cdata)
             if len(cpes) > 0:
-                port_info["cpes"] = cpes
+                port_data["cpes"] = cpes
 
 
-def process_port_scripts(port_info, port, summaries, topic, results_key):
+def process_port_scripts(port_data, port, results_context):
     if hasattr(port, "script"):
         for script in port.script:
             name = script["id"]
@@ -166,9 +195,9 @@ def process_port_scripts(port_info, port, summaries, topic, results_key):
                 print(f"Processing plugin for script {name}")
                 module = importlib.util.module_from_spec(script_processing_module_spec)
                 script_processing_module_spec.loader.exec_module(module)
-                script_info = module.process_script(script, summaries, post_results, topic, results_key)
+                script_info = module.process_script(script, results_context)
                 if script_info:
-                    port_info.update(script_info)
+                    port_data.update(script_info)
 
 
 def process_host_names(host_names, host):
@@ -183,41 +212,53 @@ def process_host_names(host_names, host):
 MAPPED_OS_ATTRS = {f: f.replace("_", "") for f in ["type", "vendor", "os_family", "os_gen", "accuracy"]}
 
 
-def process_os(os_info, host, summaries, results_key, topic):
+def process_os_class(os_match, os_data):
+    if hasattr(os_match, "osclass"):
+        os_classes = []
+        for os_class in os_match.osclass:
+            class_info = {}
+            for field, retrieve_name in MAPPED_OS_ATTRS.items():
+                class_info[f"os_class_{field}"] = os_class[retrieve_name]
+            if hasattr(os_class, "cpe"):
+                cpe_info = []
+                for cpe in os_class.cpe:
+                    cpe_info.append(cpe.cdata)
+                if len(cpe_info) > 0:
+                    class_info["os_cpes"] = cpe_info
+
+            os_classes.append(class_info)
+        if len(os_classes) > 0:
+            os_data["os_classes"] = os_classes
+
+
+def process_os(os_info, host, results_context):
     if hasattr(host, "os") and hasattr(host.os, "osmatch"):
         most_likely_os, most_accurate = (None, 0)
         for os_match in host.os.osmatch:
             name = os_match["name"]
             accuracy = int(os_match["accuracy"])
-            os_details = {
-                "os_name": name,
+
+            os_key = {
+                "os_name": name
+            }
+            results_context.push_context(os_key)
+
+            os_data = {
                 "os_accuracy": accuracy
             }
+
             if accuracy > most_accurate:
                 most_accurate = accuracy
                 most_likely_os = name
-            if hasattr(os_match, "osclass"):
-                os_classes = []
-                for os_class in os_match.osclass:
-                    class_info = {}
-                    for field, retreive_name in MAPPED_OS_ATTRS.items():
-                        class_info[f"os_class_{field}"] = os_class[retreive_name]
-                    if hasattr(os_class, "cpe"):
-                        cpe_info = []
-                        for cpe in os_class.cpe:
-                            cpe_info.append(cpe.cdata)
-                        if len(cpe_info) > 0:
-                            class_info["os_cpes"] = cpe_info
+            process_os_class(os_match, os_data)
+            os_info.append({**os_key, **os_data})
 
-                    os_classes.append(class_info)
-                if len(os_classes) > 0:
-                    os_details["os_classes"] = os_classes
-            os_info.append(os_details)
             if most_likely_os:
-                summaries["most_likely_os"] = most_likely_os
-                summaries["most_likely_os_accuracy"] = most_accurate
-                non_temporal_key = f"{results_key['scan_id']}/{name}"
-            post_results(topic, f"{task_name}:os:write", {**results_key, **os_details}, non_temporal_key, results_key["scan_end_time"])
+                results_context.add_summary("most_likely_os", most_likely_os)
+                results_context.add_summary("most_likely_os_accuracy", most_accurate)
+
+            results_context.post_results("os", os_data)
+            results_context.pop_context()
 
 
 @ssm_parameters(

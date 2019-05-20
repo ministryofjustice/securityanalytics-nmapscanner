@@ -1,4 +1,4 @@
-def process_script(script, summaries, post_results, topic, results_key):
+def process_script(script, results_context):
     headers = []
     for elem in script.elem:
         headers.append(elem.cdata)

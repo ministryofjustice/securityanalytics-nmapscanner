@@ -78,12 +78,12 @@ def test_parses_hosts_and_ports():
         Subject="me-twice:ports:write",
         Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
-            "scan_start_time": "2019-04-17T12:55:57Z",
-            "scan_end_time": "2019-04-17T12:56:27Z",
             "address": "45.33.32.156",
             "address_type": "ipv4",
             "port_id": "22",
             "protocol": "tcp",
+            "scan_start_time": "2019-04-17T12:55:57Z",
+            "scan_end_time": "2019-04-17T12:56:27Z",
             "status": "open",
             "status_reason": "syn-ack",
             "service": "ssh",
@@ -94,7 +94,7 @@ def test_parses_hosts_and_ports():
             "cpes": ["cpe:/a:openbsd:openssh:6.6.1p1", "cpe:/o:linux:linux_kernel"]
         }),
         MessageAttributes={
-            "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/22/tcp",
+            "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/45.33.32.156/ipv4/22/tcp",
             "ScanEndTime": "2019-04-17T12:56:27Z"
         })
 
@@ -104,12 +104,12 @@ def test_parses_hosts_and_ports():
         Subject="me-twice:ports:write",
         Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
-            "scan_start_time": "2019-04-17T12:55:57Z",
-            "scan_end_time": "2019-04-17T12:56:27Z",
             "address": "45.33.32.156",
             "address_type": "ipv4",
             "port_id": "80",
             "protocol": "tcp",
+            "scan_start_time": "2019-04-17T12:55:57Z",
+            "scan_end_time": "2019-04-17T12:56:27Z",
             "status": "open",
             "status_reason": "syn-ack",
             "service": "http",
@@ -120,7 +120,7 @@ def test_parses_hosts_and_ports():
             "cpes": ["cpe:/a:apache:http_server:2.4.7"]
         }),
         MessageAttributes={
-            "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/80/tcp",
+            "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/45.33.32.156/ipv4/80/tcp",
             "ScanEndTime": "2019-04-17T12:56:27Z"
         })
 
@@ -130,12 +130,12 @@ def test_parses_hosts_and_ports():
         Subject="me-twice:ports:write",
         Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
-            "scan_start_time": "2019-04-17T12:55:57Z",
-            "scan_end_time": "2019-04-17T12:56:27Z",
             "address": "45.33.32.156",
             "address_type": "ipv4",
             "port_id": "9929",
             "protocol": "tcp",
+            "scan_start_time": "2019-04-17T12:55:57Z",
+            "scan_end_time": "2019-04-17T12:56:27Z",
             "status": "open",
             "status_reason": "syn-ack",
             "service": "nping-echo",
@@ -145,7 +145,7 @@ def test_parses_hosts_and_ports():
             "os_type": None
         }),
         MessageAttributes={
-            "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/9929/tcp",
+            "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/45.33.32.156/ipv4/9929/tcp",
             "ScanEndTime": "2019-04-17T12:56:27Z"
         })
 
@@ -155,12 +155,12 @@ def test_parses_hosts_and_ports():
         Subject="me-twice:ports:write",
         Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
-            "scan_start_time": "2019-04-17T12:55:57Z",
-            "scan_end_time": "2019-04-17T12:56:27Z",
             "address": "45.33.32.156",
             "address_type": "ipv4",
             "port_id": "31337",
             "protocol": "tcp",
+            "scan_start_time": "2019-04-17T12:55:57Z",
+            "scan_end_time": "2019-04-17T12:56:27Z",
             "status": "open",
             "status_reason": "syn-ack",
             "service": "tcpwrapped",
@@ -170,7 +170,7 @@ def test_parses_hosts_and_ports():
             "os_type": None
         }),
         MessageAttributes={
-            "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/31337/tcp",
+            "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/45.33.32.156/ipv4/31337/tcp",
             "ScanEndTime": "2019-04-17T12:56:27Z"
         })
 
@@ -180,11 +180,11 @@ def test_parses_hosts_and_ports():
         Subject="me-twice:os:write",
         Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
-            "scan_start_time": "2019-04-17T12:55:57Z",
-            "scan_end_time": "2019-04-17T12:56:27Z",
             "address": "45.33.32.156",
             "address_type": "ipv4",
             "os_name": "Linux 4.4",
+            "scan_start_time": "2019-04-17T12:55:57Z",
+            "scan_end_time": "2019-04-17T12:56:27Z",
             "os_accuracy": 97,
             "os_classes": [
                 {
@@ -200,7 +200,7 @@ def test_parses_hosts_and_ports():
             ]
         }),
         MessageAttributes={
-            "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/Linux 4.4",
+            "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/45.33.32.156/ipv4/Linux 4.4",
             "ScanEndTime": "2019-04-17T12:56:27Z"
         })
 
@@ -210,11 +210,11 @@ def test_parses_hosts_and_ports():
         Subject="me-twice:os:write",
         Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
-            "scan_start_time": "2019-04-17T12:55:57Z",
-            "scan_end_time": "2019-04-17T12:56:27Z",
             "address": "45.33.32.156",
             "address_type": "ipv4",
             "os_name": "Linux 3.11 - 4.1",
+            "scan_start_time": "2019-04-17T12:55:57Z",
+            "scan_end_time": "2019-04-17T12:56:27Z",
             "os_accuracy": 93,
             "os_classes": [
                 {
@@ -240,7 +240,7 @@ def test_parses_hosts_and_ports():
             ]
         }),
         MessageAttributes={
-            "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/Linux 3.11 - 4.1",
+            "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/45.33.32.156/ipv4/Linux 3.11 - 4.1",
             "ScanEndTime": "2019-04-17T12:56:27Z"
         })
 
@@ -251,10 +251,10 @@ def test_parses_hosts_and_ports():
             Subject="me-twice:data:write",
             Message=json.dumps({
                 "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
-                "scan_start_time": "2019-04-17T12:55:57Z",
-                "scan_end_time": "2019-04-17T12:56:27Z",
                 "address": "45.33.32.156",
                 "address_type": "ipv4",
+                "scan_start_time": "2019-04-17T12:55:57Z",
+                "scan_end_time": "2019-04-17T12:56:27Z",
                 "host_names": [
                     {
                         "host_name": "scanme.nmap.org",
@@ -371,7 +371,7 @@ def test_parses_hosts_and_ports():
                 "summary_most_likely_os_accuracy": 97
             }),
             MessageAttributes={
-                "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
+                "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/45.33.32.156/ipv4",
                 "ScanEndTime": "2019-04-17T12:56:27Z"
             }))
 
