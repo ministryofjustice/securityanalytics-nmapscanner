@@ -47,8 +47,7 @@ variable "scan_hosts" {
 provider "aws" {
   region = "${var.aws_region}"
 
-  # profile set in env variables to support MFA
-  # profile = "${var.app_name}"
+  # N.B. To support all authentication use cases, we expect the local environment variables to provide auth details.
   allowed_account_ids = ["${var.account_id}"]
 }
 
