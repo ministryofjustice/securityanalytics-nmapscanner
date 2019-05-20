@@ -26,7 +26,7 @@ sns_client = boto3.client("sns", region_name=region)
 SNS_TOPIC = f"{ssm_prefix}/tasks/{task_name}/results/arn"
 
 
-def post_results(topic, doc_type, document):
+def post_results(topic, doc_type, document, scan_id, non_temporal_key):
     r = sns_client.publish(
         TopicArn=topic, Subject=doc_type, Message=dumps(document)
     )
