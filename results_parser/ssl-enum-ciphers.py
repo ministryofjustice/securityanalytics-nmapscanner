@@ -37,15 +37,16 @@ def process_script(script, summaries, post_results, topic, results_key):
     for proto_table in script.table:
         proto = proto_table["key"]
         proto_info = {
-            "protocol": proto
+            "ssl_protocol": proto
         }
         summarise_proto(proto, summaries)
 
         for sub_table in proto_table.table:
             if sub_table["key"] == "ciphers":
                 proto_info["ciphers"] = cipher_info = []
-                post_results(topic, f"{task_name}:ssl_protos:write", {**results_key, **proto_info})
-                process_ciphers(cipher_info, sub_table, post_results, topic, results_key, proto)
+                non_temporal_key = f"{results_key['scan_id']}/{results_key['port_id']}/{results_key['protocol']}/{proto}"
+                post_results(topic, f"{task_name}:ssl_protos:write", {**results_key, **proto_info}, non_temporal_key, results_key["scan_end_time"])
+                process_ciphers(cipher_info, sub_table, post_results, topic, {**results_key, **proto_info}, proto)
         for elem in proto_table.elem:
             if elem["key"] == "cipher preference":
                 proto_info["cipher_preference"] = elem.cdata
@@ -65,7 +66,10 @@ def process_ciphers(cipher_info, table, post_results, topic, results_key, protoc
         for elem in cipher_table.elem:
             info[elem["key"]] = elem.cdata
         cipher_info.append(info)
+        non_temporal_key = f"{results_key['scan_id']}/{results_key['port_id']}/{results_key['protocol']}/{results_key['ssl_protocol']}/{info['name']}"
         post_results(topic, f"{task_name}:ssl_ciphers:write", {
             **results_key,
             **info,
-            "protocol": protocol})
+            "ssl_protocol": protocol},
+            non_temporal_key,
+            results_key["scan_end_time"])

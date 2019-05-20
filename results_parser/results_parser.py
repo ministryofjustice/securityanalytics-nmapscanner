@@ -26,9 +26,12 @@ sns_client = boto3.client("sns", region_name=region)
 SNS_TOPIC = f"{ssm_prefix}/tasks/{task_name}/results/arn"
 
 
-def post_results(topic, doc_type, document, scan_id, non_temporal_key):
+def post_results(topic, doc_type, document, non_temporal_key, time):
     r = sns_client.publish(
-        TopicArn=topic, Subject=doc_type, Message=dumps(document)
+        TopicArn=topic,
+        Subject=doc_type,
+        Message=dumps(document),
+        MessageAttributes={"NonTemporalKey": non_temporal_key, "ScanEndTime": time}
     )
     print(f"Published message {r['MessageId']}")
 
@@ -104,7 +107,7 @@ def process_host_results(topic, host, result_file_name, start_time, end_time):
 
     add_summaries(results, summaries)
 
-    post_results(topic, f"{task_name}:data:write", results)
+    post_results(topic, f"{task_name}:data:write", results, scan_id, end_time)
 
     print(f"done host")
 
@@ -123,14 +126,15 @@ def process_ports(ports, host, summaries, results_key, topic):
                 "port_id": port_id,
                 "protocol": protocol
             }
+            # publish this before adding the script info
+            port_result_key = {**results_key, **port_info}
             if hasattr(port, "state"):
                 status = port.state
                 port_info["status"] = status["state"]
                 port_info["status_reason"] = status["reason"]
             process_port_service(port_info, port)
-            # publish this before adding the script info
-            port_result_key = {**results_key, **port_info}
-            post_results(topic, f"{task_name}:ports:write", port_result_key)
+            non_temporal_key = f"{results_key['scan_id']}/{port_id}/{protocol}"
+            post_results(topic, f"{task_name}:ports:write", {**results_key, **port_info}, non_temporal_key, results_key["scan_end_time"])
             process_port_scripts(port_info, port, summaries, topic, port_result_key)
             ports.append(port_info)
 
@@ -186,8 +190,8 @@ def process_os(os_info, host, summaries, results_key, topic):
             name = os_match["name"]
             accuracy = int(os_match["accuracy"])
             os_details = {
-                "os_name": os_match["name"],
-                "os_accuracy": os_match["accuracy"]
+                "os_name": name,
+                "os_accuracy": accuracy
             }
             if accuracy > most_accurate:
                 most_accurate = accuracy
@@ -212,7 +216,8 @@ def process_os(os_info, host, summaries, results_key, topic):
             if most_likely_os:
                 summaries["most_likely_os"] = most_likely_os
                 summaries["most_likely_os_accuracy"] = most_accurate
-            post_results(topic, f"{task_name}:os:write", {**results_key, **os_details})
+                non_temporal_key = f"{results_key['scan_id']}/{name}"
+            post_results(topic, f"{task_name}:os:write", {**results_key, **os_details}, non_temporal_key, results_key["scan_end_time"])
 
 
 @ssm_parameters(

@@ -16,7 +16,7 @@ TEST_ENV = {
 TEST_DIR = "./tests/results_parser/"
 
 with mock.patch.dict(os.environ, TEST_ENV), \
-    mock.patch("boto3.client") as boto_client, \
+     mock.patch("boto3.client") as boto_client, \
         mock.patch("utils.json_serialisation.stringify_all"):
     # ensure each client is a different mock
     boto_client.side_effect = (mock.MagicMock() for _ in itertools.count())
@@ -73,7 +73,10 @@ def test_parses_hosts_and_ports():
         }, mock.MagicMock())
 
     port_call_22_actual = results_parser.sns_client.publish.call_args_list[0]
-    assert port_call_22_actual == mock.call(TopicArn="test_topic", Subject="me-twice:ports:write", Message=json.dumps({
+    assert port_call_22_actual == mock.call(
+        TopicArn="test_topic",
+        Subject="me-twice:ports:write",
+        Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
@@ -89,10 +92,17 @@ def test_parses_hosts_and_ports():
             "extra_info": "Ubuntu Linux; protocol 2.0",
             "os_type": "Linux",
             "cpes": ["cpe:/a:openbsd:openssh:6.6.1p1", "cpe:/o:linux:linux_kernel"]
-        }))
+        }),
+        MessageAttributes={
+            "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/22/tcp",
+            "ScanEndTime": "2019-04-17T12:56:27Z"
+        })
 
     port_call_80_actual = results_parser.sns_client.publish.call_args_list[1]
-    assert port_call_80_actual == mock.call(TopicArn="test_topic", Subject="me-twice:ports:write", Message=json.dumps({
+    assert port_call_80_actual == mock.call(
+        TopicArn="test_topic",
+        Subject="me-twice:ports:write",
+        Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
@@ -108,10 +118,17 @@ def test_parses_hosts_and_ports():
             "extra_info": "(Ubuntu)",
             "os_type": None,
             "cpes": ["cpe:/a:apache:http_server:2.4.7"]
-        }))
+        }),
+        MessageAttributes={
+            "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/80/tcp",
+            "ScanEndTime": "2019-04-17T12:56:27Z"
+        })
 
     port_call_9929_actual = results_parser.sns_client.publish.call_args_list[2]
-    assert port_call_9929_actual == mock.call(TopicArn="test_topic", Subject="me-twice:ports:write", Message=json.dumps({
+    assert port_call_9929_actual == mock.call(
+        TopicArn="test_topic",
+        Subject="me-twice:ports:write",
+        Message=json.dumps({
             "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
@@ -126,7 +143,11 @@ def test_parses_hosts_and_ports():
             "version": None,
             "extra_info": None,
             "os_type": None
-        }))
+        }),
+        MessageAttributes={
+            "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/9929/tcp",
+            "ScanEndTime": "2019-04-17T12:56:27Z"
+        })
 
     port_call_31337_actual = results_parser.sns_client.publish.call_args_list[3]
     assert port_call_31337_actual == mock.call(
@@ -147,7 +168,11 @@ def test_parses_hosts_and_ports():
             "version": None,
             "extra_info": None,
             "os_type": None
-        }))
+        }),
+        MessageAttributes={
+            "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/31337/tcp",
+            "ScanEndTime": "2019-04-17T12:56:27Z"
+        })
 
     os_call_linux_44_actual = results_parser.sns_client.publish.call_args_list[4]
     assert os_call_linux_44_actual == mock.call(
@@ -160,7 +185,7 @@ def test_parses_hosts_and_ports():
             "address": "45.33.32.156",
             "address_type": "ipv4",
             "os_name": "Linux 4.4",
-            "os_accuracy": "97",
+            "os_accuracy": 97,
             "os_classes": [
                 {
                     "os_class_type": "general purpose",
@@ -173,7 +198,11 @@ def test_parses_hosts_and_ports():
                     ]
                 }
             ]
-        }))
+        }),
+        MessageAttributes={
+            "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/Linux 4.4",
+            "ScanEndTime": "2019-04-17T12:56:27Z"
+        })
 
     os_call_linux_34_actual = results_parser.sns_client.publish.call_args_list[5]
     assert os_call_linux_34_actual == mock.call(
@@ -186,154 +215,165 @@ def test_parses_hosts_and_ports():
             "address": "45.33.32.156",
             "address_type": "ipv4",
             "os_name": "Linux 3.11 - 4.1",
-                "os_accuracy": "93",
-                "os_classes": [
-                    {
-                        "os_class_type": "general purpose",
-                        "os_class_vendor": "Linux",
-                        "os_class_os_family": "Linux",
-                        "os_class_os_gen": "3.X",
-                        "os_class_accuracy": "93",
-                        "os_cpes": [
-                            "cpe:/o:linux:linux_kernel:3"
-                        ]
-                    },
-                    {
-                        "os_class_type": "general purpose",
-                        "os_class_vendor": "Linux",
-                        "os_class_os_family": "Linux",
-                        "os_class_os_gen": "4.X",
-                        "os_class_accuracy": "93",
-                        "os_cpes": [
-                            "cpe:/o:linux:linux_kernel:4"
-                        ]
-                    }
-                ]
-        }))
+            "os_accuracy": 93,
+            "os_classes": [
+                {
+                    "os_class_type": "general purpose",
+                    "os_class_vendor": "Linux",
+                    "os_class_os_family": "Linux",
+                    "os_class_os_gen": "3.X",
+                    "os_class_accuracy": "93",
+                    "os_cpes": [
+                        "cpe:/o:linux:linux_kernel:3"
+                    ]
+                },
+                {
+                    "os_class_type": "general purpose",
+                    "os_class_vendor": "Linux",
+                    "os_class_os_family": "Linux",
+                    "os_class_os_gen": "4.X",
+                    "os_class_accuracy": "93",
+                    "os_cpes": [
+                        "cpe:/o:linux:linux_kernel:4"
+                    ]
+                }
+            ]
+        }),
+        MessageAttributes={
+            "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap/Linux 3.11 - 4.1",
+            "ScanEndTime": "2019-04-17T12:56:27Z"
+        })
 
     host_call_actual = results_parser.sns_client.publish.call_args_list[6]
     assert host_call_actual == (
-        mock.call(TopicArn="test_topic", Subject="me-twice:data:write", Message=json.dumps({
-            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
-            "scan_start_time": "2019-04-17T12:55:57Z",
-            "scan_end_time": "2019-04-17T12:56:27Z",
-            "address": "45.33.32.156",
-            "address_type": "ipv4",
-            "host_names": [
-                {
-                    "host_name": "scanme.nmap.org",
-                    "host_name_type": "user"
-                },
-                {
-                    "host_name": "scanme.nmap.org",
-                    "host_name_type": "PTR"
-                }
-            ],
-            "ports": [
-                {
-                    "port_id": "22",
-                    "protocol": "tcp",
-                    "status": "open",
-                    "status_reason": "syn-ack",
-                    "service": "ssh",
-                    "product": "OpenSSH",
-                    "version": "6.6.1p1 Ubuntu 2ubuntu2.11",
-                    "extra_info": "Ubuntu Linux; protocol 2.0",
-                    "os_type": "Linux",
-                    "cpes": ["cpe:/a:openbsd:openssh:6.6.1p1", "cpe:/o:linux:linux_kernel"]
-                },
-                {
-                    "port_id": "80",
-                    "protocol": "tcp",
-                    "status": "open",
-                    "status_reason": "syn-ack",
-                    "service": "http",
-                    "product": "Apache httpd",
-                    "version": "2.4.7",
-                    "extra_info": "(Ubuntu)",
-                    "os_type": None,
-                    "cpes": ["cpe:/a:apache:http_server:2.4.7"],
-                    "http-server-header": [
-                        "Apache/2.4.7 (Ubuntu)"
-                    ]
-                },
-                {
-                    "port_id": "9929",
-                    "protocol": "tcp",
-                    "status": "open",
-                    "status_reason": "syn-ack",
-                    "service": "nping-echo",
-                    "product": "Nping echo",
-                    "version": None,
-                    "extra_info": None,
-                    "os_type": None
-                },
-                {
+        mock.call(
+            TopicArn="test_topic",
+            Subject="me-twice:data:write",
+            Message=json.dumps({
+                "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
+                "scan_start_time": "2019-04-17T12:55:57Z",
+                "scan_end_time": "2019-04-17T12:56:27Z",
+                "address": "45.33.32.156",
+                "address_type": "ipv4",
+                "host_names": [
+                    {
+                        "host_name": "scanme.nmap.org",
+                        "host_name_type": "user"
+                    },
+                    {
+                        "host_name": "scanme.nmap.org",
+                        "host_name_type": "PTR"
+                    }
+                ],
+                "ports": [
+                    {
+                        "port_id": "22",
+                        "protocol": "tcp",
+                        "status": "open",
+                        "status_reason": "syn-ack",
+                        "service": "ssh",
+                        "product": "OpenSSH",
+                        "version": "6.6.1p1 Ubuntu 2ubuntu2.11",
+                        "extra_info": "Ubuntu Linux; protocol 2.0",
+                        "os_type": "Linux",
+                        "cpes": ["cpe:/a:openbsd:openssh:6.6.1p1", "cpe:/o:linux:linux_kernel"]
+                    },
+                    {
+                        "port_id": "80",
+                        "protocol": "tcp",
+                        "status": "open",
+                        "status_reason": "syn-ack",
+                        "service": "http",
+                        "product": "Apache httpd",
+                        "version": "2.4.7",
+                        "extra_info": "(Ubuntu)",
+                        "os_type": None,
+                        "cpes": ["cpe:/a:apache:http_server:2.4.7"],
+                        "http-server-header": [
+                            "Apache/2.4.7 (Ubuntu)"
+                        ]
+                    },
+                    {
+                        "port_id": "9929",
+                        "protocol": "tcp",
+                        "status": "open",
+                        "status_reason": "syn-ack",
+                        "service": "nping-echo",
+                        "product": "Nping echo",
+                        "version": None,
+                        "extra_info": None,
+                        "os_type": None
+                    },
+                    {
 
-                    "port_id": "31337",
-                    "protocol": "tcp",
-                    "status": "open",
-                    "status_reason": "syn-ack",
-                    "service": "tcpwrapped",
-                    "product": None,
-                    "version": None,
-                    "extra_info": None,
-                    "os_type": None
-                }
-            ],
-            "os_info": [
-                {
-                    "os_name": "Linux 4.4",
-                    "os_accuracy": "97",
-                    "os_classes": [
-                        {
-                            "os_class_type": "general purpose",
-                            "os_class_vendor": "Linux",
-                            "os_class_os_family": "Linux",
-                            "os_class_os_gen": "4.X",
-                            "os_class_accuracy": "97",
-                            "os_cpes": [
-                                "cpe:/o:linux:linux_kernel:4.4"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "os_name": "Linux 3.11 - 4.1",
-                    "os_accuracy": "93",
-                    "os_classes": [
-                        {
-                            "os_class_type": "general purpose",
-                            "os_class_vendor": "Linux",
-                            "os_class_os_family": "Linux",
-                            "os_class_os_gen": "3.X",
-                            "os_class_accuracy": "93",
-                            "os_cpes": [
-                                "cpe:/o:linux:linux_kernel:3"
-                            ]
-                        },
-                        {
-                            "os_class_type": "general purpose",
-                            "os_class_vendor": "Linux",
-                            "os_class_os_family": "Linux",
-                            "os_class_os_gen": "4.X",
-                            "os_class_accuracy": "93",
-                            "os_cpes": [
-                                "cpe:/o:linux:linux_kernel:4"
-                            ]
-                        }
-                    ]
-                }
-            ],
-            "host_scan_start_time": "2019-04-17T12:55:57Z",
-            "host_scan_end_time": "2019-04-17T12:56:27Z",
-            "status": "up",
-            "status_reason": "echo-reply",
-            "uptime": "686432",
-            "last_boot": "Tue Apr  9 14:15:55 2019",
-            "summary_most_likely_os": "Linux 4.4",
-            "summary_most_likely_os_accuracy": 97
-        })))
+                        "port_id": "31337",
+                        "protocol": "tcp",
+                        "status": "open",
+                        "status_reason": "syn-ack",
+                        "service": "tcpwrapped",
+                        "product": None,
+                        "version": None,
+                        "extra_info": None,
+                        "os_type": None
+                    }
+                ],
+                "os_info": [
+                    {
+                        "os_name": "Linux 4.4",
+                        "os_accuracy": 97,
+                        "os_classes": [
+                            {
+                                "os_class_type": "general purpose",
+                                "os_class_vendor": "Linux",
+                                "os_class_os_family": "Linux",
+                                "os_class_os_gen": "4.X",
+                                "os_class_accuracy": "97",
+                                "os_cpes": [
+                                    "cpe:/o:linux:linux_kernel:4.4"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "os_name": "Linux 3.11 - 4.1",
+                        "os_accuracy": 93,
+                        "os_classes": [
+                            {
+                                "os_class_type": "general purpose",
+                                "os_class_vendor": "Linux",
+                                "os_class_os_family": "Linux",
+                                "os_class_os_gen": "3.X",
+                                "os_class_accuracy": "93",
+                                "os_cpes": [
+                                    "cpe:/o:linux:linux_kernel:3"
+                                ]
+                            },
+                            {
+                                "os_class_type": "general purpose",
+                                "os_class_vendor": "Linux",
+                                "os_class_os_family": "Linux",
+                                "os_class_os_gen": "4.X",
+                                "os_class_accuracy": "93",
+                                "os_cpes": [
+                                    "cpe:/o:linux:linux_kernel:4"
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "host_scan_start_time": "2019-04-17T12:55:57Z",
+                "host_scan_end_time": "2019-04-17T12:56:27Z",
+                "status": "up",
+                "status_reason": "echo-reply",
+                "uptime": "686432",
+                "last_boot": "Tue Apr  9 14:15:55 2019",
+                "summary_most_likely_os": "Linux 4.4",
+                "summary_most_likely_os_accuracy": 97
+            }),
+            MessageAttributes={
+                "NonTemporalKey": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
+                "ScanEndTime": "2019-04-17T12:56:27Z"
+            }))
 
 
 @mock.patch.dict(os.environ, TEST_ENV)
@@ -373,7 +413,7 @@ def test_parses_tls_info():
             assert port["ssl_least_strength"] == "A"
             assert port["ssl_enum_ciphers"] == [
                 {
-                    "protocol": "TLSv1.2",
+                    "ssl_protocol": "TLSv1.2",
                     "ciphers": [
                         {
                             "kex_info": "ecdh_x25519",
@@ -425,10 +465,10 @@ def test_parses_tls_info():
                 }
             ]
             assert results_parser.sns_client.publish.call_count == \
-                len(call_details["ports"]) + \
-                len(port["ssl_enum_ciphers"]) + \
-                len(port["ssl_enum_ciphers"][0]["ciphers"]) + \
-                len(call_details["os_info"]) + 1
+                   len(call_details["ports"]) + \
+                   len(port["ssl_enum_ciphers"]) + \
+                   len(port["ssl_enum_ciphers"][0]["ciphers"]) + \
+                   len(call_details["os_info"]) + 1
 
 
 @mock.patch.dict(os.environ, TEST_ENV)
@@ -665,16 +705,16 @@ def test_parses_os_but_no_osmatch_regression_sa_45():
     all_protocols = 0
     all_ciphers = 0
     for x in call_details["ports"]:
-        if "ssl_enum_ciphers"in x:
+        if "ssl_enum_ciphers" in x:
             all_protocols += len(x["ssl_enum_ciphers"])
             for enum_cipher in x["ssl_enum_ciphers"]:
                 all_ciphers += len(enum_cipher["ciphers"])
 
     assert results_parser.sns_client.publish.call_count == \
-        len(call_details["ports"]) + \
-        all_protocols + \
-        all_ciphers +  \
-        len(call_details["os_info"]) + 1
+           len(call_details["ports"]) + \
+           all_protocols + \
+           all_ciphers + \
+           len(call_details["os_info"]) + 1
 
 
 @mock.patch.dict(os.environ, TEST_ENV)

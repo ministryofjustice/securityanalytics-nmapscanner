@@ -36,14 +36,19 @@ def process_script(script, summaries, post_results, topic, results_key):
                 "cve_severity": severity
             })
             summarise_severity(severity, summaries)
-            post_results(topic, f"{task_name}:cves:write", {
-                **results_key,
-                "cve_code": code,
-                "cve_severity": severity,
-                "cpe_key": cpe_key
-            })
+            non_temporal_key = f"{results_key['scan_id']}/{results_key['port_id']}/{results_key['protocol']}/{code}"
+            post_results(
+                topic,
+                f"{task_name}:cves:write",
+                {
+                    **results_key,
+                    "cve_code": code,
+                    "cve_severity": severity,
+                    "cpe_key": cpe_key
+                },
+                non_temporal_key,
+                results_key["scan_end_time"]
+            )
         if len(cve_info) > 0:
             results.append(cpe_result)
     return result
-
-
