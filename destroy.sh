@@ -2,7 +2,7 @@
 
 if [ $# -ne 2 ]
 then
-    echo "Syntax: setup.sh <app_name> <tf_workspace>"
+    echo "Syntax: destroy.sh <app_name> <tf_workspace>"
     sleep 30
     exit
 fi
@@ -13,8 +13,6 @@ git submodule sync
 
 export PIPENV_VENV_IN_PROJECT=true
 pipenv install --dev
-
-# since the terraform step uses python code, it requires we run in an activated venv
-pipenv run ./terraform.sh $1 $2
+pipenv run ./terraform-destroy.sh $1 $2
 
 wait
