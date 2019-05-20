@@ -1,8 +1,9 @@
 # TODO I wish we could use these along with modules with a count argument, but terraform doesn't
 # support that yet
 locals {
-  flavours = ["history", "snapshot"]
+  flavours   = ["history", "snapshot"]
   data_types = ["data", "os", "ports", "cves", "ssl_ciphers", "ssl_protos"]
+
   # Commnented out because setproduct function is only in terraform 12
   # index_patterns = "${setproduct(local.data_types, local.flavours)}"
 }
