@@ -15,6 +15,6 @@ export PIPENV_VENV_IN_PROJECT=true
 pipenv install --dev
 
 # since the terraform step uses python code, it requires we run in an activated venv
-pipenv run ./terraform.sh $1 $2
+pipenv run terraform.sh $1 $2
 
 wait
