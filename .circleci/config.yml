@@ -162,6 +162,61 @@ jobs:
             - ".generated"
             - ".pytest_cache"
 
+  deploy-moj:
+    executor: builder
+    steps:
+      - restore_cache:
+          keys:
+            - git-v1-{{ .Branch }}-
+            - git-v1-
+
+      - checkout:
+          path: ~/project
+
+      - restore_cache:
+          keys:
+            - tf-moj-v1-{{ .Branch }}-
+            - tf-moj-v1-
+
+      - run:
+          name: update git submodule
+          command: |
+            git submodule init
+            git submodule update --remote
+            git submodule sync
+
+      - run:
+          name: install virtual env
+          command: |
+            export PIPENV_VENV_IN_PROJECT=true
+            pipenv install --dev --deploy
+            if [ ! -d "test-reports" ]; then
+              mkdir test-reports
+            fi
+
+      - run:
+          name: terraform apply
+          command: |
+            unset AWS_PROFILE
+            export AWS_ACCESS_KEY_ID=$MOJ_ACCESS_KEY_ID
+            export AWS_SECRET_ACCESS_KEY=$MOJ_SECRET_ACCESS_KEY
+            set -x
+            . .circleci/env.sh
+            cd infrastructure
+            terraform init -backend-config "bucket=$MOJ_APP_NAME-terraform-state" -reconfigure
+            terraform workspace new dev || terraform workspace select dev
+            terraform apply -auto-approve -var account_id=$MOJ_ACCOUNT_ID -var app_name=$MOJ_APP_NAME
+
+      - save_cache:
+          key: git-v1-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".git"
+
+      - save_cache:
+          key: tf-moj-v1-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ".terraform"
+
 workflows:
   version: 2
   terraform-infrastructure:
@@ -178,5 +233,8 @@ workflows:
             - integration-test
           <<: *master-only
       - deploy:
+          requires: [ approve ]
+          <<: *master-only
+      - deploy-moj:
           requires: [ approve ]
           <<: *master-only
