@@ -1,0 +1,32 @@
+{
+  "mappings": {
+    "_doc": {
+      "properties": {
+        "scan_start_time": {
+          "type": "date"
+        },
+        "scan_end_time": {
+          "type": "date"
+        },
+        "address": {
+          "type": "keyword"
+        },
+        "address_type": {
+          "type": "keyword"
+        },
+        "cve_code": {
+          "type": "keyword"
+        },
+        "cpe_key": {
+          "type": "keyword"
+        },
+        "cve_severity": {
+          "type": "float"
+        },
+        "scan_id": {
+          "type": "keyword"
+        }
+      }
+    }
+  }
+}

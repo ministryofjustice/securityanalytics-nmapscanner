@@ -54,4 +54,3 @@ def test_orders_by_protocol():
     ssl_enum_ciphers.summarise_proto("silly", summaries)
     assert summaries["lowest_ssl_proto"] == "TLSv1.0"
     assert summaries["unknown_ssl_proto"]
-

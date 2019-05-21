@@ -1,4 +1,4 @@
-def process_script(script, summaries, post_results, topic, results_key):
+def process_script(script, results_context):
     results = {}
     for table in script.table:
         if table["key"] == "validity":
