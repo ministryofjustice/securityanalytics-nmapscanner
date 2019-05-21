@@ -77,11 +77,11 @@ def test_parses_hosts_and_ports():
         TopicArn="test_topic",
         Subject="me-twice:ports",
         Message=json.dumps({
-            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "address": "45.33.32.156",
             "address_type": "ipv4",
             "port_id": "22",
             "protocol": "tcp",
+            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
             "status": "open",
@@ -93,18 +93,25 @@ def test_parses_hosts_and_ports():
             "os_type": "Linux",
             "cpes": ["cpe:/a:openbsd:openssh:6.6.1p1", "cpe:/o:linux:linux_kernel"]
         }),
-        MessageAttributes={'NonTemporalKey': {'StringValue': '94d257692ecd703754c6aa769941385069ecb15934515cccd64ff83e7d0b6a8a', 'DataType': 'String'}, 'ScanEndTime': {'StringValue': 'e82bd778e8e2477ca067dfb3124060cf676a6a1cc13f750c238bd46f146f83a7', 'DataType': 'String'}})
+        MessageAttributes={
+            'NonTemporalKey': {
+                'StringValue': '88a3a3051a9bcdbeffe96302480bc5ac54ed5ecc6adb125b1e5abd1ad2173f96',
+                'DataType': 'String'},
+            'ScanEndTime': {
+                'StringValue': 'e82bd778e8e2477ca067dfb3124060cf676a6a1cc13f750c238bd46f146f83a7',
+                'DataType': 'String'}
+        })
 
     port_call_80_actual = results_parser.sns_client.publish.call_args_list[1]
     assert port_call_80_actual == mock.call(
         TopicArn="test_topic",
         Subject="me-twice:ports",
         Message=json.dumps({
-            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "address": "45.33.32.156",
             "address_type": "ipv4",
             "port_id": "80",
             "protocol": "tcp",
+            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
             "status": "open",
@@ -116,18 +123,25 @@ def test_parses_hosts_and_ports():
             "os_type": None,
             "cpes": ["cpe:/a:apache:http_server:2.4.7"]
         }),
-        MessageAttributes={'NonTemporalKey': {'StringValue': 'd09675d9345d56681918e9fc125f960fd3080f4f3cdf1ccc330b185bf87697a0', 'DataType': 'String'}, 'ScanEndTime': {'StringValue': 'e82bd778e8e2477ca067dfb3124060cf676a6a1cc13f750c238bd46f146f83a7', 'DataType': 'String'}})
+        MessageAttributes={
+            'NonTemporalKey': {
+                'StringValue': 'e0ca3779e65c0f576eb8d240e66133696e408f665fe1c1aecbcb0445faa6e4e0',
+                'DataType': 'String'},
+            'ScanEndTime': {
+                'StringValue': 'e82bd778e8e2477ca067dfb3124060cf676a6a1cc13f750c238bd46f146f83a7',
+                'DataType': 'String'}
+        })
 
     port_call_9929_actual = results_parser.sns_client.publish.call_args_list[2]
     assert port_call_9929_actual == mock.call(
         TopicArn="test_topic",
         Subject="me-twice:ports",
         Message=json.dumps({
-            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "address": "45.33.32.156",
             "address_type": "ipv4",
             "port_id": "9929",
             "protocol": "tcp",
+            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
             "status": "open",
@@ -138,18 +152,25 @@ def test_parses_hosts_and_ports():
             "extra_info": None,
             "os_type": None
         }),
-        MessageAttributes={'NonTemporalKey': {'StringValue': '095a2443dba986dd5059e142ed1dbc3887b6baaaa65276bf1f73d2ff158fec4d', 'DataType': 'String'}, 'ScanEndTime': {'StringValue': 'e82bd778e8e2477ca067dfb3124060cf676a6a1cc13f750c238bd46f146f83a7', 'DataType': 'String'}})
+        MessageAttributes={
+            'NonTemporalKey': {
+                'StringValue': 'dbaa7d0398c2b7669089a1c7bf66deed7d546c09310edf50747bcb44d5d1b861',
+                'DataType': 'String'},
+            'ScanEndTime': {
+                'StringValue': 'e82bd778e8e2477ca067dfb3124060cf676a6a1cc13f750c238bd46f146f83a7',
+                'DataType': 'String'}
+        })
 
     port_call_31337_actual = results_parser.sns_client.publish.call_args_list[3]
     assert port_call_31337_actual == mock.call(
         TopicArn="test_topic",
         Subject="me-twice:ports",
         Message=json.dumps({
-            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "address": "45.33.32.156",
             "address_type": "ipv4",
             "port_id": "31337",
             "protocol": "tcp",
+            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
             "status": "open",
@@ -160,17 +181,24 @@ def test_parses_hosts_and_ports():
             "extra_info": None,
             "os_type": None
         }),
-        MessageAttributes={'NonTemporalKey': {'StringValue': '3d8896d4bf8d56539142b28f8875578b0ca922097719e4d3dc7913d9f6f4cf94', 'DataType': 'String'}, 'ScanEndTime': {'StringValue': 'e82bd778e8e2477ca067dfb3124060cf676a6a1cc13f750c238bd46f146f83a7', 'DataType': 'String'}})
+        MessageAttributes={
+            'NonTemporalKey': {
+                'StringValue': '3a663b9d860cf12912ffadfc666bf85b487680b3ce92e52f5fcc1bf56cc58e42',
+                'DataType': 'String'},
+            'ScanEndTime': {
+                'StringValue': 'e82bd778e8e2477ca067dfb3124060cf676a6a1cc13f750c238bd46f146f83a7',
+                'DataType': 'String'}
+        })
 
     os_call_linux_44_actual = results_parser.sns_client.publish.call_args_list[4]
     assert os_call_linux_44_actual == mock.call(
         TopicArn="test_topic",
         Subject="me-twice:os",
         Message=json.dumps({
-            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "address": "45.33.32.156",
             "address_type": "ipv4",
             "os_name": "Linux 4.4",
+            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
             "os_accuracy": 97,
@@ -187,17 +215,24 @@ def test_parses_hosts_and_ports():
                 }
             ]
         }),
-        MessageAttributes={'NonTemporalKey': {'StringValue': '3ed4a61d78cd5f4a7ba054874b7b090796b479fdb02486451dccd12b4f120d86', 'DataType': 'String'}, 'ScanEndTime': {'StringValue': 'e82bd778e8e2477ca067dfb3124060cf676a6a1cc13f750c238bd46f146f83a7', 'DataType': 'String'}})
+        MessageAttributes={
+            'NonTemporalKey': {
+                'StringValue': 'ab218e15e66052db937725554757fc3510b073b779992b00812bd83c54f4af6e',
+                'DataType': 'String'},
+            'ScanEndTime': {
+                'StringValue': 'e82bd778e8e2477ca067dfb3124060cf676a6a1cc13f750c238bd46f146f83a7',
+                'DataType': 'String'}
+        })
 
     os_call_linux_34_actual = results_parser.sns_client.publish.call_args_list[5]
     assert os_call_linux_34_actual == mock.call(
         TopicArn="test_topic",
         Subject="me-twice:os",
         Message=json.dumps({
-            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "address": "45.33.32.156",
             "address_type": "ipv4",
             "os_name": "Linux 3.11 - 4.1",
+            "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
             "scan_start_time": "2019-04-17T12:55:57Z",
             "scan_end_time": "2019-04-17T12:56:27Z",
             "os_accuracy": 93,
@@ -224,7 +259,15 @@ def test_parses_hosts_and_ports():
                 }
             ]
         }),
-        MessageAttributes={'NonTemporalKey': {'StringValue': 'b4b1aabb29ef3a9c6557711c8dd9749be2597bf9f42ef678b78d2a71cbe22b56', 'DataType': 'String'}, 'ScanEndTime': {'StringValue': 'e82bd778e8e2477ca067dfb3124060cf676a6a1cc13f750c238bd46f146f83a7', 'DataType': 'String'}})
+        MessageAttributes={
+            'NonTemporalKey': {
+                'StringValue': '0f490012fba14663fa5960bd7af2ca03278a7843dd211f073242b0675d605668',
+                'DataType': 'String'
+            },
+            'ScanEndTime': {
+                'StringValue': 'e82bd778e8e2477ca067dfb3124060cf676a6a1cc13f750c238bd46f146f83a7',
+                'DataType': 'String'}
+        })
 
     host_call_actual = results_parser.sns_client.publish.call_args_list[6]
     assert host_call_actual == (
@@ -232,9 +275,9 @@ def test_parses_hosts_and_ports():
             TopicArn="test_topic",
             Subject="me-twice:data",
             Message=json.dumps({
-                "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
                 "address": "45.33.32.156",
                 "address_type": "ipv4",
+                "scan_id": "scanme.nmap.org-2019-04-17T12:55:56Z-nmap",
                 "scan_start_time": "2019-04-17T12:55:57Z",
                 "scan_end_time": "2019-04-17T12:56:27Z",
                 "host_names": [
@@ -353,14 +396,14 @@ def test_parses_hosts_and_ports():
                 "summary_most_likely_os_accuracy": 97
             }),
             MessageAttributes={
-                    'NonTemporalKey': {
-                        'StringValue': 'e513ac4b5b85700f25abe5ff995b676b9f9a3741f1a1c41e44e30e322b4b422c',
-                        'DataType': 'String'
-                    },
-                    'ScanEndTime': {
-                        'StringValue': 'e82bd778e8e2477ca067dfb3124060cf676a6a1cc13f750c238bd46f146f83a7',
-                        'DataType': 'String'
-                    }
+                'NonTemporalKey': {
+                    'StringValue': '05935ced860a0ed4771118d3794a676e08f123ecd9e989575388c392e25b1554',
+                    'DataType': 'String'
+                },
+                'ScanEndTime': {
+                    'StringValue': 'e82bd778e8e2477ca067dfb3124060cf676a6a1cc13f750c238bd46f146f83a7',
+                    'DataType': 'String'
+                }
             }))
 
 
