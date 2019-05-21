@@ -170,6 +170,9 @@ jobs:
             - git-v1-{{ .Branch }}-
             - git-v1-
 
+      - setup_remote_docker:
+          docker_layer_caching: true
+
       - checkout:
           path: ~/project
 
