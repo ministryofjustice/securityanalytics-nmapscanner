@@ -30,8 +30,9 @@ SNS_TOPIC = f"{ssm_prefix}/tasks/{task_name}/results/arn"
 # Tracks context for results e.g. the main data result has key fields of scan id, address and address type
 # When looking at a port the port id and protocol are pushed onto that context
 class ResultsContext:
-    def __init__(self, topic, non_temporal_key_fields, start, end):
+    def __init__(self, topic, non_temporal_key_fields, scan_id, start, end):
         self.non_temporal_key = [non_temporal_key_fields]
+        self.scan_id = scan_id
         self.start = start
         self.end = end
         self.topic = topic
@@ -61,7 +62,9 @@ class ResultsContext:
     def _hash_of(self, value):
         hasher = sha256()
         hasher.update(value.encode('utf-8'))
-        return hasher.hexdigest()
+        hash_val = hasher.hexdigest()
+        print(f"Mapped non-temporal key {value} to hash {hash_val}")
+        return hash_val
 
     def post_results(self, doc_type, data, include_summaries=False):
         if include_summaries:
@@ -72,6 +75,7 @@ class ResultsContext:
             Subject=f"{task_name}:{doc_type}",
             Message=dumps({
                 **self._key_fields(),
+                "scan_id": self.scan_id,
                 "scan_start_time": self.start,
                 "scan_end_time": self.end,
                 **data}),
@@ -109,12 +113,11 @@ def process_host_results(topic, host, result_file_name, start_time, end_time):
 
     scan_id = os.path.splitext(result_file_name)[0]
     non_temporal_key = {
-        "scan_id": scan_id,
         "address": address,
         "address_type": address_type
     }
 
-    results_context = ResultsContext(topic, non_temporal_key, start_time, end_time)
+    results_context = ResultsContext(topic, non_temporal_key, scan_id, start_time, end_time)
 
     host_names = []
     os_info = []
