@@ -179,6 +179,15 @@ jobs:
             - tf-moj-v1-
 
       - run:
+          name: install virtual env
+          command: |
+            export PIPENV_VENV_IN_PROJECT=true
+            pipenv install --dev --deploy
+            if [ ! -d "test-reports" ]; then
+              mkdir test-reports
+            fi
+
+      - run:
           name: terraform apply
           command: |
             unset AWS_PROFILE
