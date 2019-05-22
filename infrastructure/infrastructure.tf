@@ -79,26 +79,6 @@ module "elastic_resources" {
   ssm_source_stage = "${local.ssm_source_stage}"
 }
 
-# module "nmap_task_common" {
-#   // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories    // source = "github.com/ministryofjustice/securityanalytics-taskexecution//infrastructure/shared_task"
-
-#   // It is sometimes useful for the developers of the project to use a local version of the task
-#   // execution project. This enables them to develop the task execution project and the nmap scanner
-#   // (or other future tasks), at the same time, without requiring the task execution changes to be
-#   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
-#   // devs will have to comment in/out this line as and when they need
-#   source = "../../securityanalytics-taskexecution/infrastructure/task"
-
-#   app_name                      = "${var.app_name}"
-#   aws_region                    = "${var.aws_region}"
-#   task_name                     = "${var.task_name}"
-#   subscribe_elastic_to_notifier = true
-#   account_id                    = "${var.account_id}"
-#   ssm_source_stage              = "${local.ssm_source_stage}"
-#   transient_workspace           = "${!contains(var.known_deployment_stages, terraform.workspace)}"
-#   task_role_name                = "${module.nmap_task.task_role_name}"
-# }
-
 module "nmap_task" {
   // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories  # source = "github.com/ministryofjustice/securityanalytics-taskexecution//infrastructure/ecs_task"  //source = "github.com/ministryofjustice/securityanalytics-taskexecution//infrastructure/ecs_task"
 
@@ -121,11 +101,6 @@ module "nmap_task" {
   account_id                    = "${var.account_id}"
   ssm_source_stage              = "${local.ssm_source_stage}"
   transient_workspace           = "${!contains(var.known_deployment_stages, terraform.workspace)}"
-
-  # results_bucket_arn            = "${module.nmap_task_common.results_bucket_arn}"
-  # trigger_queue_arn             = "${module.nmap_task_common.task_queue}"
-  # trigger_role_arn              = "${module.nmap_task_common.task_queue_consumer}"
-  # trigger_role_name             = "${module.nmap_task_common.trigger_role_name}"
 }
 
 module "nmap_task_scheduler" {
