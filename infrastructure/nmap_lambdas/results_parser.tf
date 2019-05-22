@@ -31,6 +31,8 @@ resource "aws_lambda_function" "results_parser" {
     "${data.aws_ssm_parameter.utils_layer.value}",
   ]
 
+  timeout = 30
+
   environment {
     variables = {
       REGION    = "${var.aws_region}"

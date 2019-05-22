@@ -1,13 +1,13 @@
 {
   "attributes": {
     "title": "${object_title}",
-    "visState": "{\"title\":\"${object_title}\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":1,\"direction\":\"desc\"},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"top_hits\",\"schema\":\"metric\",\"params\":{\"field\":\"summary_lowest_ssl_strength\",\"aggregate\":\"concat\",\"size\":1,\"sortField\":\"summary_lowest_ssl_strength\",\"sortOrder\":\"desc\",\"customLabel\":\"Weakest Cipher\"}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"address\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":1000,\"order\":\"desc\",\"orderBy\":\"_term\",\"customLabel\":\"Address\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"top_hits\",\"schema\":\"metric\",\"params\":{\"field\":\"host_names.host_name\",\"aggregate\":\"concat\",\"size\":1,\"sortField\":\"host_names.host_name\",\"sortOrder\":\"desc\",\"customLabel\":\"Hostnames\"}}]}",
-    "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":1,\"direction\":\"desc\"}}}}",
+    "visState": "{\"title\":\"${object_title}\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"top_hits\",\"schema\":\"metric\",\"params\":{\"field\":\"summary_lowest_ssl_strength\",\"aggregate\":\"concat\",\"size\":1,\"sortField\":\"summary_lowest_ssl_strength\",\"sortOrder\":\"desc\",\"customLabel\":\"Weakest Cipher\"}},{\"id\":\"2\",\"enabled\":true,\"type\":\"top_hits\",\"schema\":\"metric\",\"params\":{\"field\":\"host_names.host_name\",\"aggregate\":\"concat\",\"size\":1,\"sortField\":\"scan_end_time\",\"sortOrder\":\"desc\",\"customLabel\":\"Hostnames\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"address\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":1000,\"order\":\"desc\",\"orderBy\":\"_term\",\"customLabel\":\"Address\"}}]}",
+    "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
     "description": "",
     "savedSearchId": "${search_id}",
     "version": 1,
     "kibanaSavedObjectMeta": {
-      "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"kuery\"}}"
+      "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
     }
   }
 }
