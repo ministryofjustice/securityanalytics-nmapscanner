@@ -49,14 +49,14 @@ module "moj_dashboard_2" {
   object_template  = "${path.module}/dashboards/moj2.dash.json"
 
   object_substitutions {
-    common_ciphers     = "${module.common_ciphers.object_id}"
-    common_vulns     = "${module.common_vulns.object_id}"
-    likely_os     = "${module.likely_os.object_id}"
-    services     = "${module.services.object_id}"
-    proto_all     = "${module.proto_all.object_id}"
-    vulns_severity     = "${module.vulns_severity.object_id}"
-    host_status     = "${module.host_status.object_id}"
-    host_scanned     = "${module.host_scanned.object_id}"
+    common_ciphers = "${module.common_ciphers.object_id}"
+    common_vulns   = "${module.common_vulns.object_id}"
+    likely_os      = "${module.likely_os.object_id}"
+    services       = "${module.services.object_id}"
+    proto_all      = "${module.proto_all.object_id}"
+    vulns_severity = "${module.vulns_severity.object_id}"
+    host_status    = "${module.host_status.object_id}"
+    host_scanned   = "${module.host_scanned.object_id}"
   }
 
   object_type  = "dashboard"
@@ -81,8 +81,8 @@ module "moj_dashboard_3" {
   object_template  = "${path.module}/dashboards/moj3.dash.json"
 
   object_substitutions {
-    ssl_expiry_distro     = "${module.ssl_expiry_distro.object_id}"
-    ssl_expiry_table     = "${module.ssl_expiry_table.object_id}"
+    ssl_expiry_distro = "${module.ssl_expiry_distro.object_id}"
+    ssl_expiry_table  = "${module.ssl_expiry_table.object_id}"
   }
 
   object_type  = "dashboard"
