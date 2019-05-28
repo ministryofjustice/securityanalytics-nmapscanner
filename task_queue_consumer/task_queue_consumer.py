@@ -1,7 +1,6 @@
-from lambda_decorators import async_handler
 import os
 import boto3
-from utils.lambda_decorators import ssm_parameters
+from utils.lambda_decorators import ssm_parameters, async_handler
 from utils.json_serialisation import dumps
 from netaddr import IPNetwork
 from netaddr.core import AddrFormatError
