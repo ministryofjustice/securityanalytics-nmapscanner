@@ -3,6 +3,7 @@ import os
 import boto3
 import requests
 import json
+import time
 from requests_aws4auth import AWS4Auth
 
 
@@ -30,6 +31,7 @@ def get_url(endpoint, method):
 
 @pytest.mark.integration
 def test_integration():
+    time.sleep(60)
     url = get_url('sample', 'GET')
     response = requests.get(url, auth=get_auth())
     print(f"response: {response.text}")
