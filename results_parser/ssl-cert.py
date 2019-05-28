@@ -20,4 +20,5 @@ def process_script(script, results_context):
                     alt_name[elem["key"]] = elem.cdata
                 if alt_rec:
                     results['extensions'].append(alt_name)
+    results_context.post_results("ssl_cert", results)
     return {'ssl_cert': results}
