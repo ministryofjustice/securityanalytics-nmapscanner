@@ -2,8 +2,7 @@
 pytest = "*"
 
 [packages]
-boto3 = "*"
-lambda-decorators = "*"
+aioboto3 = "*"
 requests = "*"
 requests-aws4auth = "*"
 netaddr="*"

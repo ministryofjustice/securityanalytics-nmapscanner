@@ -60,6 +60,8 @@ locals {
   # When the circle ci build is run we override the var.ssm_source_stage to explicitly tell it
   # to use the resources in dev. Change
   ssm_source_stage = "${var.ssm_source_stage == "DEFAULT" ? terraform.workspace : var.ssm_source_stage}"
+
+  transient_workspace = "${!contains(var.known_deployment_stages, terraform.workspace)}"
 }
 
 module "docker_image" {
@@ -101,7 +103,7 @@ module "nmap_task" {
   subscribe_elastic_to_notifier = true
   account_id                    = "${var.account_id}"
   ssm_source_stage              = "${local.ssm_source_stage}"
-  transient_workspace           = "${!contains(var.known_deployment_stages, terraform.workspace)}"
+  transient_workspace           = "${local.transient_workspace}"
 }
 
 module "nmap_task_scheduler" {
@@ -120,7 +122,7 @@ module "nmap_task_scheduler" {
   scan_hosts          = "${var.scan_hosts}"
   queue_url           = "${module.nmap_task.task_queue_url}"
   queue_arn           = "${module.nmap_task.task_queue}"
-  transient_workspace = "${!contains(var.known_deployment_stages, terraform.workspace)}"
+  transient_workspace = "${local.transient_workspace}"
 }
 
 module "nmap_lambda" {
