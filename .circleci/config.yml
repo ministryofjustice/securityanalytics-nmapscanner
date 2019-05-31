@@ -54,7 +54,6 @@ jobs:
             echo checking formatting
             terraform fmt -check=true
             echo making the plan
-            export TF_LOG=*
             terraform plan -var ssm_source_stage=$SSM_SOURCE_STAGE -var account_id=$ACCOUNT_ID -var app_name=$APP_NAME -no-color -out=plan.file > terraform.plan
 
       - persist_to_workspace:
