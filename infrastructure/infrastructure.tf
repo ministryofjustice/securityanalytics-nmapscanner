@@ -107,9 +107,9 @@ module "nmap_task" {
 }
 
 module "subscribe_scheduler" {
-  source = "scan_initiation_subscription"
-  app_name                      = "${var.app_name}"
-  ssm_source_stage              = "${local.ssm_source_stage}"
+  source                 = "scan_initiation_subscription"
+  app_name               = "${var.app_name}"
+  ssm_source_stage       = "${local.ssm_source_stage}"
   subscribe_to_scheduler = true
   scan_trigger_queue_arn = "${module.nmap_task.task_queue}"
   scan_trigger_queue_url = "${module.nmap_task.task_queue_url}"

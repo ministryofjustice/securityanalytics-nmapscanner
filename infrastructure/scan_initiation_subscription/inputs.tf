@@ -1,20 +1,20 @@
 variable "app_name" {
-  type="string"
+  type = "string"
 }
 
 variable "ssm_source_stage" {
-  type="string"
+  type = "string"
 }
 
 variable "subscribe_to_scheduler" {
-  type="string"
+  type    = "string"
   default = true
 }
 
 variable "scan_trigger_queue_arn" {
-  type="string"
+  type = "string"
 }
 
 variable "scan_trigger_queue_url" {
-  type="string"
+  type = "string"
 }
