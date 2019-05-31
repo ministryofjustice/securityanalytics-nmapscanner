@@ -9,7 +9,6 @@
       "scan_end_time",
       "desc"
     ],
-    "version": 1,
     "kibanaSavedObjectMeta": {
       "searchSourceJSON": "{\"index\":\"${index}\",\"highlightAll\":true,\"version\":true,\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[{\"$state\":{\"store\":\"appState\"},\"meta\":{\"alias\":null,\"disabled\":false,\"index\":\"${index}\",\"key\":\"summary_highest_cve_severity\",\"negate\":false,\"params\":{\"gte\":${severity},\"lt\":null},\"type\":\"range\",\"value\":\"${severity} to +∞\"},\"range\":{\"summary_highest_cve_severity\":{\"gte\":${severity},\"lt\":null}}}]}"
     }

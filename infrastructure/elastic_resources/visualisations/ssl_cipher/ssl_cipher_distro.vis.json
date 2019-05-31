@@ -5,7 +5,6 @@
     "uiStateJSON": "{}",
     "description": "",
     "savedSearchId": "${search_id}",
-    "version": 1,
     "kibanaSavedObjectMeta": {
       "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
     }

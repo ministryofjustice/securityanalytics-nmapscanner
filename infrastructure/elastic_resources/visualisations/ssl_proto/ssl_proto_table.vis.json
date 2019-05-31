@@ -5,7 +5,6 @@
     "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
     "description": "",
     "savedSearchId": "${search_id}",
-    "version": 1,
     "kibanaSavedObjectMeta": {
       "searchSourceJSON": "{\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
     }

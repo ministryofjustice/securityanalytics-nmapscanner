@@ -173,8 +173,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
 
-      - checkout:
-          path: ~/project
+      - checkout
 
       - restore_cache:
           keys:
