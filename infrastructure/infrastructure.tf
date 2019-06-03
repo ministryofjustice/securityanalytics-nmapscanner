@@ -128,3 +128,9 @@ module "nmap_lambda" {
   task_queue_consumer_role = "${module.nmap_task.task_queue_consumer}"
   results_parser_role      = "${module.nmap_task.results_parser}"
 }
+
+resource "random_integer" "priority" {
+  min     = 1
+  max     = 99999
+  keepers = {}
+}
