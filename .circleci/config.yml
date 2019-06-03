@@ -47,7 +47,9 @@ jobs:
           command: |
             . .circleci/env.sh
             cd infrastructure
-            echo $CIRCLE_HOSTS > scan_hosts.auto.tfvars 
+            echo $CIRCLE_HOSTS > scan_hosts.auto.tfvars
+            export TF_LOG=*
+            terraform --version
             terraform init -backend-config "bucket=$APP_NAME-terraform-state"
             terraform get --update
             terraform workspace new $SSM_SOURCE_STAGE || terraform workspace select $SSM_SOURCE_STAGE
@@ -205,8 +207,6 @@ jobs:
             set -x
             . .circleci/env.sh
             cd infrastructure
-            export TF_LOG=*
-            terraform --version
             terraform init -backend-config "bucket=$MOJ_APP_NAME-terraform-state" -reconfigure
             terraform workspace new dev || terraform workspace select dev
             terraform apply -auto-approve -var account_id=$MOJ_ACCOUNT_ID -var app_name=$MOJ_APP_NAME
