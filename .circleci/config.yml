@@ -83,7 +83,7 @@ jobs:
       - save_cache:
           key: other-v2-{{ .Branch }}-{{ .Revision }}
           paths:
-            - ".terraform"
+            - "infrastructure/.terraform"
             - ".venv"
             - ".generated"
             - ".pytest_cache"
