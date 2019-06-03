@@ -9,7 +9,6 @@
       "scan_end_time",
       "desc"
     ],
-    "version": 1,
     "kibanaSavedObjectMeta": {
       "searchSourceJSON": "{\"index\":\"${index}\",\"highlightAll\":true,\"version\":true,\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[{\"meta\":{\"index\":\"${index}\",\"type\":\"phrases\",\"key\":\"summary_lowest_ssl_proto\",\"value\":\"SSLv3, TLSv1.0\",\"params\":[\"SSLv3\",\"TLSv1.0\"],\"negate\":false,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"summary_lowest_ssl_proto\":\"SSLv3\"}},{\"match_phrase\":{\"summary_lowest_ssl_proto\":\"TLSv1.0\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}}]}"
     }

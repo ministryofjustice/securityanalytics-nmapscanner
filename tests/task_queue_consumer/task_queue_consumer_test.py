@@ -2,7 +2,7 @@ from unittest import mock
 import pytest
 import os
 import itertools
-from test_utils.test_utils import resetting_mocks, serialise_mocks
+from test_utils.test_utils import resetting_mocks, serialise_mocks, coroutine_of
 
 
 TEST_ENV = {
@@ -14,9 +14,11 @@ TEST_ENV = {
 
 with mock.patch.dict(os.environ, TEST_ENV), \
         mock.patch('boto3.client') as boto_client, \
+        mock.patch('aioboto3.client') as aioboto_client, \
         mock.patch('utils.json_serialisation.stringify_all'):
     # ensure each client is a different mock
     boto_client.side_effect = (mock.MagicMock() for _ in itertools.count())
+    aioboto_client.side_effect = (mock.MagicMock() for _ in itertools.count())
     from task_queue_consumer import task_queue_consumer
 
 
@@ -26,7 +28,7 @@ def ssm_return_vals(using_private):
     app_name = os.environ["APP_NAME"]
     task_name = os.environ["TASK_NAME"]
     ssm_prefix = f"/{app_name}/{stage}"
-    return {
+    return coroutine_of({
         'Parameters': [
             {"Name": f"{ssm_prefix}/vpc/using_private_subnets", "Value": "true" if using_private else "false"},
             {"Name": f"{ssm_prefix}/tasks/{task_name}/security_group/id", "Value": "sg-123"},
@@ -35,7 +37,7 @@ def ssm_return_vals(using_private):
             {"Name": f"{ssm_prefix}/vpc/subnets/instance", "Value": "subnet-123,subnet-456"},
             {"Name": f"{ssm_prefix}/ecs/cluster", "Value": "cid"}
         ]
-    }
+    })
 
 
 def expected_params(public_ip_str, scan_targets, message_id):

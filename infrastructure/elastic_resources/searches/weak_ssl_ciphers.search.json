@@ -9,7 +9,6 @@
       "scan_end_time",
       "desc"
     ],
-    "version": 1,
     "kibanaSavedObjectMeta": {
       "searchSourceJSON": "{\"index\":\"${index}\",\"highlightAll\":true,\"version\":true,\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[{\"meta\":{\"index\":\"${index}\",\"type\":\"phrases\",\"key\":\"summary_lowest_ssl_strength\",\"value\":\"A, B\",\"params\":[\"A\",\"B\"],\"negate\":true,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"summary_lowest_ssl_strength\":\"A\"}},{\"match_phrase\":{\"summary_lowest_ssl_strength\":\"B\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"${index}\",\"negate\":false,\"disabled\":false,\"alias\":null,\"type\":\"exists\",\"key\":\"summary_lowest_ssl_strength\",\"value\":\"exists\"},\"exists\":{\"field\":\"summary_lowest_ssl_strength\"},\"$state\":{\"store\":\"appState\"}}]}"
     }

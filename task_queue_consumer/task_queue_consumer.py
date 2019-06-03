@@ -1,4 +1,5 @@
 import os
+import aioboto3
 import boto3
 from utils.lambda_decorators import ssm_parameters, async_handler
 from utils.json_serialisation import dumps
@@ -13,7 +14,7 @@ app_name = os.environ["APP_NAME"]
 task_name = os.environ["TASK_NAME"]
 ssm_prefix = f"/{app_name}/{stage}"
 ecs_client = boto3.client("ecs", region_name=region)
-ssm_client = boto3.client("ssm", region_name=region)
+ssm_client = aioboto3.client("ssm", region_name=region)
 
 PRIVATE_SUBNETS = f"{ssm_prefix}/vpc/using_private_subnets"
 SUBNETS = f"{ssm_prefix}/vpc/subnets/instance"

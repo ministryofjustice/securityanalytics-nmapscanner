@@ -16,8 +16,8 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - git-v1-{{ .Branch }}-
-            - git-v1-
+            - git-v2-{{ .Branch }}-
+            - git-v3-
 
       - checkout
 
@@ -30,8 +30,8 @@ jobs:
 
       - restore_cache:
           keys:
-            - other-v1-{{ .Branch }}-
-            - other-v1-
+            - other-v2-{{ .Branch }}-
+            - other-v2-
 
       - run:
           name: install virtual env
@@ -47,7 +47,7 @@ jobs:
           command: |
             . .circleci/env.sh
             cd infrastructure
-            echo $CIRCLE_HOSTS > scan_hosts.auto.tfvars 
+            echo $CIRCLE_HOSTS > scan_hosts.auto.tfvars
             terraform init -backend-config "bucket=$APP_NAME-terraform-state"
             terraform get --update
             terraform workspace new $SSM_SOURCE_STAGE || terraform workspace select $SSM_SOURCE_STAGE
@@ -74,14 +74,14 @@ jobs:
           path: .generated/*
 
       - save_cache:
-          key: git-v1-{{ .Branch }}-{{ .Revision }}
+          key: git-v2-{{ .Branch }}-{{ .Revision }}
           paths:
             - ".git"
 
       - save_cache:
-          key: other-v1-{{ .Branch }}-{{ .Revision }}
+          key: other-v2-{{ .Branch }}-{{ .Revision }}
           paths:
-            - ".terraform"
+            - "infrastructure/.terraform"
             - ".venv"
             - ".generated"
             - ".pytest_cache"
@@ -157,7 +157,7 @@ jobs:
       - save_cache:
           key: other-v1-{{ .Branch }}-{{ .Revision }}
           paths:
-            - ".terraform"
+            - "infrastructure/.terraform"
             - ".venv"
             - ".generated"
             - ".pytest_cache"
@@ -167,19 +167,18 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - git-v1-{{ .Branch }}-
-            - git-v1-
+            - git-v2-{{ .Branch }}-
+            - git-v2-
 
       - setup_remote_docker:
           docker_layer_caching: true
 
-      - checkout:
-          path: ~/project
+      - checkout
 
       - restore_cache:
           keys:
-            - tf-moj-v1-{{ .Branch }}-
-            - tf-moj-v1-
+            - tf-moj-v2-{{ .Branch }}-
+            - tf-moj-v2-
 
       - run:
           name: update git submodule
@@ -211,14 +210,14 @@ jobs:
             terraform apply -auto-approve -var account_id=$MOJ_ACCOUNT_ID -var app_name=$MOJ_APP_NAME
 
       - save_cache:
-          key: git-v1-{{ .Branch }}-{{ .Revision }}
+          key: git-v2-{{ .Branch }}-{{ .Revision }}
           paths:
             - ".git"
 
       - save_cache:
-          key: tf-moj-v1-{{ .Branch }}-{{ .Revision }}
+          key: tf-moj-v2-{{ .Branch }}-{{ .Revision }}
           paths:
-            - ".terraform"
+            - "infrastructure/.terraform"
 
 workflows:
   version: 2

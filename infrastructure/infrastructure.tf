@@ -106,23 +106,13 @@ module "nmap_task" {
   transient_workspace           = "${local.transient_workspace}"
 }
 
-module "nmap_task_scheduler" {
-  # two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
-  source = "github.com/ministryofjustice/securityanalytics-taskexecution//infrastructure/scheduler"
-
-  # It is sometimes useful for the developers of the project to use a local version of the task
-  # execution project. This enables them to develop the task execution project and the nmap scanner
-  # (or other future tasks), at the same time, without requiring the task execution changes to be
-  # pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
-  # devs will have to comment in/out this line as and when they need
-  # source = "../../securityanalytics-taskexecution/infrastructure/scheduler"
-
-  app_name            = "${var.app_name}"
-  task_name           = "${var.task_name}"
-  scan_hosts          = "${var.scan_hosts}"
-  queue_url           = "${module.nmap_task.task_queue_url}"
-  queue_arn           = "${module.nmap_task.task_queue}"
-  transient_workspace = "${local.transient_workspace}"
+module "subscribe_scheduler" {
+  source                 = "scan_initiation_subscription"
+  app_name               = "${var.app_name}"
+  ssm_source_stage       = "${local.ssm_source_stage}"
+  subscribe_to_scheduler = true
+  scan_trigger_queue_arn = "${module.nmap_task.task_queue}"
+  scan_trigger_queue_url = "${module.nmap_task.task_queue_url}"
 }
 
 module "nmap_lambda" {
