@@ -130,6 +130,8 @@ jobs:
             if [ $? != 0 ]; then
               export SUCCESS=1
             fi
+            terraform workspace select default
+            terraform workspace delete $DEPLOY_STAGE
             exit $SUCCESS
       - store_test_results:
           path: test-reports
