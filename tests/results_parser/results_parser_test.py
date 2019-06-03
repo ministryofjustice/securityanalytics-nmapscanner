@@ -3,7 +3,7 @@ import pytest
 import os
 import json
 import itertools
-from test_utils.test_utils import resetting_mocks, serialise_mocks
+from test_utils.test_utils import resetting_mocks, serialise_mocks, coroutine_of
 from utils.json_serialisation import dumps
 from botocore.response import StreamingBody
 
@@ -17,9 +17,11 @@ TEST_DIR = "./tests/results_parser/"
 
 with mock.patch.dict(os.environ, TEST_ENV), \
      mock.patch("boto3.client") as boto_client, \
+        mock.patch('aioboto3.client') as aioboto_client, \
         mock.patch("utils.json_serialisation.stringify_all"):
     # ensure each client is a different mock
     boto_client.side_effect = (mock.MagicMock() for _ in itertools.count())
+    aioboto_client.side_effect = (mock.MagicMock() for _ in itertools.count())
     from results_parser import results_parser
 
 
@@ -29,11 +31,11 @@ def ssm_return_vals():
     app_name = os.environ["APP_NAME"]
     task_name = os.environ["TASK_NAME"]
     ssm_prefix = f"/{app_name}/{stage}"
-    return {
+    return coroutine_of({
         "Parameters": [
             {"Name": f"{ssm_prefix}/tasks/{task_name}/results/arn", "Value": "test_topic"}
         ]
-    }
+    })
 
 
 def expected_pub(doc_type, doc):

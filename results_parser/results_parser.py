@@ -2,7 +2,6 @@ import os
 import aioboto3
 import boto3
 from utils.lambda_decorators import ssm_parameters, async_handler
-from utils.json_serialisation import dumps
 from utils.objectify_dict import objectify
 import tarfile
 import re
@@ -12,7 +11,6 @@ import datetime
 import pytz
 from urllib.parse import unquote_plus
 import importlib.util
-from hashlib import sha256
 from utils.scan_results import ResultsContext
 
 region = os.environ["REGION"]
@@ -25,6 +23,7 @@ s3_client = boto3.client("s3", region_name=region)
 sns_client = boto3.client("sns", region_name=region)
 
 SNS_TOPIC = f"{ssm_prefix}/tasks/{task_name}/results/arn"
+
 
 def process_results(topic, bucket, key):
     # Get, read, and split the file into lines
