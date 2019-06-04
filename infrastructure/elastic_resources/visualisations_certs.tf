@@ -8,15 +8,15 @@ module "ssl_expiry_distro" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
-  task_name        = "${var.task_name}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/ssl_cert/expiry_dates_distro.vis.json"
 
-  object_substitutions {
-    index = "${module.index_pattern_ssl_cert_snapshot.object_id}"
+  object_substitutions = {
+    index = module.index_pattern_ssl_cert_snapshot.object_id
   }
 
   object_type  = "visualization"
@@ -33,17 +33,18 @@ module "ssl_expiry_table" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
-  task_name        = "${var.task_name}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/ssl_cert/expiry_dates_table.vis.json"
 
-  object_substitutions {
-    index = "${module.index_pattern_ssl_cert_snapshot.object_id}"
+  object_substitutions = {
+    index = module.index_pattern_ssl_cert_snapshot.object_id
   }
 
   object_type  = "visualization"
   object_title = "SSL Expiry Top 10"
 }
+

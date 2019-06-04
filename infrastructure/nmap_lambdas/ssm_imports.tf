@@ -5,3 +5,4 @@ data "aws_ssm_parameter" "utils_layer" {
 data "aws_ssm_parameter" "api_gateway" {
   name = "/${var.app_name}/${var.ssm_source_stage}/api/private/name"
 }
+

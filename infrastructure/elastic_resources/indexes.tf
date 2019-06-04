@@ -3,7 +3,6 @@
 locals {
   flavours   = ["history", "snapshot"]
   data_types = ["data", "os", "ports", "cves", "ssl_ciphers", "ssl_protos"]
-
   # Commnented out because setproduct function is only in terraform 12
   # index_patterns = "${setproduct(local.data_types, local.flavours)}"
 }
@@ -18,13 +17,13 @@ module "index" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/elastic_index"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
   index_file       = "${path.module}/indexes/nmap-data.index.json"
   index_name       = "data"
-  task_name        = "${var.task_name}"
+  task_name        = var.task_name
 }
 
 module "index_pattern_history" {
@@ -37,11 +36,11 @@ module "index_pattern_history" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region           = "${var.aws_region}"
-  ssm_source_stage     = "${var.ssm_source_stage}"
-  task_name            = "${var.task_name}"
+  aws_region           = var.aws_region
+  ssm_source_stage     = var.ssm_source_stage
+  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-data.pattern.json"
   object_substitutions = {}
 
@@ -59,11 +58,11 @@ module "index_pattern_snapshot" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region           = "${var.aws_region}"
-  ssm_source_stage     = "${var.ssm_source_stage}"
-  task_name            = "${var.task_name}"
+  aws_region           = var.aws_region
+  ssm_source_stage     = var.ssm_source_stage
+  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-data.pattern.json"
   object_substitutions = {}
 
@@ -81,13 +80,13 @@ module "nmap_index_os" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/elastic_index"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
   index_file       = "${path.module}/indexes/nmap-os.index.json"
   index_name       = "os"
-  task_name        = "${var.task_name}"
+  task_name        = var.task_name
 }
 
 module "index_pattern_os_history" {
@@ -100,11 +99,11 @@ module "index_pattern_os_history" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region           = "${var.aws_region}"
-  ssm_source_stage     = "${var.ssm_source_stage}"
-  task_name            = "${var.task_name}"
+  aws_region           = var.aws_region
+  ssm_source_stage     = var.ssm_source_stage
+  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-os.pattern.json"
   object_substitutions = {}
 
@@ -122,11 +121,11 @@ module "index_pattern_os_snapshot" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region           = "${var.aws_region}"
-  ssm_source_stage     = "${var.ssm_source_stage}"
-  task_name            = "${var.task_name}"
+  aws_region           = var.aws_region
+  ssm_source_stage     = var.ssm_source_stage
+  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-os.pattern.json"
   object_substitutions = {}
 
@@ -144,13 +143,13 @@ module "nmap_index_ports" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/elastic_index"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
   index_file       = "${path.module}/indexes/nmap-ports.index.json"
   index_name       = "ports"
-  task_name        = "${var.task_name}"
+  task_name        = var.task_name
 }
 
 module "index_pattern_ports_history" {
@@ -163,11 +162,11 @@ module "index_pattern_ports_history" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region           = "${var.aws_region}"
-  ssm_source_stage     = "${var.ssm_source_stage}"
-  task_name            = "${var.task_name}"
+  aws_region           = var.aws_region
+  ssm_source_stage     = var.ssm_source_stage
+  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-ports.pattern.json"
   object_substitutions = {}
 
@@ -185,11 +184,11 @@ module "index_pattern_ports_snapshot" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region           = "${var.aws_region}"
-  ssm_source_stage     = "${var.ssm_source_stage}"
-  task_name            = "${var.task_name}"
+  aws_region           = var.aws_region
+  ssm_source_stage     = var.ssm_source_stage
+  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-ports.pattern.json"
   object_substitutions = {}
 
@@ -207,13 +206,13 @@ module "nmap_index_cves" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/elastic_index"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
   index_file       = "${path.module}/indexes/nmap-cves.index.json"
   index_name       = "cves"
-  task_name        = "${var.task_name}"
+  task_name        = var.task_name
 }
 
 module "index_pattern_cves_history" {
@@ -226,11 +225,11 @@ module "index_pattern_cves_history" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region           = "${var.aws_region}"
-  ssm_source_stage     = "${var.ssm_source_stage}"
-  task_name            = "${var.task_name}"
+  aws_region           = var.aws_region
+  ssm_source_stage     = var.ssm_source_stage
+  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-cves.pattern.json"
   object_substitutions = {}
 
@@ -248,11 +247,11 @@ module "index_pattern_cves_snapshot" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region           = "${var.aws_region}"
-  ssm_source_stage     = "${var.ssm_source_stage}"
-  task_name            = "${var.task_name}"
+  aws_region           = var.aws_region
+  ssm_source_stage     = var.ssm_source_stage
+  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-cves.pattern.json"
   object_substitutions = {}
 
@@ -270,13 +269,13 @@ module "nmap_index_ssl_protos" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/elastic_index"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
   index_file       = "${path.module}/indexes/nmap-ssl_protos.index.json"
   index_name       = "ssl_protos"
-  task_name        = "${var.task_name}"
+  task_name        = var.task_name
 }
 
 module "index_pattern_ssl_protos_history" {
@@ -289,11 +288,11 @@ module "index_pattern_ssl_protos_history" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region           = "${var.aws_region}"
-  ssm_source_stage     = "${var.ssm_source_stage}"
-  task_name            = "${var.task_name}"
+  aws_region           = var.aws_region
+  ssm_source_stage     = var.ssm_source_stage
+  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-ssl_protos.pattern.json"
   object_substitutions = {}
 
@@ -311,11 +310,11 @@ module "index_pattern_ssl_protos_snapshot" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region           = "${var.aws_region}"
-  ssm_source_stage     = "${var.ssm_source_stage}"
-  task_name            = "${var.task_name}"
+  aws_region           = var.aws_region
+  ssm_source_stage     = var.ssm_source_stage
+  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-ssl_protos.pattern.json"
   object_substitutions = {}
 
@@ -333,13 +332,13 @@ module "nmap_index_ssl_ciphers" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/elastic_index"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
   index_file       = "${path.module}/indexes/nmap-ssl_ciphers.index.json"
   index_name       = "ssl_ciphers"
-  task_name        = "${var.task_name}"
+  task_name        = var.task_name
 }
 
 module "index_pattern_ssl_ciphers_history" {
@@ -352,11 +351,11 @@ module "index_pattern_ssl_ciphers_history" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region           = "${var.aws_region}"
-  ssm_source_stage     = "${var.ssm_source_stage}"
-  task_name            = "${var.task_name}"
+  aws_region           = var.aws_region
+  ssm_source_stage     = var.ssm_source_stage
+  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-ssl_ciphers.pattern.json"
   object_substitutions = {}
 
@@ -374,11 +373,11 @@ module "index_pattern_ssl_ciphers_snapshot" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region           = "${var.aws_region}"
-  ssm_source_stage     = "${var.ssm_source_stage}"
-  task_name            = "${var.task_name}"
+  aws_region           = var.aws_region
+  ssm_source_stage     = var.ssm_source_stage
+  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-ssl_ciphers.pattern.json"
   object_substitutions = {}
 
@@ -396,13 +395,13 @@ module "nmap_index_ssl_cert" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/elastic_index"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
   index_file       = "${path.module}/indexes/nmap-ssl_cert.index.json"
   index_name       = "ssl_cert"
-  task_name        = "${var.task_name}"
+  task_name        = var.task_name
 }
 
 module "index_pattern_ssl_cert_history" {
@@ -415,11 +414,11 @@ module "index_pattern_ssl_cert_history" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region           = "${var.aws_region}"
-  ssm_source_stage     = "${var.ssm_source_stage}"
-  task_name            = "${var.task_name}"
+  aws_region           = var.aws_region
+  ssm_source_stage     = var.ssm_source_stage
+  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-ssl_cert.pattern.json"
   object_substitutions = {}
 
@@ -437,14 +436,15 @@ module "index_pattern_ssl_cert_snapshot" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region           = "${var.aws_region}"
-  ssm_source_stage     = "${var.ssm_source_stage}"
-  task_name            = "${var.task_name}"
+  aws_region           = var.aws_region
+  ssm_source_stage     = var.ssm_source_stage
+  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-ssl_cert.pattern.json"
   object_substitutions = {}
 
   object_type  = "index-pattern"
   object_title = "${var.task_name}:ssl_cert_snapshot:read*"
 }
+

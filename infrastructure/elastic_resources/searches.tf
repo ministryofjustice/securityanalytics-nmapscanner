@@ -8,16 +8,16 @@ module "severe_cve_search" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
-  task_name        = "${var.task_name}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  task_name        = var.task_name
   object_template  = "${path.module}/searches/serious_vulnerabilities.search.json"
 
-  object_substitutions {
+  object_substitutions = {
     severity = 7
-    index    = "${module.index_pattern_snapshot.object_id}"
+    index    = module.index_pattern_snapshot.object_id
   }
 
   object_type  = "search"
@@ -34,15 +34,15 @@ module "weak_ssl_cipher_search" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
-  task_name        = "${var.task_name}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  task_name        = var.task_name
   object_template  = "${path.module}/searches/weak_ssl_ciphers.search.json"
 
-  object_substitutions {
-    index = "${module.index_pattern_snapshot.object_id}"
+  object_substitutions = {
+    index = module.index_pattern_snapshot.object_id
   }
 
   object_type  = "search"
@@ -59,17 +59,18 @@ module "weak_ssl_proto_search" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
-  task_name        = "${var.task_name}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  task_name        = var.task_name
   object_template  = "${path.module}/searches/weak_ssl_protos.search.json"
 
-  object_substitutions {
-    index = "${module.index_pattern_snapshot.object_id}"
+  object_substitutions = {
+    index = module.index_pattern_snapshot.object_id
   }
 
   object_type  = "search"
   object_title = "Hosts with weak SSL Protocols"
 }
+

@@ -7,8 +7,9 @@ data "external" "nmap_zip" {
     "python",
     "../shared_code/python/package_lambda.py",
     "-x",
-    "${local.nmap_zip}",
+    local.nmap_zip,
     "${path.module}/packaging.config.json",
     "../Pipfile.lock",
   ]
 }
+
