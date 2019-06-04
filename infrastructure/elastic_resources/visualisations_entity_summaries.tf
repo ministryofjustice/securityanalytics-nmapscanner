@@ -8,15 +8,15 @@ module "vulns_severity" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
-  task_name        = "${var.task_name}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/entity_summaries/cve_severity_all.vis.json"
 
-  object_substitutions {
-    index = "${module.index_pattern_cves_snapshot.object_id}"
+  object_substitutions = {
+    index = module.index_pattern_cves_snapshot.object_id
   }
 
   object_type  = "visualization"
@@ -33,15 +33,15 @@ module "proto_all" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
-  task_name        = "${var.task_name}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/entity_summaries/ssl_proto_all.vis.json"
 
-  object_substitutions {
-    index = "${module.index_pattern_ssl_protos_snapshot.object_id}"
+  object_substitutions = {
+    index = module.index_pattern_ssl_protos_snapshot.object_id
   }
 
   object_type  = "visualization"
@@ -58,15 +58,15 @@ module "services" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
-  task_name        = "${var.task_name}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/entity_summaries/services.vis.json"
 
-  object_substitutions {
-    index = "${module.index_pattern_ports_snapshot.object_id}"
+  object_substitutions = {
+    index = module.index_pattern_ports_snapshot.object_id
   }
 
   object_type  = "visualization"
@@ -83,15 +83,15 @@ module "likely_os" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
-  task_name        = "${var.task_name}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/entity_summaries/os_most_likely.vis.json"
 
-  object_substitutions {
-    index = "${module.index_pattern_snapshot.object_id}"
+  object_substitutions = {
+    index = module.index_pattern_snapshot.object_id
   }
 
   object_type  = "visualization"
@@ -108,15 +108,15 @@ module "common_vulns" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
-  task_name        = "${var.task_name}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/entity_summaries/cves_all.vis.json"
 
-  object_substitutions {
-    index = "${module.index_pattern_cves_snapshot.object_id}"
+  object_substitutions = {
+    index = module.index_pattern_cves_snapshot.object_id
   }
 
   object_type  = "visualization"
@@ -133,17 +133,18 @@ module "common_ciphers" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
-  task_name        = "${var.task_name}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/entity_summaries/ssl_ciphers_all.vis.json"
 
-  object_substitutions {
-    index = "${module.index_pattern_ssl_ciphers_snapshot.object_id}"
+  object_substitutions = {
+    index = module.index_pattern_ssl_ciphers_snapshot.object_id
   }
 
   object_type  = "visualization"
   object_title = "Cipher Support"
 }
+

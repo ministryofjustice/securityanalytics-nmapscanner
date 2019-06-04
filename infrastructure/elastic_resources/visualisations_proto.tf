@@ -8,15 +8,15 @@ module "severe_proto_total" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
-  task_name        = "${var.task_name}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/ssl_proto/ssl_proto_total.vis.json"
 
-  object_substitutions {
-    search_id = "${module.weak_ssl_proto_search.object_id}"
+  object_substitutions = {
+    search_id = module.weak_ssl_proto_search.object_id
   }
 
   object_type  = "visualization"
@@ -33,15 +33,15 @@ module "severe_proto_distro" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
-  task_name        = "${var.task_name}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/ssl_proto/ssl_proto_distro.vis.json"
 
-  object_substitutions {
-    search_id = "${module.weak_ssl_proto_search.object_id}"
+  object_substitutions = {
+    search_id = module.weak_ssl_proto_search.object_id
   }
 
   object_type  = "visualization"
@@ -58,17 +58,18 @@ module "severe_proto_table" {
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
-  app_name = "${var.app_name}"
+  app_name = var.app_name
 
-  aws_region       = "${var.aws_region}"
-  ssm_source_stage = "${var.ssm_source_stage}"
-  task_name        = "${var.task_name}"
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/ssl_proto/ssl_proto_table.vis.json"
 
-  object_substitutions {
-    search_id = "${module.weak_ssl_proto_search.object_id}"
+  object_substitutions = {
+    search_id = module.weak_ssl_proto_search.object_id
   }
 
   object_type  = "visualization"
   object_title = "Table of hosts with weak SSL protos"
 }
+
