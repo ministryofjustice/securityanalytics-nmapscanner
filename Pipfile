@@ -1,10 +1,11 @@
 [dev-packages]
 pytest = "*"
+requests = "*"
+requests-aws4auth = "*"
+aws-xray-sdk = "*"
 
 [packages]
 aioboto3 = "*"
-requests = "*"
-requests-aws4auth = "*"
 netaddr="*"
 untangle = "*"
 pytz = "*"
