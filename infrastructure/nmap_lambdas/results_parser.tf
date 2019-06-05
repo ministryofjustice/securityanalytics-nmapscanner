@@ -31,6 +31,10 @@ resource "aws_lambda_function" "results_parser" {
     data.aws_ssm_parameter.utils_layer.value,
   ]
 
+  tracing_config {
+    mode = var.use_xray ? "Active" : "PassThrough"
+  }
+
   timeout = 30
 
   environment {
@@ -39,6 +43,7 @@ resource "aws_lambda_function" "results_parser" {
       STAGE     = terraform.workspace
       APP_NAME  = var.app_name
       TASK_NAME = var.task_name
+      USE_XRAY = var.use_xray
     }
   }
 

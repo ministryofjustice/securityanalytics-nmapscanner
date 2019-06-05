@@ -38,6 +38,7 @@ jobs:
           command: |
             export PIPENV_VENV_IN_PROJECT=true
             pipenv install --dev --deploy
+            pipenv clean
             if [ ! -d "test-reports" ]; then
               mkdir test-reports
             fi

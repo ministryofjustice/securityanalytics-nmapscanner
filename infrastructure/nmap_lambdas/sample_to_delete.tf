@@ -29,12 +29,17 @@ resource "aws_lambda_function" "sample" {
     data.aws_ssm_parameter.utils_layer.value,
   ]
 
+  tracing_config {
+    mode = var.use_xray ? "Active" : "PassThrough"
+  }
+
   environment {
     variables = {
       REGION    = var.aws_region
       STAGE     = terraform.workspace
       APP_NAME  = var.app_name
       TASK_NAME = var.task_name
+      USE_XRAY = var.use_xray
     }
   }
 

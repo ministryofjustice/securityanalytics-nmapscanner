@@ -212,7 +212,7 @@ def process_os(os_info, host, results_context):
     ssm_client,
     SNS_TOPIC
 )
-@async_handler
+@async_handler()
 async def parse_results(event, _):
     topic = event['ssm_params'][SNS_TOPIC]
     for record in event["Records"]:

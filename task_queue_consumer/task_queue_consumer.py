@@ -138,7 +138,7 @@ def submit_ecs_task(event, host, message_id):
     SECURITY_GROUP,
     IMAGE_ID
 )
-@async_handler
+@async_handler()
 async def submit_scan_task(event, _):
 
     print(f"Processing event {dumps(event)}")
