@@ -27,6 +27,10 @@ resource "aws_lambda_function" "results_parser" {
   filename         = local.nmap_zip
   source_code_hash = data.external.nmap_zip.result.hash
 
+  dead_letter_config {
+    target_arn = var.results_parser_dlq
+  }
+
   layers = [
     data.aws_ssm_parameter.utils_layer.value,
   ]
