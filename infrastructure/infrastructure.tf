@@ -45,6 +45,12 @@ variable "scan_hosts" {
   default = ["scanme.nmap.org"]
 }
 
+variable "use_xray" {
+  type        = string
+  description = "Whether to instrument lambdas"
+  default     = false
+}
+
 provider "aws" {
   version = "~> 2.13"
   region  = var.aws_region
@@ -93,10 +99,11 @@ module "nmap_task" {
   # (or other future tasks), at the same time, without requiring the task execution changes to be
   # pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   # devs will have to comment in/out this line as and when they need
-  # source = "../../securityanalytics-taskexecution/infrastructure/ecs_task"
+  // source = "../../securityanalytics-taskexecution/infrastructure/ecs_task"
 
   app_name                      = var.app_name
   aws_region                    = var.aws_region
+  use_xray                      = var.use_xray
   cpu                           = "1024"
   memory                        = "2048"
   docker_dir                    = replace(dirname(module.docker_image.docker_file), "\\", "/")
@@ -107,6 +114,7 @@ module "nmap_task" {
   account_id                    = var.account_id
   ssm_source_stage              = local.ssm_source_stage
   transient_workspace           = local.transient_workspace
+  results_parser_arn            = module.nmap_lambda.results_parser_arn
 }
 
 module "subscribe_scheduler" {
@@ -126,9 +134,11 @@ module "nmap_lambda" {
   results_bucket_arn       = module.nmap_task.results_bucket_arn
   aws_region               = var.aws_region
   account_id               = var.account_id
+  use_xray                 = var.use_xray
   queue_arn                = module.nmap_task.task_queue
   ssm_source_stage         = local.ssm_source_stage
   task_queue_consumer_role = module.nmap_task.task_queue_consumer
   results_parser_role      = module.nmap_task.results_parser
+  results_parser_dlq       = module.nmap_task.results_dead_letter_queue
 }
 

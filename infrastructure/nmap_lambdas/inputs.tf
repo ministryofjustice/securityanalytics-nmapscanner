@@ -14,6 +14,15 @@ variable "account_id" {
   type = string
 }
 
+variable "ssm_source_stage" {
+  type = string
+}
+
+variable "use_xray" {
+  type = string
+  description = "Whether to instrument lambdas"
+}
+
 variable "queue_arn" {
   type = string
 }
@@ -34,13 +43,6 @@ variable "results_parser_role" {
   type = string
 }
 
-variable "ssm_source_stage" {
+variable "results_parser_dlq" {
   type = string
 }
-
-variable "use_xray" {
-  type = string
-  description = "Whether to instrument lambdas"
-  default = true
-}
-

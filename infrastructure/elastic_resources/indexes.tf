@@ -16,7 +16,7 @@ module "index" {
   // (or other future tasks), at the same time, without requiring the task execution changes to be
   // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   // devs will have to comment in/out this line as and when they need
-  // source = "../../../securityanalytics-analyticsplatform/infrastructure/elastic_index"
+  //k source = "../../../securityanalytics-analyticsplatform/infrastructure/elastic_index"
   app_name = var.app_name
 
   aws_region       = var.aws_region
