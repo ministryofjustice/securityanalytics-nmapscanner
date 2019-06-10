@@ -99,7 +99,7 @@ module "nmap_task" {
   # (or other future tasks), at the same time, without requiring the task execution changes to be
   # pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
   # devs will have to comment in/out this line as and when they need
-  // source = "../../securityanalytics-taskexecution/infrastructure/ecs_task"
+  # source = "../../securityanalytics-taskexecution/infrastructure/ecs_task"
 
   app_name                      = var.app_name
   aws_region                    = var.aws_region
