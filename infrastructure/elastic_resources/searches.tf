@@ -22,6 +22,7 @@ module "severe_cve_search" {
 
   object_type  = "search"
   object_title = "Hosts with severe CVEs"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "weak_ssl_cipher_search" {
@@ -47,6 +48,7 @@ module "weak_ssl_cipher_search" {
 
   object_type  = "search"
   object_title = "Hosts with weak SSL Ciphers"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "weak_ssl_proto_search" {
@@ -72,5 +74,6 @@ module "weak_ssl_proto_search" {
 
   object_type  = "search"
   object_title = "Hosts with weak SSL Protocols"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 

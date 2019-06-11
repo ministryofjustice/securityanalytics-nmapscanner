@@ -29,6 +29,7 @@ module "moj_dashboard" {
 
   object_type  = "dashboard"
   object_title = "MoJ Security Analaysis Dashboard 1"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "moj_dashboard_2" {
@@ -61,6 +62,7 @@ module "moj_dashboard_2" {
 
   object_type  = "dashboard"
   object_title = "MoJ Security Analaysis Dashboard 2"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "moj_dashboard_3" {
@@ -87,5 +89,6 @@ module "moj_dashboard_3" {
 
   object_type  = "dashboard"
   object_title = "SSL Expiry"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
