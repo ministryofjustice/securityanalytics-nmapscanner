@@ -21,6 +21,7 @@ module "host_status" {
 
   object_type  = "visualization"
   object_title = "Up/Down"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "host_scanned" {
@@ -46,5 +47,6 @@ module "host_scanned" {
 
   object_type  = "visualization"
   object_title = "Hosts scanned"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 

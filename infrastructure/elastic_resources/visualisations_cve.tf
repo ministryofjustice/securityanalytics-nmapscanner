@@ -22,6 +22,7 @@ module "severe_cve_total" {
 
   object_type  = "visualization"
   object_title = "Total hosts with severe CVEs"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "severe_cve_distro" {
@@ -47,6 +48,7 @@ module "severe_cve_distro" {
 
   object_type  = "visualization"
   object_title = "Distribution of most severe CVEs"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "severe_cve_table" {
@@ -65,12 +67,13 @@ module "severe_cve_table" {
   ssm_source_stage = var.ssm_source_stage
   task_name        = var.task_name
   object_template  = "${path.module}/visualisations/cve/serious_vulnerabilities_table.vis.json"
-
+  es_domain        = data.aws_ssm_parameter.es_domain.value
   object_substitutions = {
     search_id = module.severe_cve_search.object_id
   }
 
   object_type  = "visualization"
   object_title = "Table of hosts with severe CVEs"
+
 }
 

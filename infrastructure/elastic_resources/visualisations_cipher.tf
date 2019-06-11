@@ -21,6 +21,7 @@ module "severe_cipher_total" {
 
   object_type  = "visualization"
   object_title = "Total hosts with weak SSL ciphers"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "severe_cipher_distro" {
@@ -46,6 +47,7 @@ module "severe_cipher_distro" {
 
   object_type  = "visualization"
   object_title = "Distribution of weakest SSL ciphers"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "severe_cipher_table" {
@@ -71,5 +73,6 @@ module "severe_cipher_table" {
 
   object_type  = "visualization"
   object_title = "Table of hosts with weak SSL ciphers"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 

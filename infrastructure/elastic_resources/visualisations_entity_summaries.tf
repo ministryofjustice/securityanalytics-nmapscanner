@@ -21,6 +21,7 @@ module "vulns_severity" {
 
   object_type  = "visualization"
   object_title = "Vulnerabilities and Severity"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "proto_all" {
@@ -46,6 +47,7 @@ module "proto_all" {
 
   object_type  = "visualization"
   object_title = "SSL Proto Support"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "services" {
@@ -71,6 +73,7 @@ module "services" {
 
   object_type  = "visualization"
   object_title = "Services"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "likely_os" {
@@ -96,6 +99,7 @@ module "likely_os" {
 
   object_type  = "visualization"
   object_title = "Most likely host OS"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "common_vulns" {
@@ -121,6 +125,7 @@ module "common_vulns" {
 
   object_type  = "visualization"
   object_title = "Most Common Vulnerabilities"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "common_ciphers" {
@@ -146,5 +151,6 @@ module "common_ciphers" {
 
   object_type  = "visualization"
   object_title = "Cipher Support"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 

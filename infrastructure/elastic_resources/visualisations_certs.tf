@@ -21,6 +21,7 @@ module "ssl_expiry_distro" {
 
   object_type  = "visualization"
   object_title = "SSL Expiry Distro"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "ssl_expiry_table" {
@@ -46,5 +47,6 @@ module "ssl_expiry_table" {
 
   object_type  = "visualization"
   object_title = "SSL Expiry Top 10"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
