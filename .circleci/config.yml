@@ -30,8 +30,8 @@ jobs:
 
       - restore_cache:
           keys:
-            - other-v3-{{ .Branch }}-
-            - other-v3-
+            - other-v4-{{ .Branch }}-
+            - other-v4-
 
       - run:
           name: install virtual env
@@ -80,7 +80,7 @@ jobs:
             - ".git"
 
       - save_cache:
-          key: other-v3-{{ .Branch }}-{{ .Revision }}
+          key: other-v4-{{ .Branch }}-{{ .Revision }}
           paths:
             - "infrastructure/.terraform"
             - ".venv"
@@ -162,8 +162,8 @@ jobs:
     steps:
       - restore_cache:
           keys:
-            - git-v3-{{ .Branch }}-
-            - git-v3-
+            - git-v4-{{ .Branch }}-
+            - git-v4-
 
       - setup_remote_docker:
           docker_layer_caching: true
@@ -172,8 +172,8 @@ jobs:
 
       - restore_cache:
           keys:
-            - tf-moj-v3-{{ .Branch }}-
-            - tf-moj-v3-
+            - tf-moj-v4-{{ .Branch }}-
+            - tf-moj-v4-
 
       - run:
           name: update git submodule
@@ -199,17 +199,17 @@ jobs:
             export AWS_SECRET_ACCESS_KEY=$MOJ_SECRET_ACCESS_KEY
             . .circleci/env.sh
             cd infrastructure
-            terraform init -backend-config "bucket=$MOJ_APP_NAME-terraform-state" -reconfigure
+            terraform -reconfigure init -backend-config "bucket=$MOJ_APP_NAME-terraform-state"
             terraform workspace new dev || terraform workspace select dev
             terraform apply -auto-approve -var ssm_source_stage=$SSM_SOURCE_STAGE -var account_id=$MOJ_ACCOUNT_ID -var app_name=$MOJ_APP_NAME
 
       - save_cache:
-          key: git-v3-{{ .Branch }}-{{ .Revision }}
+          key: git-v4-{{ .Branch }}-{{ .Revision }}
           paths:
             - ".git"
 
       - save_cache:
-          key: tf-moj-v3-{{ .Branch }}-{{ .Revision }}
+          key: tf-moj-v4-{{ .Branch }}-{{ .Revision }}
           paths:
             - "infrastructure/.terraform"
 
