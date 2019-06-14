@@ -199,7 +199,7 @@ jobs:
             export AWS_SECRET_ACCESS_KEY=$MOJ_SECRET_ACCESS_KEY
             . .circleci/env.sh
             cd infrastructure
-            terraform -reconfigure init -backend-config "bucket=$MOJ_APP_NAME-terraform-state"
+            terraform init -reconfigure -backend-config "bucket=$MOJ_APP_NAME-terraform-state"
             terraform workspace new dev || terraform workspace select dev
             terraform apply -auto-approve -var ssm_source_stage=$SSM_SOURCE_STAGE -var account_id=$MOJ_ACCOUNT_ID -var app_name=$MOJ_APP_NAME
 
