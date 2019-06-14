@@ -152,7 +152,7 @@ jobs:
           command: |
             . .circleci/env.sh
             cd infrastructure
-            terraform init -backend-config "bucket=$APP_NAME-terraform-state"
+            terraform init -reconfigure -backend-config "bucket=$APP_NAME-terraform-state"
             terraform workspace new dev || terraform workspace select dev
             terraform get --update
             terraform apply plan.file
