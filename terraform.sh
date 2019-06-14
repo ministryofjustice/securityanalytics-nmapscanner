@@ -7,7 +7,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     # or touch lots of files at the same time - boosting this to 4096 allows this to happen and stops the build failing
     ulimit -n 4096
 fi
-terraform init -backend-config "bucket=$1-terraform-state"
+terraform init -reconfigure -backend-config "bucket=$1-terraform-state"
 terraform workspace new $2 || terraform workspace select $2
 terraform get --update
 terraform apply -auto-approve -input=true -var app_name=$1
