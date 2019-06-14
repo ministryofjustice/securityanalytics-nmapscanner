@@ -17,4 +17,4 @@ pipenv shell
 pytest tests -s
 ```
 
-This runs all of the tests. Note that you can use `-m` to reduce the scope e.g. `-m unit` to run unit tests and `-m integration`
+This runs all of the tests. Note that you can use `-m` to reduce the scope e.g. `-m unit` to run unit tests and `-m integration`.
