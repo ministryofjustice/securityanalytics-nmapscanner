@@ -32,7 +32,7 @@ module "task_queue_consumer_dead_letters" {
 resource "aws_lambda_function" "queue_consumer" {
   depends_on = [data.external.nmap_zip]
 
-  function_name    = "${terraform.workspace}-${var.app_name}-${var.task_name}-task-q-consumer"
+  function_name    = "${terraform.workspace}-${var.app_name}-${var.task_name}-task-queue-consumer"
   handler          = "task_queue_consumer.task_queue_consumer.submit_scan_task"
   role             = var.task_queue_consumer_role
   runtime          = "python3.7"
