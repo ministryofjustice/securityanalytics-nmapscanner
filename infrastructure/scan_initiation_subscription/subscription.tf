@@ -41,6 +41,6 @@ resource "aws_sns_topic_subscription" "user_updates_sqs_target" {
   topic_arn            = data.aws_ssm_parameter.scan_initiation_topic.value
   protocol             = "sqs"
   endpoint             = var.scan_trigger_queue_arn
-  raw_message_delivery = false
+  raw_message_delivery = true
 }
 
