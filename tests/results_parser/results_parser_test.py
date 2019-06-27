@@ -826,7 +826,8 @@ def test_parses_ssl_certs():
             all_protocols += len(x["ssl_enum_ciphers"])
             for enum_cipher in x["ssl_enum_ciphers"]:
                 all_ciphers += len(enum_cipher["ciphers"])
-    assert results_parser.sns_client.publish.call_count == len(call_details["ports"]) + all_protocols + all_ciphers + 2 # 2 because of main data and because of ssl_cert
+    # 2 because of main data and because of ssl_cert
+    assert results_parser.sns_client.publish.call_count == len(call_details["ports"]) + all_protocols + all_ciphers + 2
 
     for port in call_details["ports"]:
         if port["port_id"] == "443":

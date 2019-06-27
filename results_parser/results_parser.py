@@ -90,6 +90,7 @@ def process_host_results(topic, host, result_file_name, start_time, end_time):
 
     results_context.post_results("data", results_details, include_summaries=True)
 
+    results_context.publish_results()
     print(f"done host")
 
 
