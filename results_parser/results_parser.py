@@ -201,11 +201,12 @@ def process_os(os_info, host, results_context):
             process_os_class(os_match, os_data)
             os_info.append({**os_key, **os_data})
 
-            if most_likely_os:
+            results_context.post_results("os", os_data)
+
+            if most_likely_os == name:
                 results_context.add_summary("most_likely_os", most_likely_os)
                 results_context.add_summary("most_likely_os_accuracy", most_accurate)
 
-            results_context.post_results("os", os_data)
             results_context.pop_context()
 
 
