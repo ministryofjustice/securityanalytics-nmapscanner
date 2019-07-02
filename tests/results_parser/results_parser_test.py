@@ -695,3 +695,56 @@ def test_parses_ssl_certs():
         }),
         call.pop_context()
     ]
+
+@patch.dict(os.environ, TEST_ENV)
+@pytest.mark.unit
+@serialise_mocks()
+@resetting_mocks(
+    mock_mgr,
+    mock_results_context,
+    results_parser.sns_client,
+    results_parser.s3_client,
+    results_parser.ssm_client
+)
+def test_regression_foo():
+    results_parser.ssm_client.get_parameters.return_value = ssm_return_vals()
+
+    # load sample results file and make mock return it
+    sample_file_name = f"{TEST_DIR}regression-SA-174-table-format-for-vulns.xml.tar.gz"
+    with open(sample_file_name, "rb") as sample_data:
+        results_parser.s3_client.get_object.return_value = {
+            "Body": StreamingBody(sample_data, os.stat(sample_file_name).st_size)
+        }
+
+        results_parser.parse_results({
+            "Records": [
+                {"s3": {
+                    "bucket": {"name": "test_bucket"},
+                    # Please note that the / characters in the key are replaced with %2F, the key is
+                    # urlencoded
+                    "object": {"key": "regression-SA-174-table-format-for-vulns.xml.tar.gz"}
+                }}
+            ]
+        }, MagicMock())
+
+    # filter all the calls to those that allow us to inspect the behaviour
+    posted_cipher_doc = [
+        (name, args, kwargs)
+        for (name, args, kwargs) in mock_mgr.mock_calls
+        if (name == "post_results" and args[0] in ["cve_code", "cves"]) or
+           (name == "push_context" or name == "pop_context")
+    ]
+
+    assert posted_cipher_doc == [
+        call.push_context({
+            "port_id": "80",
+            "protocol": "tcp",
+        }),
+        call.push_context({"cve_code": "CVE-2017-7679"}),
+        call.post_results("cves", {"cve_severity": 7.5, "is_exploit": "false", "type": "cve"}),
+        call.pop_context(),
+        call.push_context({"cve_code": "CVE-2018-1312"}),
+        call.post_results("cves", {"cve_severity": 6.8, "is_exploit": "false", "type": "cve"}),
+        call.pop_context(),
+        call.pop_context(),
+    ]
