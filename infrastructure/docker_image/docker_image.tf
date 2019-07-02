@@ -12,7 +12,7 @@ locals {
 
 resource "local_file" "docker_file" {
   filename = local.docker_file
-  content  = data.template_file.docker_file.rendered
+  content = data.template_file.docker_file.rendered
 }
 
 data "template_file" "task_script" {
@@ -25,6 +25,6 @@ data "template_file" "task_script" {
 
 resource "local_file" "task_script" {
   filename = "../.generated/task_script.sh"
-  content  = data.template_file.task_script.rendered
+  content = data.template_file.task_script.rendered
 }
 

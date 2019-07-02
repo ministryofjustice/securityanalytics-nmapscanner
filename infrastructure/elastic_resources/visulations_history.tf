@@ -10,18 +10,17 @@ module "host_status" {
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
-  aws_region       = var.aws_region
+  aws_region = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
-  object_template  = "${path.module}/visualisations/historical/host_status.vis.json"
+  object_template = "${path.module}/visualisations/historical/host_status.vis.json"
 
   object_substitutions = {
     index = module.index_pattern_history.object_id
   }
 
-  object_type  = "visualization"
+  object_type = "visualization"
   object_title = "Up/Down"
-  es_domain    = data.aws_ssm_parameter.es_domain.value
+  es_domain = data.aws_ssm_parameter.es_domain.value
 }
 
 module "host_scanned" {
@@ -36,17 +35,16 @@ module "host_scanned" {
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
-  aws_region       = var.aws_region
+  aws_region = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
-  object_template  = "${path.module}/visualisations/historical/hosts_scanned.vis.json"
+  object_template = "${path.module}/visualisations/historical/hosts_scanned.vis.json"
 
   object_substitutions = {
     index = module.index_pattern_history.object_id
   }
 
-  object_type  = "visualization"
+  object_type = "visualization"
   object_title = "Hosts scanned"
-  es_domain    = data.aws_ssm_parameter.es_domain.value
+  es_domain = data.aws_ssm_parameter.es_domain.value
 }
 
