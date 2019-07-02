@@ -7,23 +7,20 @@ resource "aws_lambda_permission" "s3_invoke" {
 }
 
 resource "aws_s3_bucket_notification" "ingestor_queue_trigger" {
-  depends_on = [
-  aws_lambda_permission.s3_invoke]
-  bucket = var.results_bucket
+  depends_on = [aws_lambda_permission.s3_invoke]
+  bucket     = var.results_bucket
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.results_parser.arn
-    events = [
-    "s3:ObjectCreated:*"]
-    filter_suffix = ".tar.gz"
+    events              = ["s3:ObjectCreated:*"]
+    filter_suffix       = ".tar.gz"
   }
 }
 
 resource "aws_lambda_function" "results_parser" {
   # TODO Could have some issues here potentially when the policy attachments to the role
   # this depends on are not done in time.
-  depends_on = [
-  data.external.nmap_zip]
+  depends_on = [data.external.nmap_zip]
 
   function_name    = "${terraform.workspace}-${var.app_name}-${var.task_name}-results-parser"
   handler          = "results_parser.results_parser.parse_results"

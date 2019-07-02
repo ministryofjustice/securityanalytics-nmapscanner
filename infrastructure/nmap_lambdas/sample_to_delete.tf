@@ -19,7 +19,8 @@ resource "aws_api_gateway_deployment" "stage" {
 resource "aws_lambda_function" "sample" {
   depends_on = [
     data.external.nmap_zip,
-  aws_iam_role_policy_attachment.task_policy]
+    aws_iam_role_policy_attachment.task_policy
+  ]
 
   function_name = "${terraform.workspace}-${var.app_name}-${var.task_name}-sample"
   handler       = "sample_lambda.sample.sample"
@@ -94,8 +95,7 @@ resource "aws_api_gateway_method_response" "nmap_sample_200" {
 }
 
 resource "aws_api_gateway_integration_response" "nmap_sample" {
-  depends_on = [
-  aws_api_gateway_integration.nmap_sample]
+  depends_on = [aws_api_gateway_integration.nmap_sample]
 
   rest_api_id = aws_api_gateway_rest_api.api_gateway.id
   resource_id = aws_api_gateway_resource.nmap_sample.id
@@ -105,14 +105,12 @@ resource "aws_api_gateway_integration_response" "nmap_sample" {
 
 data "aws_iam_policy_document" "sample_trust" {
   statement {
-    actions = [
-    "sts:AssumeRole"]
-    effect = "Allow"
+    actions = ["sts:AssumeRole"]
+    effect  = "Allow"
 
     principals {
-      type = "Service"
-      identifiers = [
-      "lambda.amazonaws.com"]
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
     }
   }
 }
@@ -126,8 +124,7 @@ data "aws_iam_policy_document" "sample_access" {
     ]
 
     # TODO reduce this scope
-    resources = [
-    "*"]
+    resources = ["*"]
   }
 
   statement {
@@ -140,8 +137,7 @@ data "aws_iam_policy_document" "sample_access" {
     ]
 
     # TODO reduce this scope
-    resources = [
-    "*"]
+    resources = ["*"]
   }
 
   # To enable XRAY trace

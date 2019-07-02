@@ -16,9 +16,8 @@ data "aws_iam_policy_document" "notify_topic_policy" {
     effect = "Allow"
 
     principals {
-      type = "AWS"
-      identifiers = [
-      "*"]
+      type        = "AWS"
+      identifiers = ["*"]
     }
 
     resources = [
