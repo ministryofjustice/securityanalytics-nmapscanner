@@ -1,20 +1,20 @@
 resource "aws_lambda_permission" "s3_invoke" {
-  statement_id = "AllowExecutionFromS3"
-  action = "lambda:InvokeFunction"
+  statement_id  = "AllowExecutionFromS3"
+  action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.results_parser.function_name
-  principal = "s3.amazonaws.com"
-  source_arn = var.results_bucket_arn
+  principal     = "s3.amazonaws.com"
+  source_arn    = var.results_bucket_arn
 }
 
 resource "aws_s3_bucket_notification" "ingestor_queue_trigger" {
   depends_on = [
-    aws_lambda_permission.s3_invoke]
+  aws_lambda_permission.s3_invoke]
   bucket = var.results_bucket
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.results_parser.arn
     events = [
-      "s3:ObjectCreated:*"]
+    "s3:ObjectCreated:*"]
     filter_suffix = ".tar.gz"
   }
 }
@@ -23,13 +23,13 @@ resource "aws_lambda_function" "results_parser" {
   # TODO Could have some issues here potentially when the policy attachments to the role
   # this depends on are not done in time.
   depends_on = [
-    data.external.nmap_zip]
+  data.external.nmap_zip]
 
-  function_name = "${terraform.workspace}-${var.app_name}-${var.task_name}-results-parser"
-  handler = "results_parser.results_parser.parse_results"
-  role = var.results_parser_role
-  runtime = "python3.7"
-  filename = local.nmap_zip
+  function_name    = "${terraform.workspace}-${var.app_name}-${var.task_name}-results-parser"
+  handler          = "results_parser.results_parser.parse_results"
+  role             = var.results_parser_role
+  runtime          = "python3.7"
+  filename         = local.nmap_zip
   source_code_hash = data.external.nmap_zip.result.hash
 
   dead_letter_config {
@@ -48,17 +48,17 @@ resource "aws_lambda_function" "results_parser" {
 
   environment {
     variables = {
-      REGION = var.aws_region
-      STAGE = terraform.workspace
-      APP_NAME = var.app_name
+      REGION    = var.aws_region
+      STAGE     = terraform.workspace
+      APP_NAME  = var.app_name
       TASK_NAME = var.task_name
-      USE_XRAY = var.use_xray
+      USE_XRAY  = var.use_xray
     }
   }
 
   tags = {
     workspace = terraform.workspace
-    app_name = var.app_name
+    app_name  = var.app_name
   }
 }
 

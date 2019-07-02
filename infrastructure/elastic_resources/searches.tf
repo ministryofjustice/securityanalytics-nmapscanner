@@ -10,18 +10,18 @@ module "severe_cve_search" {
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
-  aws_region = var.aws_region
+  aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  object_template = "${path.module}/searches/serious_vulnerabilities.search.json"
+  object_template  = "${path.module}/searches/serious_vulnerabilities.search.json"
 
   object_substitutions = {
     severity = 7
-    index = module.index_pattern_snapshot.object_id
+    index    = module.index_pattern_snapshot.object_id
   }
 
-  object_type = "search"
+  object_type  = "search"
   object_title = "Hosts with severe CVEs"
-  es_domain = data.aws_ssm_parameter.es_domain.value
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "weak_ssl_cipher_search" {
@@ -36,17 +36,17 @@ module "weak_ssl_cipher_search" {
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
-  aws_region = var.aws_region
+  aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  object_template = "${path.module}/searches/weak_ssl_ciphers.search.json"
+  object_template  = "${path.module}/searches/weak_ssl_ciphers.search.json"
 
   object_substitutions = {
     index = module.index_pattern_snapshot.object_id
   }
 
-  object_type = "search"
+  object_type  = "search"
   object_title = "Hosts with weak SSL Ciphers"
-  es_domain = data.aws_ssm_parameter.es_domain.value
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "weak_ssl_proto_search" {
@@ -61,16 +61,16 @@ module "weak_ssl_proto_search" {
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
-  aws_region = var.aws_region
+  aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  object_template = "${path.module}/searches/weak_ssl_protos.search.json"
+  object_template  = "${path.module}/searches/weak_ssl_protos.search.json"
 
   object_substitutions = {
     index = module.index_pattern_snapshot.object_id
   }
 
-  object_type = "search"
+  object_type  = "search"
   object_title = "Hosts with weak SSL Protocols"
-  es_domain = data.aws_ssm_parameter.es_domain.value
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 

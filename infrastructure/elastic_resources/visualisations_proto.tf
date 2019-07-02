@@ -10,17 +10,17 @@ module "severe_proto_total" {
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
-  aws_region = var.aws_region
+  aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  object_template = "${path.module}/visualisations/ssl_proto/ssl_proto_total.vis.json"
+  object_template  = "${path.module}/visualisations/ssl_proto/ssl_proto_total.vis.json"
 
   object_substitutions = {
     search_id = module.weak_ssl_proto_search.object_id
   }
 
-  object_type = "visualization"
+  object_type  = "visualization"
   object_title = "Total hosts with weak SSL protos"
-  es_domain = data.aws_ssm_parameter.es_domain.value
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "severe_proto_distro" {
@@ -35,17 +35,17 @@ module "severe_proto_distro" {
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
-  aws_region = var.aws_region
+  aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  object_template = "${path.module}/visualisations/ssl_proto/ssl_proto_distro.vis.json"
+  object_template  = "${path.module}/visualisations/ssl_proto/ssl_proto_distro.vis.json"
 
   object_substitutions = {
     search_id = module.weak_ssl_proto_search.object_id
   }
 
-  object_type = "visualization"
+  object_type  = "visualization"
   object_title = "Distribution of weakest SSL protos"
-  es_domain = data.aws_ssm_parameter.es_domain.value
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "severe_proto_table" {
@@ -60,16 +60,16 @@ module "severe_proto_table" {
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
-  aws_region = var.aws_region
+  aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  object_template = "${path.module}/visualisations/ssl_proto/ssl_proto_table.vis.json"
+  object_template  = "${path.module}/visualisations/ssl_proto/ssl_proto_table.vis.json"
 
   object_substitutions = {
     search_id = module.weak_ssl_proto_search.object_id
   }
 
-  object_type = "visualization"
+  object_type  = "visualization"
   object_title = "Table of hosts with weak SSL protos"
-  es_domain = data.aws_ssm_parameter.es_domain.value
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 

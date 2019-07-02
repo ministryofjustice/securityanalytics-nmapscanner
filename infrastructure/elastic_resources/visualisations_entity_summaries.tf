@@ -10,17 +10,17 @@ module "vulns_severity" {
   // source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
-  aws_region = var.aws_region
+  aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  object_template = "${path.module}/visualisations/entity_summaries/cve_severity_all.vis.json"
+  object_template  = "${path.module}/visualisations/entity_summaries/cve_severity_all.vis.json"
 
   object_substitutions = {
     index = module.index_pattern_cves_snapshot.object_id
   }
 
-  object_type = "visualization"
+  object_type  = "visualization"
   object_title = "Vulnerabilities and Severity"
-  es_domain = data.aws_ssm_parameter.es_domain.value
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "proto_all" {
@@ -35,17 +35,17 @@ module "proto_all" {
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
-  aws_region = var.aws_region
+  aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  object_template = "${path.module}/visualisations/entity_summaries/ssl_proto_all.vis.json"
+  object_template  = "${path.module}/visualisations/entity_summaries/ssl_proto_all.vis.json"
 
   object_substitutions = {
     index = module.index_pattern_ssl_protos_snapshot.object_id
   }
 
-  object_type = "visualization"
+  object_type  = "visualization"
   object_title = "SSL Proto Support"
-  es_domain = data.aws_ssm_parameter.es_domain.value
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "services" {
@@ -60,17 +60,17 @@ module "services" {
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
-  aws_region = var.aws_region
+  aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  object_template = "${path.module}/visualisations/entity_summaries/services.vis.json"
+  object_template  = "${path.module}/visualisations/entity_summaries/services.vis.json"
 
   object_substitutions = {
     index = module.index_pattern_ports_snapshot.object_id
   }
 
-  object_type = "visualization"
+  object_type  = "visualization"
   object_title = "Services"
-  es_domain = data.aws_ssm_parameter.es_domain.value
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "likely_os" {
@@ -85,17 +85,17 @@ module "likely_os" {
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
-  aws_region = var.aws_region
+  aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  object_template = "${path.module}/visualisations/entity_summaries/os_most_likely.vis.json"
+  object_template  = "${path.module}/visualisations/entity_summaries/os_most_likely.vis.json"
 
   object_substitutions = {
     index = module.index_pattern_snapshot.object_id
   }
 
-  object_type = "visualization"
+  object_type  = "visualization"
   object_title = "Most likely host OS"
-  es_domain = data.aws_ssm_parameter.es_domain.value
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "common_vulns" {
@@ -110,17 +110,17 @@ module "common_vulns" {
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
-  aws_region = var.aws_region
+  aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  object_template = "${path.module}/visualisations/entity_summaries/cves_all.vis.json"
+  object_template  = "${path.module}/visualisations/entity_summaries/cves_all.vis.json"
 
   object_substitutions = {
     index = module.index_pattern_cves_snapshot.object_id
   }
 
-  object_type = "visualization"
+  object_type  = "visualization"
   object_title = "Most Common Vulnerabilities"
-  es_domain = data.aws_ssm_parameter.es_domain.value
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "common_ciphers" {
@@ -135,16 +135,16 @@ module "common_ciphers" {
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
-  aws_region = var.aws_region
+  aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  object_template = "${path.module}/visualisations/entity_summaries/ssl_ciphers_all.vis.json"
+  object_template  = "${path.module}/visualisations/entity_summaries/ssl_ciphers_all.vis.json"
 
   object_substitutions = {
     index = module.index_pattern_ssl_ciphers_snapshot.object_id
   }
 
-  object_type = "visualization"
+  object_type  = "visualization"
   object_title = "Cipher Support"
-  es_domain = data.aws_ssm_parameter.es_domain.value
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 

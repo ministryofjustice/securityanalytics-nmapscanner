@@ -7,7 +7,7 @@ variable "ssm_source_stage" {
 }
 
 variable "subscribe_to_scheduler" {
-  type = string
+  type    = string
   default = true
 }
 

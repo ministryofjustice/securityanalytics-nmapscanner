@@ -10,17 +10,17 @@ module "ssl_expiry_distro" {
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
-  aws_region = var.aws_region
+  aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  object_template = "${path.module}/visualisations/ssl_cert/expiry_dates_distro.vis.json"
+  object_template  = "${path.module}/visualisations/ssl_cert/expiry_dates_distro.vis.json"
 
   object_substitutions = {
     index = module.index_pattern_ssl_cert_snapshot.object_id
   }
 
-  object_type = "visualization"
+  object_type  = "visualization"
   object_title = "SSL Expiry Distro"
-  es_domain = data.aws_ssm_parameter.es_domain.value
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
 module "ssl_expiry_table" {
@@ -35,16 +35,16 @@ module "ssl_expiry_table" {
   //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
-  aws_region = var.aws_region
+  aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  object_template = "${path.module}/visualisations/ssl_cert/expiry_dates_table.vis.json"
+  object_template  = "${path.module}/visualisations/ssl_cert/expiry_dates_table.vis.json"
 
   object_substitutions = {
     index = module.index_pattern_ssl_cert_snapshot.object_id
   }
 
-  object_type = "visualization"
+  object_type  = "visualization"
   object_title = "SSL Expiry Top 10"
-  es_domain = data.aws_ssm_parameter.es_domain.value
+  es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 

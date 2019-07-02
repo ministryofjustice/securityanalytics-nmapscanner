@@ -5,7 +5,7 @@ data "aws_iam_policy_document" "notify_topic_policy" {
     ]
 
     condition {
-      test = "ArnEquals"
+      test     = "ArnEquals"
       variable = "aws:SourceArn"
 
       values = [
@@ -18,7 +18,7 @@ data "aws_iam_policy_document" "notify_topic_policy" {
     principals {
       type = "AWS"
       identifiers = [
-        "*"]
+      "*"]
     }
 
     resources = [
@@ -28,9 +28,9 @@ data "aws_iam_policy_document" "notify_topic_policy" {
 }
 
 resource "aws_sqs_queue_policy" "queue_policy" {
-  count = local.is_not_integration_test
+  count     = local.is_not_integration_test
   queue_url = var.scan_trigger_queue_url
-  policy = data.aws_iam_policy_document.notify_topic_policy.json
+  policy    = data.aws_iam_policy_document.notify_topic_policy.json
 }
 
 locals {
@@ -38,10 +38,10 @@ locals {
 }
 
 resource "aws_sns_topic_subscription" "user_updates_sqs_target" {
-  count = local.is_not_integration_test
-  topic_arn = data.aws_ssm_parameter.scan_initiation_topic.value
-  protocol = "sqs"
-  endpoint = var.scan_trigger_queue_arn
+  count                = local.is_not_integration_test
+  topic_arn            = data.aws_ssm_parameter.scan_initiation_topic.value
+  protocol             = "sqs"
+  endpoint             = var.scan_trigger_queue_arn
   raw_message_delivery = true
 }
 
