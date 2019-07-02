@@ -12,7 +12,6 @@ module "severe_cve_search" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/searches/serious_vulnerabilities.search.json"
 
   object_substitutions = {
@@ -39,7 +38,6 @@ module "weak_ssl_cipher_search" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/searches/weak_ssl_ciphers.search.json"
 
   object_substitutions = {
@@ -65,7 +63,6 @@ module "weak_ssl_proto_search" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/searches/weak_ssl_protos.search.json"
 
   object_substitutions = {

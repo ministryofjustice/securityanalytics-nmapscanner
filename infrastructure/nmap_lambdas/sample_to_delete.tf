@@ -17,7 +17,10 @@ resource "aws_api_gateway_deployment" "stage" {
 }
 
 resource "aws_lambda_function" "sample" {
-  depends_on = [data.external.nmap_zip]
+  depends_on = [
+    data.external.nmap_zip,
+    aws_iam_role_policy_attachment.task_policy
+  ]
 
   function_name = "${terraform.workspace}-${var.app_name}-${var.task_name}-sample"
   handler       = "sample_lambda.sample.sample"
@@ -39,7 +42,7 @@ resource "aws_lambda_function" "sample" {
       STAGE     = terraform.workspace
       APP_NAME  = var.app_name
       TASK_NAME = var.task_name
-      USE_XRAY = var.use_xray
+      USE_XRAY  = var.use_xray
     }
   }
 

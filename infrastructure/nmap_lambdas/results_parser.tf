@@ -18,6 +18,8 @@ resource "aws_s3_bucket_notification" "ingestor_queue_trigger" {
 }
 
 resource "aws_lambda_function" "results_parser" {
+  # TODO Could have some issues here potentially when the policy attachments to the role
+  # this depends on are not done in time.
   depends_on = [data.external.nmap_zip]
 
   function_name    = "${terraform.workspace}-${var.app_name}-${var.task_name}-results-parser"
@@ -47,7 +49,7 @@ resource "aws_lambda_function" "results_parser" {
       STAGE     = terraform.workspace
       APP_NAME  = var.app_name
       TASK_NAME = var.task_name
-      USE_XRAY = var.use_xray
+      USE_XRAY  = var.use_xray
     }
   }
 

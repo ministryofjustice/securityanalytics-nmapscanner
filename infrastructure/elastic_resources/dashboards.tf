@@ -12,7 +12,6 @@ module "moj_dashboard" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/dashboards/moj.dash.json"
 
   object_substitutions = {
@@ -46,7 +45,6 @@ module "moj_dashboard_2" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/dashboards/moj2.dash.json"
 
   object_substitutions = {
@@ -79,7 +77,6 @@ module "moj_dashboard_3" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/dashboards/moj3.dash.json"
 
   object_substitutions = {

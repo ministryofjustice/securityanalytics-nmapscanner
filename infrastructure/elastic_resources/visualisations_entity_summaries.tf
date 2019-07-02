@@ -12,7 +12,6 @@ module "vulns_severity" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/entity_summaries/cve_severity_all.vis.json"
 
   object_substitutions = {
@@ -38,7 +37,6 @@ module "proto_all" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/entity_summaries/ssl_proto_all.vis.json"
 
   object_substitutions = {
@@ -64,7 +62,6 @@ module "services" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/entity_summaries/services.vis.json"
 
   object_substitutions = {
@@ -90,7 +87,6 @@ module "likely_os" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/entity_summaries/os_most_likely.vis.json"
 
   object_substitutions = {
@@ -116,7 +112,6 @@ module "common_vulns" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/entity_summaries/cves_all.vis.json"
 
   object_substitutions = {
@@ -142,7 +137,6 @@ module "common_ciphers" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/entity_summaries/ssl_ciphers_all.vis.json"
 
   object_substitutions = {

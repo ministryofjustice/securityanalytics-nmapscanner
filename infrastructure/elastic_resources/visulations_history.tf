@@ -12,7 +12,6 @@ module "host_status" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/historical/host_status.vis.json"
 
   object_substitutions = {
@@ -38,7 +37,6 @@ module "host_scanned" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/historical/hosts_scanned.vis.json"
 
   object_substitutions = {

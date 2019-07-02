@@ -12,7 +12,6 @@ module "severe_proto_total" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/ssl_proto/ssl_proto_total.vis.json"
 
   object_substitutions = {
@@ -38,7 +37,6 @@ module "severe_proto_distro" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/ssl_proto/ssl_proto_distro.vis.json"
 
   object_substitutions = {
@@ -64,7 +62,6 @@ module "severe_proto_table" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/ssl_proto/ssl_proto_table.vis.json"
 
   object_substitutions = {

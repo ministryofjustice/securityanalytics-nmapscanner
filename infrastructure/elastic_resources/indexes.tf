@@ -41,7 +41,6 @@ module "index_pattern_history" {
 
   aws_region           = var.aws_region
   ssm_source_stage     = var.ssm_source_stage
-  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-data.pattern.json"
   object_substitutions = {}
 
@@ -64,7 +63,6 @@ module "index_pattern_snapshot" {
 
   aws_region           = var.aws_region
   ssm_source_stage     = var.ssm_source_stage
-  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-data.pattern.json"
   object_substitutions = {}
 
@@ -107,7 +105,6 @@ module "index_pattern_os_history" {
 
   aws_region           = var.aws_region
   ssm_source_stage     = var.ssm_source_stage
-  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-os.pattern.json"
   object_substitutions = {}
 
@@ -130,7 +127,6 @@ module "index_pattern_os_snapshot" {
 
   aws_region           = var.aws_region
   ssm_source_stage     = var.ssm_source_stage
-  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-os.pattern.json"
   object_substitutions = {}
 
@@ -173,7 +169,6 @@ module "index_pattern_ports_history" {
 
   aws_region           = var.aws_region
   ssm_source_stage     = var.ssm_source_stage
-  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-ports.pattern.json"
   object_substitutions = {}
 
@@ -196,7 +191,6 @@ module "index_pattern_ports_snapshot" {
 
   aws_region           = var.aws_region
   ssm_source_stage     = var.ssm_source_stage
-  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-ports.pattern.json"
   object_substitutions = {}
 
@@ -239,7 +233,6 @@ module "index_pattern_cves_history" {
 
   aws_region           = var.aws_region
   ssm_source_stage     = var.ssm_source_stage
-  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-cves.pattern.json"
   object_substitutions = {}
 
@@ -262,7 +255,6 @@ module "index_pattern_cves_snapshot" {
 
   aws_region           = var.aws_region
   ssm_source_stage     = var.ssm_source_stage
-  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-cves.pattern.json"
   object_substitutions = {}
 
@@ -305,7 +297,6 @@ module "index_pattern_ssl_protos_history" {
 
   aws_region           = var.aws_region
   ssm_source_stage     = var.ssm_source_stage
-  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-ssl_protos.pattern.json"
   object_substitutions = {}
 
@@ -328,7 +319,6 @@ module "index_pattern_ssl_protos_snapshot" {
 
   aws_region           = var.aws_region
   ssm_source_stage     = var.ssm_source_stage
-  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-ssl_protos.pattern.json"
   object_substitutions = {}
 
@@ -371,7 +361,6 @@ module "index_pattern_ssl_ciphers_history" {
 
   aws_region           = var.aws_region
   ssm_source_stage     = var.ssm_source_stage
-  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-ssl_ciphers.pattern.json"
   object_substitutions = {}
 
@@ -394,7 +383,6 @@ module "index_pattern_ssl_ciphers_snapshot" {
 
   aws_region           = var.aws_region
   ssm_source_stage     = var.ssm_source_stage
-  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-ssl_ciphers.pattern.json"
   object_substitutions = {}
 
@@ -437,7 +425,6 @@ module "index_pattern_ssl_cert_history" {
 
   aws_region           = var.aws_region
   ssm_source_stage     = var.ssm_source_stage
-  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-ssl_cert.pattern.json"
   object_substitutions = {}
 
@@ -460,7 +447,6 @@ module "index_pattern_ssl_cert_snapshot" {
 
   aws_region           = var.aws_region
   ssm_source_stage     = var.ssm_source_stage
-  task_name            = var.task_name
   object_template      = "${path.module}/indexes/nmap-ssl_cert.pattern.json"
   object_substitutions = {}
 

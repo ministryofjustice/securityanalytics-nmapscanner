@@ -12,7 +12,6 @@ module "ssl_expiry_distro" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/ssl_cert/expiry_dates_distro.vis.json"
 
   object_substitutions = {
@@ -38,7 +37,6 @@ module "ssl_expiry_table" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/ssl_cert/expiry_dates_table.vis.json"
 
   object_substitutions = {

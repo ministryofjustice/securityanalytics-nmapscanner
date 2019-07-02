@@ -19,7 +19,7 @@ variable "ssm_source_stage" {
 }
 
 variable "use_xray" {
-  type = string
+  type        = string
   description = "Whether to instrument lambdas"
 }
 

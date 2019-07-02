@@ -12,7 +12,6 @@ module "severe_cve_total" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/cve/serious_vulnerabilities_total.vis.json"
 
   object_substitutions = {
@@ -39,7 +38,6 @@ module "severe_cve_distro" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/cve/serious_vulnerabilities_distro.vis.json"
 
   object_substitutions = {
@@ -65,7 +63,6 @@ module "severe_cve_table" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/cve/serious_vulnerabilities_table.vis.json"
   es_domain        = data.aws_ssm_parameter.es_domain.value
   object_substitutions = {

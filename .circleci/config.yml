@@ -53,7 +53,7 @@ jobs:
             terraform get --update
             terraform workspace new $SSM_SOURCE_STAGE || terraform workspace select $SSM_SOURCE_STAGE
             echo checking formatting
-            terraform fmt -check=true
+            terraform fmt -recursive -check=true
             echo making the plan
             terraform plan -var ssm_source_stage=$SSM_SOURCE_STAGE -var account_id=$ACCOUNT_ID -var app_name=$APP_NAME -no-color -out=plan.file > terraform.plan
 
@@ -200,6 +200,7 @@ jobs:
             . .circleci/env.sh
             cd infrastructure
             terraform init -reconfigure -backend-config "bucket=$MOJ_APP_NAME-terraform-state"
+            terraform get --update
             terraform workspace new dev || terraform workspace select dev
             terraform apply -auto-approve -var ssm_source_stage=$SSM_SOURCE_STAGE -var account_id=$MOJ_ACCOUNT_ID -var app_name=$MOJ_APP_NAME
 

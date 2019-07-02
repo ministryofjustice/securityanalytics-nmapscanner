@@ -12,7 +12,6 @@ module "severe_cipher_total" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/ssl_cipher/ssl_cipher_total.vis.json"
 
   object_substitutions = {
@@ -38,7 +37,6 @@ module "severe_cipher_distro" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/ssl_cipher/ssl_cipher_distro.vis.json"
 
   object_substitutions = {
@@ -64,7 +62,6 @@ module "severe_cipher_table" {
 
   aws_region       = var.aws_region
   ssm_source_stage = var.ssm_source_stage
-  task_name        = var.task_name
   object_template  = "${path.module}/visualisations/ssl_cipher/ssl_cipher_table.vis.json"
 
   object_substitutions = {
