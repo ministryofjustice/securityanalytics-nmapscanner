@@ -115,24 +115,25 @@ module "nmap_task" {
   # ECS
   docker_file          = module.docker_image.docker_file
   docker_combined_hash = "${module.docker_image.docker_hash}:${module.docker_image.sources_hash}"
-  param_parse_lambda   = "task_queue_consumer.task_queue_consumer.submit_scan_task"
+  param_parse_lambda   = "nmap_scanner.invoke"
 
   # Results
   lambda_zip           = local.nmap_zip
-  results_parse_lambda = "results_parser.results_parser.parse_results"
+  lambda_hash          = data.external.nmap_zip.result.hash
+  results_parse_lambda = "results_parser.invoke"
 
   # General
   subscribe_input_to_scan_initiator = true
   subscribe_es_to_output            = true
 }
 
-module "elastic_resources" {
-  source           = "./elastic_resources"
-  aws_region       = var.aws_region
-  app_name         = var.app_name
-  task_name        = var.task_name
-  ssm_source_stage = local.ssm_source_stage
-}
+//module "elastic_resources" {
+//  source           = "./elastic_resources"
+//  aws_region       = var.aws_region
+//  app_name         = var.app_name
+//  task_name        = var.task_name
+//  ssm_source_stage = local.ssm_source_stage
+//}
 
 module "sample_api" {
   source = "./sample_api"
