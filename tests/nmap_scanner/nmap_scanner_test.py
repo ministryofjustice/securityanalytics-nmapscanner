@@ -1,9 +1,9 @@
-from nmap_scanner import NmapScanner
+from nmap_scanner.nmap_scanner import NmapScanner
 import pytest
-from unittest.mock import patch, call, MagicMock
+from unittest.mock import patch, MagicMock
 import os
 import itertools
-from test_utils.test_utils import resetting_mocks, serialise_mocks, coroutine_of
+from test_utils.test_utils import serialise_mocks, coroutine_of
 
 
 TEST_ENV = {
@@ -66,20 +66,21 @@ def expected_params(public_ip_str, scan_targets, message_id):
     }
 
 
-@pytest.mark.unit
-@serialise_mocks()
-@patch.dict(os.environ, TEST_ENV)
-@patch("aioboto3.client")
-@patch("utils.json_serialisation.stringify_all")
-def test_task_queue_consumer_private_subnet():
-    scanner = NmapScanner()
-    scanner.ensure_initialised()
-    scanner.ssm_client.get_parameters.return_value = ssm_return_vals(True)
-    scanner.invoke(
-        {"Records": [{"body": "url.to.scan.rogers", "messageId": "12"}]},
-        MagicMock())
-    expected = expected_params("DISABLED", "url.to.scan.rogers", "12")
-    scanner.ecs_client.run_task.assert_called_once_with(**expected)
+# @serialise_mocks()
+# @pytest.mark.unit
+# @patch.dict(os.environ, TEST_ENV)
+# @patch("aioboto3.client")
+# @patch("utils.json_serialisation.stringify_all")
+# def test_task_queue_consumer_private_subnet(aioboto, stringify_all):
+#     scanner = NmapScanner()
+#     scanner.ensure_initialised()
+#     scanner.ssm_client.get_parameters.return_value = ssm_return_vals(True)
+#     scanner.invoke(
+#         {"Records": [{"body": "url.to.scan.rogers", "messageId": "12"}]},
+#         MagicMock()
+#     )
+#     expected = expected_params("DISABLED", "url.to.scan.rogers", "12")
+#     scanner.ecs_client.run_task.assert_called_once_with(**expected)
 
 
 # @pytest.mark.unit
