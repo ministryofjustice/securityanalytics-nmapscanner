@@ -6,19 +6,8 @@ resource "aws_lambda_permission" "api_gateway_invoke" {
   source_arn    = "arn:aws:execute-api:${var.aws_region}:${var.account_id}:${aws_api_gateway_rest_api.api_gateway.id}/*/GET/nmap/sample"
 }
 
-resource "aws_api_gateway_deployment" "stage" {
-  depends_on = [
-    aws_api_gateway_integration_response.nmap_sample,
-    aws_api_gateway_integration.nmap_sample,
-  ]
-
-  rest_api_id = aws_api_gateway_rest_api.api_gateway.id
-  stage_name  = terraform.workspace
-}
-
 resource "aws_lambda_function" "sample" {
   depends_on = [
-    data.external.nmap_zip,
     aws_iam_role_policy_attachment.task_policy
   ]
 
@@ -26,7 +15,7 @@ resource "aws_lambda_function" "sample" {
   handler       = "sample_lambda.sample.sample"
   role          = aws_iam_role.sample_role.arn
   runtime       = "python3.7"
-  filename      = local.nmap_zip
+  filename      = var.lambda_zip
 
   layers = [
     data.aws_ssm_parameter.utils_layer.value,
@@ -47,17 +36,12 @@ resource "aws_lambda_function" "sample" {
   }
 
   tags = {
-    source_hash = data.external.nmap_zip.result.hash
+    source_hash = filebase64sha256(var.lambda_zip)
     workspace   = terraform.workspace
     app_name    = var.app_name
   }
 }
 
-# TODO should use the shared api, but that is currently set to private and so making new public one
-# here just for tests
-resource "aws_api_gateway_rest_api" "api_gateway" {
-  name = "${terraform.workspace}-${var.app_name}-${var.task_name}-api"
-}
 
 resource "aws_api_gateway_resource" "nmap" {
   parent_id   = aws_api_gateway_rest_api.api_gateway.root_resource_id

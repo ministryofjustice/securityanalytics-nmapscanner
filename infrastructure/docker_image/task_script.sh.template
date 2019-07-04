@@ -1,8 +1,8 @@
 #!/bin/sh
 
 startTime=$(date -u +%FT%TZ)
-output=$MESSAGE_ID-$startTime-nmap.xml
-archive=$MESSAGE_ID-$startTime-nmap.xml.tar.gz
+output=$SCAN_REQUEST_ID-$startTime-nmap.xml
+archive=$SCAN_REQUEST_ID-$startTime-nmap.xml.tar.gz
 
 echo Performing scan at $startTime
 

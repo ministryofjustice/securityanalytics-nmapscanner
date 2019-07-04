@@ -82,6 +82,52 @@ module "docker_image" {
   ssm_source_stage   = local.ssm_source_stage
 }
 
+locals {
+  nmap_zip = "../.generated/sec-an-nmap.zip"
+}
+
+data "external" "nmap_zip" {
+  program = [
+    "python",
+    "../shared_code/python/package_lambda.py",
+    "-x",
+    local.nmap_zip,
+    "${path.module}/packaging.config.json",
+    "../Pipfile.lock",
+  ]
+}
+
+module "nmap_task" {
+  source = "github.com/ministryofjustice/securityanalytics-taskexecution//infrastructure/ecs_task"
+  # source = "../../securityanalytics-taskexecution/infrastructure/ecs_task"
+
+  account_id          = var.account_id
+  aws_region          = var.aws_region
+  app_name            = var.app_name
+  task_name           = var.task_name
+  use_xray            = var.use_xray
+  transient_workspace = local.transient_workspace
+  ssm_source_stage    = local.ssm_source_stage
+
+  # TODO add separate settings for results and scan lambdas
+  cpu    = "1024"
+  memory = "2048"
+
+  # ECS
+  docker_file          = module.docker_image.docker_file
+  docker_combined_hash = "${module.docker_image.docker_hash}:${module.docker_image.sources_hash}"
+  param_parse_lambda   = "nmap_scanner.invoke"
+
+  # Results
+  lambda_zip           = local.nmap_zip
+  lambda_hash          = data.external.nmap_zip.result.hash
+  results_parse_lambda = "results_parser.invoke"
+
+  # General
+  subscribe_input_to_scan_initiator = true
+  subscribe_es_to_output            = true
+}
+
 module "elastic_resources" {
   source           = "./elastic_resources"
   aws_region       = var.aws_region
@@ -90,55 +136,16 @@ module "elastic_resources" {
   ssm_source_stage = local.ssm_source_stage
 }
 
-module "nmap_task" {
-  # two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
-  source = "github.com/ministryofjustice/securityanalytics-taskexecution//infrastructure/ecs_task"
+module "sample_api" {
+  source = "./sample_api"
 
-  # It is sometimes useful for the developers of the project to use a local version of the task
-  # execution project. This enables them to develop the task execution project and the nmap scanner
-  # (or other future tasks), at the same time, without requiring the task execution changes to be
-  # pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
-  # devs will have to comment in/out this line as and when they need
-  # source = "../../securityanalytics-taskexecution/infrastructure/ecs_task"
-
-  app_name                      = var.app_name
-  aws_region                    = var.aws_region
-  use_xray                      = var.use_xray
-  cpu                           = "1024"
-  memory                        = "2048"
-  docker_dir                    = replace(dirname(module.docker_image.docker_file), "\\", "/")
-  task_name                     = var.task_name
-  sources_hash                  = module.docker_image.sources_hash
-  docker_hash                   = module.docker_image.docker_hash
-  subscribe_elastic_to_notifier = true
-  account_id                    = var.account_id
-  ssm_source_stage              = local.ssm_source_stage
-  transient_workspace           = local.transient_workspace
-  results_parser_arn            = module.nmap_lambda.results_parser_arn
-}
-
-module "subscribe_scheduler" {
-  source                 = "./scan_initiation_subscription"
-  app_name               = var.app_name
-  ssm_source_stage       = local.ssm_source_stage
-  subscribe_to_scheduler = true
-  scan_trigger_queue_arn = module.nmap_task.task_queue
-  scan_trigger_queue_url = module.nmap_task.task_queue_url
-}
-
-module "nmap_lambda" {
-  source                   = "./nmap_lambdas"
-  app_name                 = var.app_name
-  task_name                = var.task_name
-  results_bucket           = module.nmap_task.results_bucket_id
-  results_bucket_arn       = module.nmap_task.results_bucket_arn
-  aws_region               = var.aws_region
-  account_id               = var.account_id
-  use_xray                 = var.use_xray
-  queue_arn                = module.nmap_task.task_queue
-  ssm_source_stage         = local.ssm_source_stage
-  task_queue_consumer_role = module.nmap_task.task_queue_consumer
-  results_parser_role      = module.nmap_task.results_parser
-  results_parser_dlq       = module.nmap_task.results_dead_letter_queue
+  account_id          = var.account_id
+  aws_region          = var.aws_region
+  app_name            = var.app_name
+  task_name           = var.task_name
+  use_xray            = var.use_xray
+  transient_workspace = local.transient_workspace
+  ssm_source_stage    = local.ssm_source_stage
+  lambda_zip          = local.nmap_zip
 }
 
