@@ -4,4 +4,3 @@
 [submodule "task_execution"]
 	path = task_execution
 	url = https://github.com/ministryofjustice/securityanalytics-taskexecution.git
-	branch = feature/SA-115-simple-ecs
