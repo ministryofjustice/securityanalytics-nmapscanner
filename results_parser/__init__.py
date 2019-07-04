@@ -4,7 +4,7 @@ _parser = None
 
 
 def invoke(event, context):
-    nonlocal _parser
+    global _parser
     if _parser is None:
         _parser = NmapResultsParser()
     return _parser.invoke(event, context)

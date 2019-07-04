@@ -1,65 +1,65 @@
-from unittest.mock import patch, MagicMock, call, Mock
-import pytest
-import os
-import itertools
-from test_utils.test_utils import resetting_mocks, serialise_mocks, coroutine_of
-from utils.json_serialisation import dumps
-from botocore.response import StreamingBody
-from results_parser import NmapResultsParser
-
-TEST_ENV = {
-    "REGION": "eu-west-wood",
-    "STAGE": "door",
-    "APP_NAME": "me-once",
-    "TASK_NAME": "me-twice",
-}
-TEST_DIR = "./tests/results_parser/"
-
-mock_results_context = MagicMock()
-
-with patch.dict(os.environ, TEST_ENV), \
-     patch("boto3.client") as boto_client, \
-        patch("aioboto3.client") as aioboto_client, \
-        patch("utils.json_serialisation.stringify_all"), \
-        patch("utils.scan_results.ResultsContext") as results_context_constructor:
-    # ensure each client is a different mock
-    boto_client.side_effect = (MagicMock() for _ in itertools.count())
-    aioboto_client.side_effect = (MagicMock() for _ in itertools.count())
-    results_context_constructor.return_value = mock_results_context
-
-    # Since we want to assert the ordering of calls across multiple mocks, we attach them to a mock manager
-    # and assert the calls against that
-    mock_mgr = Mock()
-    mock_mgr.attach_mock(results_context_constructor, "ResultsContext")
-    mock_mgr.attach_mock(mock_results_context.push_context, "push_context")
-    mock_mgr.attach_mock(mock_results_context.pop_context, "pop_context")
-    mock_mgr.attach_mock(mock_results_context.post_results, "post_results")
-    mock_mgr.attach_mock(mock_results_context.publish_results, "publish_results")
-    mock_mgr.attach_mock(mock_results_context.add_summaries, "add_summaries")
-    mock_mgr.attach_mock(mock_results_context.add_summary, "add_summary")
-
-    # with the mocks in place it is time to import the results parser
-
-
-@patch.dict(os.environ, TEST_ENV)
-def ssm_return_vals():
-    stage = os.environ["STAGE"]
-    app_name = os.environ["APP_NAME"]
-    task_name = os.environ["TASK_NAME"]
-    ssm_prefix = f"/{app_name}/{stage}"
-    return coroutine_of({
-        "Parameters": [
-            {"Name": f"{ssm_prefix}/tasks/{task_name}/results/arn", "Value": "test_topic"}
-        ]
-    })
-
-
-def expected_pub(doc_type, doc):
-    return {
-        "TopicArn": "test_topic",
-        "Subject": doc_type,
-        "Message": dumps(doc)
-    }
+# from unittest.mock import patch, MagicMock, call, Mock
+# import pytest
+# import os
+# import itertools
+# from test_utils.test_utils import resetting_mocks, serialise_mocks, coroutine_of
+# from utils.json_serialisation import dumps
+# from botocore.response import StreamingBody
+# from results_parser import NmapResultsParser
+#
+# TEST_ENV = {
+#     "REGION": "eu-west-wood",
+#     "STAGE": "door",
+#     "APP_NAME": "me-once",
+#     "TASK_NAME": "me-twice",
+# }
+# TEST_DIR = "./tests/results_parser/"
+#
+# mock_results_context = MagicMock()
+#
+# with patch.dict(os.environ, TEST_ENV), \
+#      patch("boto3.client") as boto_client, \
+#         patch("aioboto3.client") as aioboto_client, \
+#         patch("utils.json_serialisation.stringify_all"), \
+#         patch("utils.scan_results.ResultsContext") as results_context_constructor:
+#     # ensure each client is a different mock
+#     boto_client.side_effect = (MagicMock() for _ in itertools.count())
+#     aioboto_client.side_effect = (MagicMock() for _ in itertools.count())
+#     results_context_constructor.return_value = mock_results_context
+#
+#     # Since we want to assert the ordering of calls across multiple mocks, we attach them to a mock manager
+#     # and assert the calls against that
+#     mock_mgr = Mock()
+#     mock_mgr.attach_mock(results_context_constructor, "ResultsContext")
+#     mock_mgr.attach_mock(mock_results_context.push_context, "push_context")
+#     mock_mgr.attach_mock(mock_results_context.pop_context, "pop_context")
+#     mock_mgr.attach_mock(mock_results_context.post_results, "post_results")
+#     mock_mgr.attach_mock(mock_results_context.publish_results, "publish_results")
+#     mock_mgr.attach_mock(mock_results_context.add_summaries, "add_summaries")
+#     mock_mgr.attach_mock(mock_results_context.add_summary, "add_summary")
+#
+#     # with the mocks in place it is time to import the results parser
+#
+#
+# @patch.dict(os.environ, TEST_ENV)
+# def ssm_return_vals():
+#     stage = os.environ["STAGE"]
+#     app_name = os.environ["APP_NAME"]
+#     task_name = os.environ["TASK_NAME"]
+#     ssm_prefix = f"/{app_name}/{stage}"
+#     return coroutine_of({
+#         "Parameters": [
+#             {"Name": f"{ssm_prefix}/tasks/{task_name}/results/arn", "Value": "test_topic"}
+#         ]
+#     })
+#
+#
+# def expected_pub(doc_type, doc):
+#     return {
+#         "TopicArn": "test_topic",
+#         "Subject": doc_type,
+#         "Message": dumps(doc)
+#     }
 
 
 # @pytest.mark.unit

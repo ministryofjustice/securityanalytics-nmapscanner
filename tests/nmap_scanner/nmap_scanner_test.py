@@ -1,69 +1,69 @@
-from nmap_scanner.nmap_scanner import NmapScanner
-import pytest
-from unittest.mock import patch, MagicMock
-import os
-import itertools
-from test_utils.test_utils import serialise_mocks, coroutine_of
-
-
-TEST_ENV = {
-    "REGION": "eu-west-wood",
-    "STAGE": "door",
-    "APP_NAME": "me-once",
-    "TASK_NAME": "me-twice",
-}
-
-with patch.dict(os.environ, TEST_ENV), \
-        patch("boto3.client") as boto_client, \
-        patch("aioboto3.client") as aioboto_client, \
-        patch("utils.json_serialisation.stringify_all"):
-    # ensure each client is a different mock
-    boto_client.side_effect = (MagicMock() for _ in itertools.count())
-    aioboto_client.side_effect = (MagicMock() for _ in itertools.count())
-
-
-@patch.dict(os.environ, TEST_ENV)
-def ssm_return_vals(using_private):
-    stage = os.environ["STAGE"]
-    app_name = os.environ["APP_NAME"]
-    task_name = os.environ["TASK_NAME"]
-    ssm_prefix = f"/{app_name}/{stage}"
-    return coroutine_of({
-        "Parameters": [
-            {"Name": f"{ssm_prefix}/vpc/using_private_subnets", "Value": "true" if using_private else "false"},
-            {"Name": f"{ssm_prefix}/tasks/{task_name}/security_group/id", "Value": "sg-123"},
-            {"Name": f"{ssm_prefix}/tasks/{task_name}/image/id", "Value": "imagination"},
-            {"Name": f"{ssm_prefix}/tasks/{task_name}/s3/results/id", "Value": "bid"},
-            {"Name": f"{ssm_prefix}/vpc/subnets/instance", "Value": "subnet-123,subnet-456"},
-            {"Name": f"{ssm_prefix}/ecs/cluster", "Value": "cid"}
-        ]
-    })
-
-
-def expected_params(public_ip_str, scan_targets, message_id):
-    return {
-        "cluster": "cid",
-        "networkConfiguration": {
-            "awsvpcConfiguration": {
-                "subnets": ["subnet-123", "subnet-456"],
-                "securityGroups": ["sg-123"],
-                "assignPublicIp": public_ip_str}
-        },
-        "taskDefinition": "imagination",
-        "launchType": "FARGATE",
-        "overrides": {
-            "containerOverrides": [
-                {
-                    "name": "me-twice",
-                    "environment": [
-                        {"name": "NMAP_TARGET_STRING", "value": scan_targets},
-                        {"name": "SCAN_REQUEST_ID", "value": message_id},
-                        {"name": "RESULTS_BUCKET", "value": "bid"}
-                    ]
-                }
-            ]
-        }
-    }
+# from nmap_scanner.nmap_scanner import NmapScanner
+# import pytest
+# from unittest.mock import patch, MagicMock
+# import os
+# import itertools
+# from test_utils.test_utils import serialise_mocks, coroutine_of
+#
+#
+# TEST_ENV = {
+#     "REGION": "eu-west-wood",
+#     "STAGE": "door",
+#     "APP_NAME": "me-once",
+#     "TASK_NAME": "me-twice",
+# }
+#
+# with patch.dict(os.environ, TEST_ENV), \
+#         patch("boto3.client") as boto_client, \
+#         patch("aioboto3.client") as aioboto_client, \
+#         patch("utils.json_serialisation.stringify_all"):
+#     # ensure each client is a different mock
+#     boto_client.side_effect = (MagicMock() for _ in itertools.count())
+#     aioboto_client.side_effect = (MagicMock() for _ in itertools.count())
+#
+#
+# @patch.dict(os.environ, TEST_ENV)
+# def ssm_return_vals(using_private):
+#     stage = os.environ["STAGE"]
+#     app_name = os.environ["APP_NAME"]
+#     task_name = os.environ["TASK_NAME"]
+#     ssm_prefix = f"/{app_name}/{stage}"
+#     return coroutine_of({
+#         "Parameters": [
+#             {"Name": f"{ssm_prefix}/vpc/using_private_subnets", "Value": "true" if using_private else "false"},
+#             {"Name": f"{ssm_prefix}/tasks/{task_name}/security_group/id", "Value": "sg-123"},
+#             {"Name": f"{ssm_prefix}/tasks/{task_name}/image/id", "Value": "imagination"},
+#             {"Name": f"{ssm_prefix}/tasks/{task_name}/s3/results/id", "Value": "bid"},
+#             {"Name": f"{ssm_prefix}/vpc/subnets/instance", "Value": "subnet-123,subnet-456"},
+#             {"Name": f"{ssm_prefix}/ecs/cluster", "Value": "cid"}
+#         ]
+#     })
+#
+#
+# def expected_params(public_ip_str, scan_targets, message_id):
+#     return {
+#         "cluster": "cid",
+#         "networkConfiguration": {
+#             "awsvpcConfiguration": {
+#                 "subnets": ["subnet-123", "subnet-456"],
+#                 "securityGroups": ["sg-123"],
+#                 "assignPublicIp": public_ip_str}
+#         },
+#         "taskDefinition": "imagination",
+#         "launchType": "FARGATE",
+#         "overrides": {
+#             "containerOverrides": [
+#                 {
+#                     "name": "me-twice",
+#                     "environment": [
+#                         {"name": "NMAP_TARGET_STRING", "value": scan_targets},
+#                         {"name": "SCAN_REQUEST_ID", "value": message_id},
+#                         {"name": "RESULTS_BUCKET", "value": "bid"}
+#                     ]
+#                 }
+#             ]
+#         }
+#     }
 
 
 # @serialise_mocks()
