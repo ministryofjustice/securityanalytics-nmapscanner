@@ -98,7 +98,8 @@ data "external" "nmap_zip" {
 }
 
 module "nmap_task" {
-  source = "../../securityanalytics-taskexecution/infrastructure/ecs_task"
+  source = "github.com/ministryofjustice/securityanalytics-taskexecution//infrastructure/ecs_task"
+  # source = "../../securityanalytics-taskexecution/infrastructure/ecs_task"
 
   account_id          = var.account_id
   aws_region          = var.aws_region
@@ -127,13 +128,13 @@ module "nmap_task" {
   subscribe_es_to_output            = true
 }
 
-//module "elastic_resources" {
-//  source           = "./elastic_resources"
-//  aws_region       = var.aws_region
-//  app_name         = var.app_name
-//  task_name        = var.task_name
-//  ssm_source_stage = local.ssm_source_stage
-//}
+module "elastic_resources" {
+  source           = "./elastic_resources"
+  aws_region       = var.aws_region
+  app_name         = var.app_name
+  task_name        = var.task_name
+  ssm_source_stage = local.ssm_source_stage
+}
 
 module "sample_api" {
   source = "./sample_api"

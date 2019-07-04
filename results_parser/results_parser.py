@@ -10,9 +10,10 @@ MAPPED_OS_ATTRS = {f: f.replace("_", "") for f in ["type", "vendor", "os_family"
 # TODO break this up into multiple parsers e.g. port parser, would make unit tests simpler too
 class NmapResultsParser(ResultsParser):
     def __init__(self):
-        ResultsParser.__init__(self, [])
+        super().__init__([])
 
-    async def _parse_results(self, result_file_name, results_doc, meta_data):
+    async def parse_results(self, result_file_name, results_doc, meta_data):
+        await super().parse_results(result_file_name, results_doc, meta_data)
         nmap_results = untangle.parse(results_doc).nmaprun
 
         # TODO if we standardise how start and end time are encoded by all the scanners, we can
@@ -22,9 +23,9 @@ class NmapResultsParser(ResultsParser):
             (nmap_results["start"], nmap_results.runstats.finished["time"]))
 
         for host in nmap_results.host:
-            self._process_host_results(host, result_file_name, start_time, end_time)
+            await self._process_host_results(host, result_file_name, start_time, end_time)
 
-    def _process_host_results(self, host, result_file_name, start_time, end_time):
+    async def _process_host_results(self, host, result_file_name, start_time, end_time):
         address = host.address["addr"]
         address_type = host.address["addrtype"]
         print(f"Looking at host: {(address, address_type)} scanned at {end_time}")
@@ -50,8 +51,8 @@ class NmapResultsParser(ResultsParser):
 
         if host["starttime"] and host["endtime"]:
             host_start_time, host_end_time = map(
-                iso_date_string_from_timestamp(),
-                ("starttime", "endtime"))
+                iso_date_string_from_timestamp,
+                (host["starttime"], host["endtime"]))
             results_details["host_scan_start_time"] = host_start_time
             results_details["host_scan_end_time"] = host_end_time
 
@@ -71,7 +72,7 @@ class NmapResultsParser(ResultsParser):
 
         results_context.post_results("data", results_details, include_summaries=True)
 
-        results_context.publish_results()
+        await results_context.publish_results()
         print(f"done host")
 
     def _process_ports(self, ports, host, results_context):
@@ -90,7 +91,7 @@ class NmapResultsParser(ResultsParser):
                     port_data["status"] = status["state"]
                     port_data["status_reason"] = status["reason"]
                 self._process_port_service(port_data, port)
-                self.results_context.post_results("ports", port_data)
+                results_context.post_results("ports", port_data)
                 self._process_port_scripts(port_data, port, results_context)
                 ports.append({**port_key, **port_data})
                 results_context.pop_context()

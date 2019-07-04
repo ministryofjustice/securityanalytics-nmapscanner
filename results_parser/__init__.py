@@ -1,4 +1,4 @@
-from .results_parser2 import NmapResultsParser
+from .results_parser import NmapResultsParser
 
 _parser = NmapResultsParser()
 
