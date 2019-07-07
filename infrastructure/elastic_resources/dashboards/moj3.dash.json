@@ -2,7 +2,7 @@
   "attributes": {
     "title": "${object_title}",
     "description": "",
-    "panelsJSON": "[{\"gridData\":{\"w\":24,\"h\":15,\"x\":0,\"y\":0,\"i\":\"1\"},\"version\":\"6.3.1\",\"panelIndex\":\"1\",\"type\":\"visualization\",\"id\":\"${ssl_expiry_distro}\",\"embeddableConfig\":{}},{\"gridData\":{\"w\":24,\"h\":15,\"x\":24,\"y\":0,\"i\":\"2\"},\"version\":\"6.3.1\",\"panelIndex\":\"2\",\"type\":\"visualization\",\"id\":\"${ssl_expiry_table}\",\"embeddableConfig\":{}}]",
+    "panelsJSON": "[{\"embeddableConfig\":{},\"gridData\":{\"h\":15,\"i\":\"1\",\"w\":24,\"x\":0,\"y\":0},\"id\":\"${ssl_expiry_distro}\",\"panelIndex\":\"1\",\"type\":\"visualization\",\"version\":\"6.3.1\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":15,\"i\":\"2\",\"w\":24,\"x\":24,\"y\":0},\"id\":\"${ssl_expiry_table}\",\"panelIndex\":\"2\",\"type\":\"visualization\",\"version\":\"6.3.1\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":27,\"i\":\"3\",\"w\":24,\"x\":0,\"y\":15},\"id\":\"${open_ports_distro}\",\"panelIndex\":\"3\",\"type\":\"visualization\",\"version\":\"6.3.1\"},{\"embeddableConfig\":{},\"gridData\":{\"h\":27,\"i\":\"4\",\"w\":24,\"x\":24,\"y\":15},\"id\":\"${open_ports_table}\",\"panelIndex\":\"4\",\"type\":\"visualization\",\"version\":\"6.3.1\"}]",
     "optionsJSON": "{\"darkTheme\":false,\"useMargins\":true,\"hidePanelTitles\":false}",
     "timeRestore": false,
     "kibanaSavedObjectMeta": {
