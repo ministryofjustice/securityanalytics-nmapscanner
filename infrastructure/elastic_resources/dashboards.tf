@@ -82,6 +82,8 @@ module "moj_dashboard_3" {
   object_substitutions = {
     ssl_expiry_distro = module.ssl_expiry_distro.object_id
     ssl_expiry_table  = module.ssl_expiry_table.object_id
+    open_ports_distro = module.open_ports_distro.object_id
+    open_ports_table  = module.open_ports_table.object_id
   }
 
   object_type  = "dashboard"
