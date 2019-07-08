@@ -2,6 +2,7 @@
 pytest = "*"
 requests = "*"
 requests-aws4auth = "*"
+pytest-asyncio = "*"
 aws-xray-sdk = "*"
 
 [packages]

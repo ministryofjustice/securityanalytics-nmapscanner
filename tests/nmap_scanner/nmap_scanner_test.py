@@ -61,14 +61,8 @@ def expected_params(public_ip_str, scan_targets, message_id):
 with patch("utils.json_serialisation.stringify_all"):
 
     @pytest.mark.unit
-    @serialise_mocks()
-    @patch.dict(os.environ, TEST_ENV)
-    @patch("aioboto3.client")
-    def test_scanner_private_subnet(aioboto):
-        scanner = NmapScanner()
-        scanner.ensure_initialised()
-        scanner.ecs_client.run_task.return_value = coroutine_of({})
-        scanner.ssm_client.get_parameters.return_value = ssm_return_vals(True)
+    def test_scanner_private_subnet():
+        scanner = setup_mocks(ssm_failure=True)
         scanner.invoke(
             {"Records": [{"body": "url.to.scan.rogers", "messageId": "12"}]},
             MagicMock()
@@ -78,15 +72,8 @@ with patch("utils.json_serialisation.stringify_all"):
 
 
     @pytest.mark.unit
-    @serialise_mocks()
-    @patch.dict(os.environ, TEST_ENV)
-    @patch("aioboto3.client")
-    def test_scanner_no_subnet(aioboto3):
-        scanner = NmapScanner()
-        scanner.ensure_initialised()
-        scanner.ssm_client.get_parameters.return_value = ssm_return_vals(False)
-        scanner.ecs_client.run_task.return_value = coroutine_of({})
-
+    def test_scanner_no_subnet():
+        scanner = setup_mocks()
         scanner.invoke(
             {"Records": [{"body": "url.to.scan.mamos", "messageId": "13"}]},
             MagicMock())
@@ -95,14 +82,8 @@ with patch("utils.json_serialisation.stringify_all"):
 
 
     @pytest.mark.unit
-    @serialise_mocks()
-    @patch.dict(os.environ, TEST_ENV)
-    @patch("aioboto3.client")
-    def test_sanitises_input_cidr4(aioboto):
-        scanner = NmapScanner()
-        scanner.ensure_initialised()
-        scanner.ssm_client.get_parameters.return_value = ssm_return_vals(False)
-        scanner.ecs_client.run_task.return_value = coroutine_of({})
+    def test_sanitises_input_cidr4():
+        scanner = setup_mocks()
         scanner.invoke(
             {"Records": [{"body": "123.3.2.12/16", "messageId": "13"}]},
             MagicMock())
@@ -111,14 +92,8 @@ with patch("utils.json_serialisation.stringify_all"):
 
 
     @pytest.mark.unit
-    @serialise_mocks()
-    @patch.dict(os.environ, TEST_ENV)
-    @patch("aioboto3.client")
-    def test_sanitises_input_cidr6(aioboto):
-        scanner = NmapScanner()
-        scanner.ensure_initialised()
-        scanner.ecs_client.run_task.return_value = coroutine_of({})
-        scanner.ssm_client.get_parameters.return_value = ssm_return_vals(False)
+    def test_sanitises_input_cidr6():
+        scanner = setup_mocks()
         scanner.invoke(
             {"Records": [{"body": "2001:d80::/26", "messageId": "13"}]},
             MagicMock())
@@ -127,14 +102,8 @@ with patch("utils.json_serialisation.stringify_all"):
 
 
     @pytest.mark.unit
-    @serialise_mocks()
-    @patch.dict(os.environ, TEST_ENV)
-    @patch("aioboto3.client")
-    def test_sanitises_input_ip4(aioboto):
-        scanner = NmapScanner()
-        scanner.ensure_initialised()
-        scanner.ecs_client.run_task.return_value = coroutine_of({})
-        scanner.ssm_client.get_parameters.return_value = ssm_return_vals(False)
+    def test_sanitises_input_ip4():
+        scanner = setup_mocks()
         scanner.invoke(
             {"Records": [{"body": "123.3.2.124", "messageId": "13"}]},
             MagicMock())
@@ -143,14 +112,8 @@ with patch("utils.json_serialisation.stringify_all"):
 
 
     @pytest.mark.unit
-    @serialise_mocks()
-    @patch.dict(os.environ, TEST_ENV)
-    @patch("aioboto3.client")
-    def test_sanitises_input_ip6(aioboto):
-        scanner = NmapScanner()
-        scanner.ensure_initialised()
-        scanner.ecs_client.run_task.return_value = coroutine_of({})
-        scanner.ssm_client.get_parameters.return_value = ssm_return_vals(False)
+    def test_sanitises_input_ip6():
+        scanner = setup_mocks()
         scanner.invoke(
             {"Records": [{"body": "2001:0db8:85a3:0000:0000:8a2e:0370:7334", "messageId": "13"}]},
             MagicMock())
@@ -159,14 +122,8 @@ with patch("utils.json_serialisation.stringify_all"):
 
 
     @pytest.mark.unit
-    @serialise_mocks()
-    @patch.dict(os.environ, TEST_ENV)
-    @patch("aioboto3.client")
-    def test_processes_batches(aioboto):
-        scanner = NmapScanner()
-        scanner.ensure_initialised()
-        scanner.ecs_client.run_task.side_effect = (coroutine_of({}) for _ in count(0, 1))
-        scanner.ssm_client.get_parameters.return_value = ssm_return_vals(False)
+    def test_processes_batches():
+        scanner = setup_mocks(ssm_failure=False)
 
         scanner.invoke({
             "Records": [
@@ -186,15 +143,8 @@ with patch("utils.json_serialisation.stringify_all"):
 
 
     @pytest.mark.unit
-    @serialise_mocks()
-    @patch.dict(os.environ, TEST_ENV)
-    @patch("aioboto3.client")
-    def test_sanitises_input_multiple_targets(aioboto):
-        scanner = NmapScanner()
-        scanner.ensure_initialised()
-        scanner.ecs_client.run_task.side_effect = (coroutine_of({}) for _ in count(0, 1))
-
-        scanner.ssm_client.get_parameters.return_value = ssm_return_vals(False)
+    def test_sanitises_input_multiple_targets():
+        scanner = setup_mocks()
         scanner.invoke({
             "Records": [
                 {"body": "2001:0db8:85a3:0000:0000:8a2e:0370:7334 123.3.2.124 scan.me.everyone", "messageId": "13"},
@@ -206,15 +156,8 @@ with patch("utils.json_serialisation.stringify_all"):
     # Although testing injections by sample is a bad way to test, its good to see some basic scenarios
     # covered
     @pytest.mark.unit
-    @serialise_mocks()
-    @patch.dict(os.environ, TEST_ENV)
-    @patch("aioboto3.client")
-    def test_sanitises_input_dodgy_input(aioboto):
-        scanner = NmapScanner()
-        scanner.ensure_initialised()
-        scanner.ecs_client.run_task.side_effect = (coroutine_of({}) for _ in count(0, 1))
-
-        scanner.ssm_client.get_parameters.return_value = ssm_return_vals(False)
+    def test_sanitises_input_dodgy_input():
+        scanner = setup_mocks()
         with pytest.raises(ValueError):
             scanner.invoke(
                 {"Records": [{"body": "; rm -rf", "messageId": "13"}]},
@@ -224,15 +167,8 @@ with patch("utils.json_serialisation.stringify_all"):
     # Although testing injections by sample is a bad way to test, its good to see some basic scenarios
     # covered
     @pytest.mark.unit
-    @serialise_mocks()
-    @patch.dict(os.environ, TEST_ENV)
-    @patch("aioboto3.client")
-    def test_sanitises_input_dodgy_input_url(aioboto):
-        scanner = NmapScanner()
-        scanner.ensure_initialised()
-        scanner.ecs_client.run_task.side_effect = (coroutine_of({}) for _ in count(0, 1))
-
-        scanner.ssm_client.get_parameters.return_value = ssm_return_vals(False)
+    def test_sanitises_input_dodgy_input_url():
+        scanner = setup_mocks()
         with pytest.raises(ValueError):
             scanner.invoke(
                 {"Records": [{"body": "http://foo.bar?hello=foo; rm -rf", "messageId": "13"}]},
@@ -240,29 +176,20 @@ with patch("utils.json_serialisation.stringify_all"):
 
 
     @pytest.mark.unit
-    @serialise_mocks()
-    @patch.dict(os.environ, TEST_ENV)
-    @patch("aioboto3.client")
-    def test_raises_when_ecs_failures_present(aioboto):
-        scanner = NmapScanner()
-        scanner.ensure_initialised()
-        scanner.ssm_client.get_parameters.return_value = ssm_return_vals(False)
-        scanner.ecs_client.run_task.return_value = coroutine_of({"failures": [
-            {"arn": "arn::some:::arn", "reason": "failed miserably"}
-        ]})
-        with pytest.raises(RuntimeError, match=r"\{\"arn\": \"arn::some:::arn\", \"reason\": \"failed miserably\"\}"):
-            scanner.invoke({"Records": [{"body": "some.host", "messageId": "13"}]}, MagicMock())
+    def test_raises_when_ecs_failures_present():
+        with patch("aioboto3.client"), patch.dict(os.environ, TEST_ENV):
+            scanner = NmapScanner()
+            scanner.ensure_initialised()
+            scanner.ssm_client.get_parameters.return_value = ssm_return_vals(False)
+            scanner.ecs_client.run_task.return_value = coroutine_of({"failures": [
+                {"arn": "arn::some:::arn", "reason": "failed miserably"}
+            ]})
+            with pytest.raises(RuntimeError, match=r"\{\"arn\": \"arn::some:::arn\", \"reason\": \"failed miserably\"\}"):
+                scanner.invoke({"Records": [{"body": "some.host", "messageId": "13"}]}, MagicMock())
 
     @pytest.mark.unit
-    @serialise_mocks()
-    @patch.dict(os.environ, TEST_ENV)
-    @patch("aioboto3.client")
-    def test_json_input_one_ip4(aioboto):
-        scanner = NmapScanner()
-        scanner.ensure_initialised()
-        scanner.ecs_client.run_task.side_effect = (coroutine_of({}) for _ in count(0, 1))
-
-        scanner.ssm_client.get_parameters.return_value = ssm_return_vals(False)
+    def test_json_input_one_ip4():
+        scanner = setup_mocks()
         scanner.invoke(
             {
                 "Records": [
@@ -278,15 +205,8 @@ with patch("utils.json_serialisation.stringify_all"):
 
 
     @pytest.mark.unit
-    @serialise_mocks()
-    @patch.dict(os.environ, TEST_ENV)
-    @patch("aioboto3.client")
-    def test_sanitises_input_short_name(aioboto):
-        scanner = NmapScanner()
-        scanner.ensure_initialised()
-        scanner.ecs_client.run_task.side_effect = (coroutine_of({}) for _ in count(0, 1))
-
-        scanner.ssm_client.get_parameters.return_value = ssm_return_vals(False)
+    def test_sanitises_input_short_name():
+        scanner = setup_mocks()
         with pytest.raises(ValueError):
             scanner.invoke(
                 {"Records": [{"body": "host", "messageId": "100"}]},
@@ -294,15 +214,8 @@ with patch("utils.json_serialisation.stringify_all"):
 
 
     @pytest.mark.unit
-    @serialise_mocks()
-    @patch.dict(os.environ, TEST_ENV)
-    @patch("aioboto3.client")
-    def test_sanitises_input_mid_underscore(aioboto):
-        scanner = NmapScanner()
-        scanner.ensure_initialised()
-        scanner.ecs_client.run_task.side_effect = (coroutine_of({}) for _ in count(0, 1))
-
-        scanner.ssm_client.get_parameters.return_value = ssm_return_vals(False)
+    def test_sanitises_input_mid_underscore():
+        scanner = setup_mocks()
         with pytest.raises(ValueError):
             scanner.invoke(
                 {"Records": [{"body": "underscores_are.not.allowed.mid.domain", "messageId": "101"}]},
@@ -310,15 +223,8 @@ with patch("utils.json_serialisation.stringify_all"):
 
 
     @pytest.mark.unit
-    @serialise_mocks()
-    @patch.dict(os.environ, TEST_ENV)
-    @patch("aioboto3.client")
-    def test_sanitises_input_underscore_hostname(aioboto):
-        scanner = NmapScanner()
-        scanner.ensure_initialised()
-        scanner.ecs_client.run_task.side_effect = (coroutine_of({}) for _ in count(0, 1))
-
-        scanner.ssm_client.get_parameters.return_value = ssm_return_vals(False)
+    def test_sanitises_input_underscore_hostname():
+        scanner = setup_mocks()
         scanner.invoke(
             {"Records": [{"body": "_valid.if._first.test.com", "messageId": "102"}]},
             MagicMock())
@@ -327,15 +233,19 @@ with patch("utils.json_serialisation.stringify_all"):
 
 
     @pytest.mark.unit
-    @serialise_mocks()
-    @patch.dict(os.environ, TEST_ENV)
-    @patch("aioboto3.client")
-    def test_sanitises_input_last_underscore(aioboto):
-        scanner = NmapScanner()
-        scanner.ensure_initialised()
-        scanner.ecs_client.run_task.return_value = coroutine_of({})
-        scanner.ssm_client.get_parameters.return_value = ssm_return_vals(False)
+    def test_sanitises_input_last_underscore():
+        scanner = setup_mocks()
         with pytest.raises(ValueError):
             scanner.invoke(
                 {"Records": [{"body": "_notvalid.if._at.end", "messageId": "103"}]},
                 MagicMock())
+
+
+@serialise_mocks()
+def setup_mocks(ssm_failure=False):
+    with patch("aioboto3.client"), patch.dict(os.environ, TEST_ENV):
+        scanner = NmapScanner()
+        scanner.ensure_initialised()
+        scanner.ecs_client.run_task.side_effect = (coroutine_of({}) for _ in count(0, 1))
+        scanner.ssm_client.get_parameters.return_value = ssm_return_vals(ssm_failure)
+        return scanner
