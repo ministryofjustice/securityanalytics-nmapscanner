@@ -8,6 +8,7 @@ from test_utils.test_utils import serialise_mocks, coroutine_of
 
 TEST_ENV = {
     "REGION": "eu-west-wood",
+    "SSM_SOURCE_STAGE": "door",
     "STAGE": "door",
     "APP_NAME": "me-once",
     "TASK_NAME": "me-twice",
