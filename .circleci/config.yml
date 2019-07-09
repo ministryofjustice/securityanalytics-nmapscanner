@@ -221,7 +221,7 @@ workflows:
       - setup
       - unit-test:
           requires: [ setup ]
-       - integration-test:
+      - integration-test:
           requires: [ setup ]
       - approve:
           type: approval
