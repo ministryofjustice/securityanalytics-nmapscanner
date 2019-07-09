@@ -122,6 +122,8 @@ jobs:
             terraform apply --auto-approve -var ssm_source_stage=$SSM_SOURCE_STAGE -var account_id=$ACCOUNT_ID -var app_name=$APP_NAME -no-color
             export SUCCESS=$?
             cd ..
+            export TASK_NAME=nmap
+            export STAGE=$DEPLOY_STAGE
             pytest --junitxml=test-reports/junit.xml -m integration tests
             if [ $? != 0 ]; then
               export SUCCESS=1

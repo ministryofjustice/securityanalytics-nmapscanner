@@ -6,8 +6,8 @@ from tests.scan_integration_test_utils.scan_integration_tester import ScanIntegr
 MESSAGE_ID = re.compile(r"^([a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}).*$")
 
 
-@pytest.mark.asyncio
 @pytest.mark.integration
+@pytest.mark.asyncio
 async def test_integration():
     timeout = 120
 
