@@ -81,6 +81,7 @@ class NmapResultsParser(ResultsParser):
                 port_id, protocol = (port['portid'], port['protocol'])
                 print(f"Looking at port: {(port_id, protocol)}")
                 port_key = {
+                    "port_str": str(port_id),
                     "port_id": port_id,
                     "protocol": protocol
                 }

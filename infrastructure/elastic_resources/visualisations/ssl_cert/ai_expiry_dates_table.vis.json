@@ -1,0 +1,11 @@
+{
+  "attributes": {
+    "title": "${object_title}",
+    "visState": "{\"title\":\"${object_title}\",\"type\":\"table\",\"params\":{\"perPage\":10,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"address\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":1000,\"order\":\"desc\",\"orderBy\":\"_term\",\"customLabel\":\"Address\"}},{\"id\":\"4\",\"enabled\":true,\"type\":\"top_hits\",\"schema\":\"metric\",\"params\":{\"field\":\"validity.notAfter\",\"aggregate\":\"concat\",\"size\":1,\"sortField\":\"validity.notAfter\",\"sortOrder\":\"desc\",\"customLabel\":\"SSL Expiry\"}}]}",
+    "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":1,\"direction\":\"desc\"}}}}",
+    "description": "",
+    "kibanaSavedObjectMeta": {
+      "searchSourceJSON": "{\"index\":\"${index}\",\"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+    }
+  }
+}

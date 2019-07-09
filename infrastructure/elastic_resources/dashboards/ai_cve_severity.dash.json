@@ -1,0 +1,12 @@
+{
+    "attributes": {
+        "title": "${object_title}",
+        "description": "Actionable items: CVE Severity",
+        "panelsJSON": "[{\"panelIndex\":\"1\",\"gridData\":{\"x\":0,\"y\":0,\"w\":25,\"h\":7,\"i\":\"1\"},\"version\":\"6.3.1\",\"type\":\"visualization\",\"id\":\"${severe_cve_ai_filter}\",\"embeddableConfig\":{}},{\"panelIndex\":\"3\",\"gridData\":{\"x\":0,\"y\":7,\"w\":25,\"h\":21,\"i\":\"3\"},\"version\":\"6.3.1\",\"type\":\"visualization\",\"id\":\"${severe_cve_ai_table}\",\"embeddableConfig\":{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":1,\"direction\":\"desc\"}}}}}]",
+        "optionsJSON": "{\"darkTheme\":false,\"hidePanelTitles\":false,\"useMargins\":true}",
+        "timeRestore": false,
+        "kibanaSavedObjectMeta": {
+            "searchSourceJSON": "{\"query\":{\"language\":\"kuery\",\"query\":\"\"},\"filter\":[],\"highlightAll\":true,\"version\":true}"
+        }
+    }
+}
