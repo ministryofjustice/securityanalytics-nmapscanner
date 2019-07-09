@@ -1,0 +1,11 @@
+{
+    "attributes": {
+        "title": "${object_title}",
+        "visState": "{\"title\":\"Filter - CVE severity\",\"type\":\"input_control_vis\",\"params\":{\"controls\":[{\"indexPattern\":\"${index}\",\"fieldName\":\"summary_highest_cve_severity\",\"parent\":\"\",\"label\":\"CVE severity range\",\"type\":\"range\",\"options\":{\"decimalPlaces\":1,\"step\":0.1}}],\"updateFiltersOnChange\":false,\"useTimeFilter\":false,\"pinFilters\":false},\"aggs\":[]}",
+        "uiStateJSON": "{}",
+        "description": "",
+        "kibanaSavedObjectMeta": {
+            "searchSourceJSON": "{}"
+        }
+    }
+}

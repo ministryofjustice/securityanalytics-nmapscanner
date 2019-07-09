@@ -146,3 +146,55 @@ module "moj_dash_ai_ssl_protocols" {
   es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
+module "moj_dash_ai_cve_severity" {
+  // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
+
+  // It is sometimes useful for the developers of the project to use a local version of the task
+  // execution project. This enables them to develop the task execution project and the nmap scanner
+  // (or other future tasks), at the same time, without requiring the task execution changes to be
+  // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
+  // devs will have to comment in/out this line as and when they need
+  //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
+  app_name = var.app_name
+
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  object_template  = "${path.module}/dashboards/ai_cve_severity.dash.json"
+
+  object_substitutions = {
+    severe_cve_ai_filter = module.severe_cve_ai_filter.object_id
+    severe_cve_ai_table  = module.severe_cve_ai_table.object_id
+  }
+
+  object_type  = "dashboard"
+  object_title = "Actionable items: CVE Severity"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
+}
+
+
+module "moj_dash_ai_ssl_expiry" {
+  // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
+
+  // It is sometimes useful for the developers of the project to use a local version of the task
+  // execution project. This enables them to develop the task execution project and the nmap scanner
+  // (or other future tasks), at the same time, without requiring the task execution changes to be
+  // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
+  // devs will have to comment in/out this line as and when they need
+  //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
+  app_name = var.app_name
+
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  object_template  = "${path.module}/dashboards/ai_ssl_expiry.dash.json"
+
+  object_substitutions = {
+    ai_expiry_dates_filter = module.ai_expiry_dates_filter.object_id
+    ai_expiry_dates_table  = module.ai_expiry_dates_table.object_id
+  }
+
+  object_type  = "dashboard"
+  object_title = "Actionable items: SSL expiry"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
+}

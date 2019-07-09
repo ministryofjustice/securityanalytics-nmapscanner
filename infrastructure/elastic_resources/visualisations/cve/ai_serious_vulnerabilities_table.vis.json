@@ -1,0 +1,11 @@
+{
+    "attributes": {
+        "title": "${object_title}",
+        "visState": "{\"title\":\"${object_title}\",\"type\":\"table\",\"params\":{\"perPage\":50,\"showPartialRows\":false,\"showMeticsAtAllLevels\":false,\"sort\":{\"columnIndex\":null,\"direction\":null},\"showTotal\":false,\"totalFunc\":\"sum\"},\"aggs\":[{\"id\":\"1\",\"enabled\":true,\"type\":\"max\",\"schema\":\"metric\",\"params\":{\"field\":\"summary_highest_cve_severity\",\"customLabel\":\"CVE Vulnerability\"}},{\"id\":\"2\",\"enabled\":true,\"type\":\"terms\",\"schema\":\"bucket\",\"params\":{\"field\":\"address\",\"otherBucket\":false,\"otherBucketLabel\":\"Other\",\"missingBucket\":false,\"missingBucketLabel\":\"Missing\",\"size\":1000,\"order\":\"desc\",\"orderBy\":\"_term\",\"customLabel\":\"Host\"}},{\"id\":\"3\",\"enabled\":true,\"type\":\"top_hits\",\"schema\":\"metric\",\"params\":{\"field\":\"host_names.host_name\",\"aggregate\":\"concat\",\"size\":1,\"sortField\":\"scan_end_time\",\"sortOrder\":\"desc\",\"customLabel\":\"Hostnames\"}}]}",
+        "uiStateJSON": "{\"vis\":{\"params\":{\"sort\":{\"columnIndex\":null,\"direction\":null}}}}",
+        "description": "",
+        "kibanaSavedObjectMeta": {
+            "searchSourceJSON": "{\"index\":\"${index}\", \"filter\":[],\"query\":{\"query\":\"\",\"language\":\"lucene\"}}"
+        }
+    }
+}
