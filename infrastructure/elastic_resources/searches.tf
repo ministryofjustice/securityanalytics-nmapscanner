@@ -96,6 +96,6 @@ module "open_ports_search" {
   }
 
   object_type  = "search"
-  object_title = "Hosts with ports open that aren't 80, 443, 22, and others"
+  object_title = "Hosts with ports open that aren't 80, 443, or 22"
   es_domain    = data.aws_ssm_parameter.es_domain.value
 }

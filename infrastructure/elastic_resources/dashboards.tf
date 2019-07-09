@@ -91,3 +91,58 @@ module "moj_dashboard_3" {
   es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
+
+module "moj_dash_ai_open_ports" {
+  // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
+
+  // It is sometimes useful for the developers of the project to use a local version of the task
+  // execution project. This enables them to develop the task execution project and the nmap scanner
+  // (or other future tasks), at the same time, without requiring the task execution changes to be
+  // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
+  // devs will have to comment in/out this line as and when they need
+  //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
+  app_name = var.app_name
+
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  object_template  = "${path.module}/dashboards/ai_open_ports.dash.json"
+
+  object_substitutions = {
+    open_ports_ai_table = module.open_ports_ai_table.object_id
+    open_ports_cloud    = module.open_ports_cloud.object_id
+    open_ports_filter   = module.open_ports_filter.object_id
+  }
+
+  object_type  = "dashboard"
+  object_title = "Actionable Items: Open ports"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
+}
+
+
+module "moj_dash_ai_ssl_protocols" {
+  // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
+
+  // It is sometimes useful for the developers of the project to use a local version of the task
+  // execution project. This enables them to develop the task execution project and the nmap scanner
+  // (or other future tasks), at the same time, without requiring the task execution changes to be
+  // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
+  // devs will have to comment in/out this line as and when they need
+  //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
+  app_name = var.app_name
+
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  object_template  = "${path.module}/dashboards/ai_ssl_proto_support.dash.json"
+
+  object_substitutions = {
+    ssl_proto_ai_table  = module.ssl_proto_ai_table.object_id
+    ssl_proto_ai_filter = module.ssl_proto_ai_filter.object_id
+  }
+
+  object_type  = "dashboard"
+  object_title = "Actionable items: SSL protocol support"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
+}
+
