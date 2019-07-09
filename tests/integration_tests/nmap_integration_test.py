@@ -9,7 +9,7 @@ MESSAGE_ID = re.compile(r"^([a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}).*$")
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_integration():
-    timeout = 120
+    timeout = 240
 
     class NmapIntegrationTester(ScanIntegrationTester):
         def __init__(self, timeout_seconds=120):
