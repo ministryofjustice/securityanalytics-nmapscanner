@@ -87,8 +87,6 @@ jobs:
             - ".generated"
             - ".pytest_cache"
 
-     
-
   unit-test:
     executor: builder
     steps:
