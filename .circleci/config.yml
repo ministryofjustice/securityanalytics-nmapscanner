@@ -221,15 +221,13 @@ workflows:
       - setup
       - unit-test:
           requires: [ setup ]
-# Currently there are no useful integration tests so temporarily disabling this step to speed up builds
-#      - integration-test:
-#          requires: [ setup ]
+       - integration-test:
+          requires: [ setup ]
       - approve:
           type: approval
           requires:
             - unit-test
-# Currently there are no useful integration tests so temporarily disabling this step to speed up builds
-#            - integration-test
+            - integration-test
           <<: *master-only
       - deploy:
           requires: [ approve ]
