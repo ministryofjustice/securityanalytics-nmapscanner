@@ -1,3 +1,6 @@
+import datetime
+
+
 def process_script(script, results_context):
     results = {}
     for table in script.table:
@@ -5,6 +8,9 @@ def process_script(script, results_context):
             results["validity"] = {}
             for elem in table.elem:
                 results["validity"][elem["key"]] = elem.cdata
+                if elem["key"] == "notAfter":
+                    ssl_exp_dt = datetime.datetime.strptime(elem.cdata, "%Y-%m-%dT%H:%M:%S")
+                    results["expiry_diff"] = (ssl_exp_dt-datetime.datetime.now()).days
         if table["key"] == "issuer" or table["key"] == "subject":
             results[table["key"]] = {}
             for elem in table.elem:

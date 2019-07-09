@@ -105,7 +105,7 @@ class NmapResultsParser(ResultsParser):
                 "version": port.service["version"],
                 "extra_info": port.service["extrainfo"],
                 "os_type": port.service["ostype"],
-                })
+            })
             if hasattr(port.service, "cpe"):
                 cpes = []
                 for cpe in port.service.cpe:

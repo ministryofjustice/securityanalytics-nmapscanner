@@ -1,7 +1,7 @@
 {
     "attributes": {
         "title": "${object_title}",
-        "description": "A search returning all IP addresses where a port is open that isn't 80, 443, 22, and some mail ones",
+        "description": "A search returning all IP addresses where a port is open that isn't 80, 443 or 22",
         "columns": [
             "_source"
         ],
@@ -10,7 +10,7 @@
             "desc"
         ],
         "kibanaSavedObjectMeta": {
-            "searchSourceJSON": "{\"index\":\"${index}\",\"highlightAll\":true,\"version\":true,\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[{\"meta\":{\"index\":\"${index}\",\"type\":\"phrases\",\"key\":\"port_id\",\"value\":\"443, 80, 22\",\"params\":[\"443\",\"80\",\"22\"],\"negate\":true,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"port_id\":\"443\"}},{\"match_phrase\":{\"port_id\":\"80\"}},{\"match_phrase\":{\"port_id\":\"22\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}},{\"meta\":{\"index\":\"${index}\",\"type\":\"phrases\",\"key\":\"port_id\",\"value\":\"993, 995, 563, 587, 143, 110\",\"params\":[\"993\",\"995\",\"563\",\"587\",\"143\",\"110\"],\"negate\":true,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"port_id\":\"993\"}},{\"match_phrase\":{\"port_id\":\"995\"}},{\"match_phrase\":{\"port_id\":\"563\"}},{\"match_phrase\":{\"port_id\":\"587\"}},{\"match_phrase\":{\"port_id\":\"143\"}},{\"match_phrase\":{\"port_id\":\"110\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}}]}"
+            "searchSourceJSON": "{\"index\":\"${index}\",\"highlightAll\":true,\"version\":true,\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[{\"meta\":{\"index\":\"${index}\",\"type\":\"phrases\",\"key\":\"port_id\",\"value\":\"443, 80, 22\",\"params\":[\"443\",\"80\",\"22\"],\"negate\":true,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"port_id\":\"443\"}},{\"match_phrase\":{\"port_id\":\"80\"}},{\"match_phrase\":{\"port_id\":\"22\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}}]}"
         }
     }
 }

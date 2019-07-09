@@ -1,0 +1,11 @@
+{
+    "attributes": {
+        "title": "${object_title}",
+        "description": "Actionable items: SSL protocol support",
+        "panelsJSON": "[{\"panelIndex\":\"1\",\"gridData\":{\"x\":0,\"y\":7,\"w\":24,\"h\":25,\"i\":\"1\"},\"embeddableConfig\":{},\"id\":\"${ssl_proto_ai_table}\",\"type\":\"visualization\",\"version\":\"6.3.1\"},{\"panelIndex\":\"2\",\"gridData\":{\"x\":0,\"y\":0,\"w\":24,\"h\":10,\"i\":\"2\"},\"version\":\"6.3.1\",\"type\":\"visualization\",\"id\":\"${ssl_proto_ai_filter}\",\"embeddableConfig\":{}}]",
+        "timeRestore": false,
+        "kibanaSavedObjectMeta": {
+            "searchSourceJSON": "{\"query\":{\"language\":\"kuery\",\"query\":\"\"},\"filter\":[],\"highlightAll\":true,\"version\":true}"
+        }
+    }
+}
