@@ -1,7 +1,7 @@
 {
     "attributes": {
         "title": "${object_title}",
-        "visState": "{\"title\":\"${object_title}\",\"type\":\"input_control_vis\",\"params\":{\"controls\":[{\"fieldName\":\"expiry_diff_at_scan\",\"indexPattern\":\"${index}\",\"label\":\"\",\"options\":{\"decimalPlaces\":0,\"step\":1},\"parent\":\"\",\"type\":\"range\"},{\"fieldName\":\"\",\"indexPattern\":\"\",\"label\":\"\",\"options\":{\"decimalPlaces\":0,\"step\":1},\"parent\":\"\",\"type\":\"range\"}],\"pinFilters\":false,\"updateFiltersOnChange\":false,\"useTimeFilter\":false},\"aggs\":[]}",
+        "visState": "{\"title\":\"${object_title}\",\"type\":\"input_control_vis\",\"params\":{\"controls\":[{\"fieldName\":\"expiry_diff_at_scan\",\"indexPattern\":\"${index}\",\"label\":\"Expiry date offset from scan date\",\"options\":{\"decimalPlaces\":0,\"step\":1},\"parent\":\"\",\"type\":\"range\"},{\"fieldName\":\"\",\"indexPattern\":\"\",\"label\":\"\",\"options\":{\"decimalPlaces\":0,\"step\":1},\"parent\":\"\",\"type\":\"range\"}],\"pinFilters\":false,\"updateFiltersOnChange\":false,\"useTimeFilter\":false},\"aggs\":[]}",
         "uiStateJSON": "{}",
         "description": "",
         "kibanaSavedObjectMeta": {
