@@ -10,7 +10,7 @@ MAPPED_OS_ATTRS = {f: f.replace("_", "") for f in ["type", "vendor", "os_family"
 # TODO break this up into multiple parsers e.g. port parser, would make unit tests simpler too
 class NmapResultsParser(ResultsParser):
     def __init__(self):
-        super().__init__([])
+        super().__init__()
 
     async def parse_results(self, result_file_name, results_doc, meta_data):
         await super().parse_results(result_file_name, results_doc, meta_data)

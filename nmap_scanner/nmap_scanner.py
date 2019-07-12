@@ -6,7 +6,7 @@ from json.decoder import JSONDecodeError
 
 class NmapScanner(EcsScanner):
     def __init__(self):
-        super().__init__([])
+        super().__init__()
 
     async def create_environment_from_request(self, scan_request_id, scan_request):
         print(f"Nmap scanning {scan_request_id} - {scan_request}")
