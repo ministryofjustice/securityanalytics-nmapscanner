@@ -5,6 +5,8 @@ from test_utils.test_utils import serialise_mocks, coroutine_of, resetting_mocks
 from utils.json_serialisation import dumps
 from botocore.response import StreamingBody
 from itertools import count
+from datetime import datetime as datetime_real
+from datetime import timedelta as timedelta_real
 
 TEST_ENV = {
     "REGION": "eu-west-wood",
@@ -209,6 +211,7 @@ with patch("utils.json_serialisation.stringify_all"), \
                     ],
                     "ports": [
                         {
+                            "port_str": "22",
                             "port_id": "22",
                             "protocol": "tcp",
                             "status": "open",
@@ -221,6 +224,7 @@ with patch("utils.json_serialisation.stringify_all"), \
                             "cpes": ["cpe:/a:openbsd:openssh:6.6.1p1", "cpe:/o:linux:linux_kernel"]
                         },
                         {
+                            "port_str": "80",
                             "port_id": "80",
                             "protocol": "tcp",
                             "status": "open",
@@ -474,7 +478,12 @@ with patch("utils.json_serialisation.stringify_all"), \
 
     @resetting_mocks(results_context_constructor)
     @pytest.mark.unit
-    def test_parses_ssl_certs():
+    @serialise_mocks()
+    @patch("datetime.datetime")
+    def test_parses_ssl_certs(datetime):
+        datetime.strptime.return_value = datetime_real(2019, 6, 29, 11, 0, 0)
+        datetime.now.return_value = datetime_real(2019, 7, 12, 12, 0, 0)
+
         results_parser, mock_mgr, mock_results_context = execute_test_using_results_archive(
             "test_ssl_cert.xml.tar.gz"
         )
@@ -485,9 +494,6 @@ with patch("utils.json_serialisation.stringify_all"), \
             ["push_context", "pop_context"],
             mock_mgr
         )
-
-        datetime.datetime.now = MagicMock()
-        datetime.datetime.now.return_value = datetime.datetime(2019, 7, 12, 12, 0, 0)
 
         assert posted_cipher_doc == [
             call.push_context({
@@ -503,7 +509,8 @@ with patch("utils.json_serialisation.stringify_all"), \
                     "organizationName": "Let's Encrypt"
                 },
                 "subject": {"commonName": "scottlogic.com"},
-                "validity": {"notAfter": "2019-06-29T06:52:46", "notBefore": "2019-03-31T06:52:46"}
+                "validity": {"notAfter": "2019-06-29T06:52:46", "notBefore": "2019-03-31T06:52:46"},
+                "expiry_diff_at_scan": -14
             }),
             call.pop_context()
         ]
