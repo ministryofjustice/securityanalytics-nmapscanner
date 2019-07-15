@@ -9,6 +9,8 @@ MESSAGE_ID = re.compile(r"^([a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}).*$")
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_integration():
+    # this is intentionally set high as an nmap scan of all ports takes a while - if extra flags are
+    # added to the nmap scan in future you may have to increase this timeout
     timeout = 900
 
     class NmapIntegrationTester(ScanIntegrationTester):

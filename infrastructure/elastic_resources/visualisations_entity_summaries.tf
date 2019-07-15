@@ -1,13 +1,13 @@
 module "vulns_severity" {
-  // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  # two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
   source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
 
-  // It is sometimes useful for the developers of the project to use a local version of the task
-  // execution project. This enables them to develop the task execution project and the nmap scanner
-  // (or other future tasks), at the same time, without requiring the task execution changes to be
-  // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
-  // devs will have to comment in/out this line as and when they need
-  // source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
+  # It is sometimes useful for the developers of the project to use a local version of the task
+  # execution project. This enables them to develop the task execution project and the nmap scanner
+  # (or other future tasks), at the same time, without requiring the task execution changes to be
+  # pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
+  # devs will have to comment in/out this line as and when they need
+  # source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
   aws_region       = var.aws_region
@@ -24,15 +24,15 @@ module "vulns_severity" {
 }
 
 module "proto_all" {
-  // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  # two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
   source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
 
-  // It is sometimes useful for the developers of the project to use a local version of the task
-  // execution project. This enables them to develop the task execution project and the nmap scanner
-  // (or other future tasks), at the same time, without requiring the task execution changes to be
-  // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
-  // devs will have to comment in/out this line as and when they need
-  //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
+  # It is sometimes useful for the developers of the project to use a local version of the task
+  # execution project. This enables them to develop the task execution project and the nmap scanner
+  # (or other future tasks), at the same time, without requiring the task execution changes to be
+  # pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
+  # devs will have to comment in/out this line as and when they need
+  # source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
   aws_region       = var.aws_region
@@ -49,15 +49,15 @@ module "proto_all" {
 }
 
 module "services" {
-  // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  # two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
   source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
 
-  // It is sometimes useful for the developers of the project to use a local version of the task
-  // execution project. This enables them to develop the task execution project and the nmap scanner
-  // (or other future tasks), at the same time, without requiring the task execution changes to be
-  // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
-  // devs will have to comment in/out this line as and when they need
-  //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
+  # It is sometimes useful for the developers of the project to use a local version of the task
+  # execution project. This enables them to develop the task execution project and the nmap scanner
+  # (or other future tasks), at the same time, without requiring the task execution changes to be
+  # pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
+  # devs will have to comment in/out this line as and when they need
+  # source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
   aws_region       = var.aws_region
@@ -74,15 +74,15 @@ module "services" {
 }
 
 module "likely_os" {
-  // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  # two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
   source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
 
-  // It is sometimes useful for the developers of the project to use a local version of the task
-  // execution project. This enables them to develop the task execution project and the nmap scanner
-  // (or other future tasks), at the same time, without requiring the task execution changes to be
-  // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
-  // devs will have to comment in/out this line as and when they need
-  //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
+  # It is sometimes useful for the developers of the project to use a local version of the task
+  # execution project. This enables them to develop the task execution project and the nmap scanner
+  # (or other future tasks), at the same time, without requiring the task execution changes to be
+  # pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
+  # devs will have to comment in/out this line as and when they need
+  # source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
   aws_region       = var.aws_region
@@ -99,15 +99,15 @@ module "likely_os" {
 }
 
 module "common_vulns" {
-  // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  # two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
   source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
 
-  // It is sometimes useful for the developers of the project to use a local version of the task
-  // execution project. This enables them to develop the task execution project and the nmap scanner
-  // (or other future tasks), at the same time, without requiring the task execution changes to be
-  // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
-  // devs will have to comment in/out this line as and when they need
-  //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
+  # It is sometimes useful for the developers of the project to use a local version of the task
+  # execution project. This enables them to develop the task execution project and the nmap scanner
+  # (or other future tasks), at the same time, without requiring the task execution changes to be
+  # pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
+  # devs will have to comment in/out this line as and when they need
+  # source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
   aws_region       = var.aws_region
@@ -124,15 +124,15 @@ module "common_vulns" {
 }
 
 module "common_ciphers" {
-  // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  # two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
   source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
 
-  // It is sometimes useful for the developers of the project to use a local version of the task
-  // execution project. This enables them to develop the task execution project and the nmap scanner
-  // (or other future tasks), at the same time, without requiring the task execution changes to be
-  // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
-  // devs will have to comment in/out this line as and when they need
-  //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
+  # It is sometimes useful for the developers of the project to use a local version of the task
+  # execution project. This enables them to develop the task execution project and the nmap scanner
+  # (or other future tasks), at the same time, without requiring the task execution changes to be
+  # pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
+  # devs will have to comment in/out this line as and when they need
+  # source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
   aws_region       = var.aws_region
