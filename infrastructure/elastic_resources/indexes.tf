@@ -454,4 +454,3 @@ module "index_pattern_ssl_cert_snapshot" {
   object_title = "${var.task_name}:ssl_cert_snapshot:read*"
   es_domain    = data.aws_ssm_parameter.es_domain.value
 }
-

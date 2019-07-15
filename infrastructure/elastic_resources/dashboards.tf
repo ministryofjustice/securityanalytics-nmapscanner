@@ -1,13 +1,13 @@
 module "moj_dashboard" {
-  // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  # two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
   source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
 
-  // It is sometimes useful for the developers of the project to use a local version of the task
-  // execution project. This enables them to develop the task execution project and the nmap scanner
-  // (or other future tasks), at the same time, without requiring the task execution changes to be
-  // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
-  // devs will have to comment in/out this line as and when they need
-  //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
+  # It is sometimes useful for the developers of the project to use a local version of the task
+  # execution project. This enables them to develop the task execution project and the nmap scanner
+  # (or other future tasks), at the same time, without requiring the task execution changes to be
+  # pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
+  # devs will have to comment in/out this line as and when they need
+  # source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
   aws_region       = var.aws_region
@@ -32,15 +32,15 @@ module "moj_dashboard" {
 }
 
 module "moj_dashboard_2" {
-  // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  # two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
   source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
 
-  // It is sometimes useful for the developers of the project to use a local version of the task
-  // execution project. This enables them to develop the task execution project and the nmap scanner
-  // (or other future tasks), at the same time, without requiring the task execution changes to be
-  // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
-  // devs will have to comment in/out this line as and when they need
-  //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
+  # It is sometimes useful for the developers of the project to use a local version of the task
+  # execution project. This enables them to develop the task execution project and the nmap scanner
+  # (or other future tasks), at the same time, without requiring the task execution changes to be
+  # pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
+  # devs will have to comment in/out this line as and when they need
+  # source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
   aws_region       = var.aws_region
@@ -64,15 +64,15 @@ module "moj_dashboard_2" {
 }
 
 module "moj_dashboard_3" {
-  // two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  # two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
   source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
 
-  // It is sometimes useful for the developers of the project to use a local version of the task
-  // execution project. This enables them to develop the task execution project and the nmap scanner
-  // (or other future tasks), at the same time, without requiring the task execution changes to be
-  // pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
-  // devs will have to comment in/out this line as and when they need
-  //  source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
+  # It is sometimes useful for the developers of the project to use a local version of the task
+  # execution project. This enables them to develop the task execution project and the nmap scanner
+  # (or other future tasks), at the same time, without requiring the task execution changes to be
+  # pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
+  # devs will have to comment in/out this line as and when they need
+  # source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
   app_name = var.app_name
 
   aws_region       = var.aws_region
@@ -82,6 +82,8 @@ module "moj_dashboard_3" {
   object_substitutions = {
     ssl_expiry_distro = module.ssl_expiry_distro.object_id
     ssl_expiry_table  = module.ssl_expiry_table.object_id
+    open_ports_distro = module.open_ports_distro.object_id
+    open_ports_table  = module.open_ports_table.object_id
   }
 
   object_type  = "dashboard"
@@ -89,3 +91,110 @@ module "moj_dashboard_3" {
   es_domain    = data.aws_ssm_parameter.es_domain.value
 }
 
+
+module "moj_dash_ai_open_ports" {
+  # two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
+
+  # It is sometimes useful for the developers of the project to use a local version of the task
+  # execution project. This enables them to develop the task execution project and the nmap scanner
+  # (or other future tasks), at the same time, without requiring the task execution changes to be
+  # pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
+  # devs will have to comment in/out this line as and when they need
+  # source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
+  app_name = var.app_name
+
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  object_template  = "${path.module}/dashboards/ai_open_ports.dash.json"
+
+  object_substitutions = {
+    open_ports_ai_table = module.open_ports_ai_table.object_id
+    open_ports_cloud    = module.open_ports_cloud.object_id
+    open_ports_filter   = module.open_ports_filter.object_id
+  }
+
+  object_type  = "dashboard"
+  object_title = "Actionable Items: Open ports"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
+}
+
+
+module "moj_dash_ai_ssl_protocols" {
+  # two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
+
+  # It is sometimes useful for the developers of the project to use a local version of the task
+  # execution project. This enables them to develop the task execution project and the nmap scanner
+  # (or other future tasks), at the same time, without requiring the task execution changes to be
+  # pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
+  # devs will have to comment in/out this line as and when they need
+  # source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
+  app_name = var.app_name
+
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  object_template  = "${path.module}/dashboards/ai_ssl_proto_support.dash.json"
+
+  object_substitutions = {
+    ssl_proto_ai_table  = module.ssl_proto_ai_table.object_id
+    ssl_proto_ai_filter = module.ssl_proto_ai_filter.object_id
+  }
+
+  object_type  = "dashboard"
+  object_title = "Actionable items: SSL protocol support"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
+}
+
+module "moj_dash_ai_cve_severity" {
+  # two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
+
+  # It is sometimes useful for the developers of the project to use a local version of the task
+  # execution project. This enables them to develop the task execution project and the nmap scanner
+  # (or other future tasks), at the same time, without requiring the task execution changes to be
+  # pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
+  # devs will have to comment in/out this line as and when they need
+  # source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
+  app_name = var.app_name
+
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  object_template  = "${path.module}/dashboards/ai_cve_severity.dash.json"
+
+  object_substitutions = {
+    severe_cve_ai_filter = module.severe_cve_ai_filter.object_id
+    severe_cve_ai_table  = module.severe_cve_ai_table.object_id
+  }
+
+  object_type  = "dashboard"
+  object_title = "Actionable items: CVE Severity"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
+}
+
+
+module "moj_dash_ai_ssl_expiry" {
+  # two slashes are intentional: https://www.terraform.io/docs/modules/sources.html#modules-in-package-sub-directories
+  source = "github.com/ministryofjustice/securityanalytics-analyticsplatform//infrastructure/kibana_saved_object"
+
+  # It is sometimes useful for the developers of the project to use a local version of the task
+  # execution project. This enables them to develop the task execution project and the nmap scanner
+  # (or other future tasks), at the same time, without requiring the task execution changes to be
+  # pushed to master. Unfortunately you can not interpolate variables to generate source locations, so
+  # devs will have to comment in/out this line as and when they need
+  # source = "../../../securityanalytics-analyticsplatform/infrastructure/kibana_saved_object"
+  app_name = var.app_name
+
+  aws_region       = var.aws_region
+  ssm_source_stage = var.ssm_source_stage
+  object_template  = "${path.module}/dashboards/ai_ssl_expiry.dash.json"
+
+  object_substitutions = {
+    ai_expiry_dates_filter = module.ai_expiry_dates_filter.object_id
+    ai_expiry_dates_table  = module.ai_expiry_dates_table.object_id
+  }
+
+  object_type  = "dashboard"
+  object_title = "Actionable items: SSL expiry"
+  es_domain    = data.aws_ssm_parameter.es_domain.value
+}

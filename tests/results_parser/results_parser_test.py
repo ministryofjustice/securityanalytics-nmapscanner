@@ -5,6 +5,8 @@ from test_utils.test_utils import serialise_mocks, coroutine_of, resetting_mocks
 from utils.json_serialisation import dumps
 from botocore.response import StreamingBody
 from itertools import count
+from datetime import datetime as datetime_real
+from datetime import timedelta as timedelta_real
 
 TEST_ENV = {
     "REGION": "eu-west-wood",
@@ -17,6 +19,7 @@ TEST_DIR = "./tests/results_parser/"
 with patch("utils.json_serialisation.stringify_all"), \
         patch("utils.scan_results.ResultsContext") as results_context_constructor:
     from results_parser import NmapResultsParser
+    import datetime
 
     @patch.dict(os.environ, TEST_ENV)
     def ssm_return_vals():
@@ -31,14 +34,12 @@ with patch("utils.json_serialisation.stringify_all"), \
             ]
         })
 
-
     def expected_pub(doc_type, doc):
         return {
             "TopicArn": "test_topic_arn",
             "Subject": doc_type,
             "Message": dumps(doc)
         }
-
 
     def filter_tested_interactions(collections, methods, mock_mgr):
         actual_calls = [
@@ -48,7 +49,6 @@ with patch("utils.json_serialisation.stringify_all"), \
                (name in methods)
         ]
         return actual_calls
-
 
     @resetting_mocks(results_context_constructor)
     @pytest.mark.unit
@@ -88,6 +88,7 @@ with patch("utils.json_serialisation.stringify_all"), \
             # Expect data for port 22, but first
             # Expect to push the port context
             call.push_context({
+                "port_str": "22",
                 "port_id": "22",
                 "protocol": "tcp",
             }),
@@ -108,6 +109,7 @@ with patch("utils.json_serialisation.stringify_all"), \
             # Expect to see the pop and push of the new context for port 80 and pusblish
             call.pop_context(),
             call.push_context({
+                "port_str": "80",
                 "port_id": "80",
                 "protocol": "tcp",
             }),
@@ -209,6 +211,7 @@ with patch("utils.json_serialisation.stringify_all"), \
                     ],
                     "ports": [
                         {
+                            "port_str": "22",
                             "port_id": "22",
                             "protocol": "tcp",
                             "status": "open",
@@ -221,6 +224,7 @@ with patch("utils.json_serialisation.stringify_all"), \
                             "cpes": ["cpe:/a:openbsd:openssh:6.6.1p1", "cpe:/o:linux:linux_kernel"]
                         },
                         {
+                            "port_str": "80",
                             "port_id": "80",
                             "protocol": "tcp",
                             "status": "open",
@@ -294,7 +298,6 @@ with patch("utils.json_serialisation.stringify_all"), \
             call.publish_results()
         ]
 
-
     @resetting_mocks(results_context_constructor)
     @pytest.mark.unit
     def test_parses_tls_info():
@@ -311,6 +314,7 @@ with patch("utils.json_serialisation.stringify_all"), \
 
         expected = [
             call.push_context({
+                "port_str": "443",
                 "port_id": "443",
                 "protocol": "tcp",
             }),
@@ -345,7 +349,6 @@ with patch("utils.json_serialisation.stringify_all"), \
         ]
         assert posted_cipher_doc == expected
 
-
     @resetting_mocks(results_context_constructor)
     @pytest.mark.unit
     def test_parses_cve_info():
@@ -362,6 +365,7 @@ with patch("utils.json_serialisation.stringify_all"), \
 
         assert posted_cipher_doc == [
             call.push_context({
+                "port_str": "80",
                 "port_id": "80",
                 "protocol": "tcp",
             }),
@@ -373,7 +377,6 @@ with patch("utils.json_serialisation.stringify_all"), \
             call.pop_context(),
             call.pop_context(),
         ]
-
 
     @resetting_mocks(results_context_constructor)
     @pytest.mark.unit
@@ -415,7 +418,6 @@ with patch("utils.json_serialisation.stringify_all"), \
             call.pop_context(),
         ]
 
-
     @resetting_mocks(results_context_constructor)
     @pytest.mark.unit
     def test_parses_multiple_os_cpes_regression_sa_44():
@@ -432,7 +434,6 @@ with patch("utils.json_serialisation.stringify_all"), \
 
         mock_results_context.publish_results.assert_called_once()
 
-
     @resetting_mocks(results_context_constructor)
     @pytest.mark.unit
     def test_parses_os_but_no_osmatch_regression_sa_45():
@@ -441,7 +442,6 @@ with patch("utils.json_serialisation.stringify_all"), \
         )
 
         mock_results_context.publish_results.assert_called_once()
-
 
     @resetting_mocks(results_context_constructor)
     @pytest.mark.unit
@@ -459,6 +459,7 @@ with patch("utils.json_serialisation.stringify_all"), \
 
         assert posted_cipher_doc == [
             call.push_context({
+                "port_str": "80",
                 "port_id": "80",
                 "protocol": "tcp",
             }),
@@ -475,10 +476,14 @@ with patch("utils.json_serialisation.stringify_all"), \
             call.pop_context()
         ]
 
-
     @resetting_mocks(results_context_constructor)
     @pytest.mark.unit
-    def test_parses_ssl_certs():
+    @serialise_mocks()
+    @patch("datetime.datetime")
+    def test_parses_ssl_certs(datetime):
+        datetime.strptime.return_value = datetime_real(2019, 6, 29, 11, 0, 0)
+        datetime.now.return_value = datetime_real(2019, 7, 12, 12, 0, 0)
+
         results_parser, mock_mgr, mock_results_context = execute_test_using_results_archive(
             "test_ssl_cert.xml.tar.gz"
         )
@@ -492,6 +497,7 @@ with patch("utils.json_serialisation.stringify_all"), \
 
         assert posted_cipher_doc == [
             call.push_context({
+                "port_str": "443",
                 "port_id": "443",
                 "protocol": "tcp",
             }),
@@ -503,11 +509,11 @@ with patch("utils.json_serialisation.stringify_all"), \
                     "organizationName": "Let's Encrypt"
                 },
                 "subject": {"commonName": "scottlogic.com"},
-                "validity": {"notAfter": "2019-06-29T06:52:46", "notBefore": "2019-03-31T06:52:46"}
+                "validity": {"notAfter": "2019-06-29T06:52:46", "notBefore": "2019-03-31T06:52:46"},
+                "expiry_diff_at_scan": -14
             }),
             call.pop_context()
         ]
-
 
     @resetting_mocks(results_context_constructor)
     @pytest.mark.unit
@@ -525,6 +531,7 @@ with patch("utils.json_serialisation.stringify_all"), \
 
         assert posted_cipher_doc == [
             call.push_context({
+                "port_str": "80",
                 "port_id": "80",
                 "protocol": "tcp",
             }),
@@ -536,7 +543,6 @@ with patch("utils.json_serialisation.stringify_all"), \
             call.pop_context(),
             call.pop_context(),
         ]
-
 
     @serialise_mocks()
     def execute_test_using_results_archive(filename):

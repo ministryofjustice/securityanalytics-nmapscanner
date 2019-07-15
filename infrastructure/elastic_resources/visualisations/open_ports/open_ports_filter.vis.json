@@ -1,0 +1,11 @@
+{
+    "attributes": {
+        "title": "${object_title}",
+        "visState": "{\"title\":\"${object_title}\",\"type\":\"input_control_vis\",\"params\":{\"controls\":[{\"fieldName\":\"port_str.keyword\",\"indexPattern\":\"${index}\",\"label\":\"Port\",\"options\":{\"multiselect\":true,\"order\":\"desc\",\"size\":1000,\"type\":\"terms\"},\"parent\":\"\",\"type\":\"list\"}],\"pinFilters\":false,\"updateFiltersOnChange\":false,\"useTimeFilter\":false},\"aggs\":[]}",
+        "uiStateJSON": "{}",
+        "description": "",
+        "kibanaSavedObjectMeta": {
+            "searchSourceJSON": "{}"
+        }
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "attributes": {
+        "title": "${object_title}",
+        "description": "A search returning all IP addresses where a port is open that isn't 80, 443 or 22",
+        "columns": [
+            "_source"
+        ],
+        "sort": [
+            "scan_end_time",
+            "desc"
+        ],
+        "kibanaSavedObjectMeta": {
+            "searchSourceJSON": "{\"index\":\"${index}\",\"highlightAll\":true,\"version\":true,\"query\":{\"language\":\"lucene\",\"query\":\"\"},\"filter\":[{\"meta\":{\"index\":\"${index}\",\"type\":\"phrases\",\"key\":\"port_id\",\"value\":\"443, 80, 22\",\"params\":[\"443\",\"80\",\"22\"],\"negate\":true,\"disabled\":false,\"alias\":null},\"query\":{\"bool\":{\"should\":[{\"match_phrase\":{\"port_id\":\"443\"}},{\"match_phrase\":{\"port_id\":\"80\"}},{\"match_phrase\":{\"port_id\":\"22\"}}],\"minimum_should_match\":1}},\"$state\":{\"store\":\"appState\"}}]}"
+        }
+    }
+}

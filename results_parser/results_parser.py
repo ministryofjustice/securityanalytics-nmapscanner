@@ -80,7 +80,11 @@ class NmapResultsParser(ResultsParser):
             for port in host.ports.port:
                 port_id, protocol = (port['portid'], port['protocol'])
                 print(f"Looking at port: {(port_id, protocol)}")
+                # port_str is used so that Kibana visulations for ports >=1000 don't
+                # have commas in. port_id is the numeric version if you want to search
+                # by port range, for example
                 port_key = {
+                    "port_str": str(port_id),
                     "port_id": port_id,
                     "protocol": protocol
                 }
@@ -105,7 +109,7 @@ class NmapResultsParser(ResultsParser):
                 "version": port.service["version"],
                 "extra_info": port.service["extrainfo"],
                 "os_type": port.service["ostype"],
-                })
+            })
             if hasattr(port.service, "cpe"):
                 cpes = []
                 for cpe in port.service.cpe:

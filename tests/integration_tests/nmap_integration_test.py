@@ -9,7 +9,9 @@ MESSAGE_ID = re.compile(r"^([a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}).*$")
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_integration():
-    timeout = 360
+    # this is intentionally set high as an nmap scan of all ports takes a while - if extra flags are
+    # added to the nmap scan in future you may have to increase this timeout
+    timeout = 900
 
     class NmapIntegrationTester(ScanIntegrationTester):
         def __init__(self, timeout_seconds=120):
@@ -18,10 +20,10 @@ async def test_integration():
 
         async def send_request(self):
             resp = await self.sqs_client.send_message(
-               QueueUrl=self.sqs_input_queue_url,
-               # TODO relying on an external resource like this is error prone and unreliable,
-               # we should setup a host to scan as part of the test setup instead
-               MessageBody="scanme.nmap.org"
+                QueueUrl=self.sqs_input_queue_url,
+                # TODO relying on an external resource like this is error prone and unreliable,
+                # we should setup a host to scan as part of the test setup instead
+                MessageBody="scanme.nmap.org"
             )
             self.request_msg_id = resp["MessageId"]
             print(f"Made request {self.request_msg_id}")

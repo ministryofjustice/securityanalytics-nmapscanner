@@ -11,4 +11,17 @@ COPY task_script.sh .
 ENV NMAP_TARGET_STRING=127.0.0.1
 ENV RESULTS_BUCKET=${results_bucket_arn}
 
-ENTRYPOINT [ "sh", "task_script.sh", "--resolve-all", "--script", "ssl-enum-ciphers,vulners,ssl-cert", "-A", "-v" ]
+
+# --resolve-all: resolve all IP addresses for hostnames
+# --script: execute scripts:
+#   ssl-enum-ciphers: find which ciphers are supported
+#   vulners: find CVE vulnerabilities for a host
+#   ssl-cert: retrieve SSL certificate
+# -A: Agressive scan
+# -v: increased verbosity level
+# -sT: TCP connect scan
+# -p0-65535: scan all TCP ports
+# -T4: fast scan - this allows us to be able to scan all TCP ports
+
+# more verbose details: https://explainshell.com/explain?cmd=nmap+--resolve-all+--script+ssl_enum_ciphers,vulners,ssl-cert+-A+-v+-sT+-p0-65535+-T4
+ENTRYPOINT [ "sh", "task_script.sh", "--resolve-all", "--script", "ssl-enum-ciphers,vulners,ssl-cert", "-A", "-v", "-sT", "-p0-65535", "-T4"]

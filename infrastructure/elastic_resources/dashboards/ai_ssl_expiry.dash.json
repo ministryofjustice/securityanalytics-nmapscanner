@@ -1,0 +1,12 @@
+{
+    "attributes": {
+        "title": "${object_title}",
+        "description": "Actionable items: SSL Expiry dates",
+        "panelsJSON": "[{\"panelIndex\":\"1\",\"gridData\":{\"x\":0,\"y\":0,\"w\":24,\"h\":7,\"i\":\"1\"},\"version\":\"6.3.1\",\"type\":\"visualization\",\"id\":\"${ai_expiry_dates_filter}\",\"embeddableConfig\":{}},{\"panelIndex\":\"2\",\"gridData\":{\"x\":0,\"y\":7,\"w\":24,\"h\":15,\"i\":\"2\"},\"version\":\"6.3.1\",\"type\":\"visualization\",\"id\":\"${ai_expiry_dates_table}\",\"embeddableConfig\":{}}]",
+        "optionsJSON": "{\"darkTheme\":false,\"hidePanelTitles\":false,\"useMargins\":true}",
+        "timeRestore": false,
+        "kibanaSavedObjectMeta": {
+            "searchSourceJSON": "{\"query\":{\"language\":\"kuery\",\"query\":\"\"},\"filter\":[],\"highlightAll\":true,\"version\":true}"
+        }
+    }
+}
