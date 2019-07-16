@@ -15,5 +15,5 @@ provider "external" {
 }
 
 provider "local" {
-  version = "~> 1.2"
+  version = "~> 1.3"
 }
