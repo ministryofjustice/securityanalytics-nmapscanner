@@ -1,20 +1,13 @@
 [![CircleCI](https://circleci.com/gh/ministryofjustice/securityanalytics-nmapscanner.svg?style=svg)](https://circleci.com/gh/ministryofjustice/securityanalytics-nmapscanner)
 
-# Sample project
+# NMAP Scanner
 
-At present this project is being used as a sample project. It contains a simple lambda which will be unit and 
+The NMAP scanner is a primary (host) level ECS based scanner. It subscribes to the scan_initiator's scan request outputs and scans the hosts requested. It will port scan the host attempting to detect various vulnerabilities, collating & reporting other information too.
 
-# Testing
+## NSE Plugin support
 
-These instructions are for Powershell, you'll need a few paths set up and to go into the pipenv environment to run the tests:
+Currently we are using the following NSE scripts for NMAP
 
-```
-$Env:PYTHONPATH="C:\dev\MoJ-repo\securityanalytics-nmapscanner;C:\dev\MoJ-repo\securityanalytics-nmapscanner/shared_code/python"
-$Env:PIPENV_VENV_IN_PROJECT="true"
-$Env:AWS_REGION="eu-west-2"
-pipenv install --dev
-pipenv shell
-pytest tests -s
-```
-
-This runs all of the tests. Note that you can use `-m` to reduce the scope e.g. `-m unit` to run unit tests and `-m integration`.
+ - ssl-enum-ciphers
+ - vulners
+ - ssl-cert
